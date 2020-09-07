@@ -14,10 +14,10 @@ function [outputs] = endCondition(inputs)
         % Entire map scanned
         if ct_prog*dt_prog <= toc
             ct_prog = ct_prog + 1;
-            prog    = sum(sum(m_scan))/(n_x_search*n_y_search) * 100;
+            prog    = sum(m_scan, 'all')/(n_x_search*n_y_search) * 100;
             fprintf("Simulation progress = %4.2f %%", prog)
         end
-        if sum(sum(m_scan)) == n_x_search*n_y_search
+        if sum(m_scan, 'all') == n_x_search*n_y_search
             finishFlag = true;
         end
     end
