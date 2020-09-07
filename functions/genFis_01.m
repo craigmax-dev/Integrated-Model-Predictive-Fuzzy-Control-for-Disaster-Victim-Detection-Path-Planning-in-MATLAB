@@ -5,10 +5,14 @@
 % simulation 01. 
 
 %% To do
-% Check which variables should be returned from this function
+% Max travel time calculation for "time" input
 
 %% Script 
 function [fisArray] = genFis_01(n_a)
+
+%   % Max travel time calculation
+%   t_max = d_max/v_gs_min;
+  
 
   n_in            = 3;
   n_out           = 1;
@@ -18,23 +22,23 @@ function [fisArray] = genFis_01(n_a)
   name_in         = ["time", "priority", "downWindProximity"];
   name_out        = ["attraction"];
 
-  range_in        = [ 0 600; 
+  range_in        = [ 0 1; 
                       0 1; 
                       0 1];
   range_out       = [0 1];
 
   MF_shape_in     = ["trimf", "trimf", "trimf"];
   MF_shape_out    = ["linear"];
-  MF_range_in(:,:,1) = [0   60  120; 
-                        60  120 300; 
-                        120 300 6000];
+  MF_range_in(:,:,1) = [- 1/4 0/4 1/4; 
+                          1/4 2/4 3/4; 
+                          3/4 4/4 5/4];
   MF_range_in(:,:,2) = [- 1/4 0/4 1/4; 
                           1/4 2/4 3/4; 
                           3/4 4/4 5/4];
-  MF_range_in(:,:,3) = [0, 0, 0.25; 
-                        0, 0.25, 0.5; 
-                        0.25, 0.5, 1];
-  MF_range_out    = [1 600 1 1];
+  MF_range_in(:,:,3) = [- 1/4 0/4 1/4; 
+                          1/4 2/4 3/4; 
+                          3/4 4/4 5/4];
+  MF_range_out    = [1 1 1 1];
   MF_name_in      = [ "short", "medium", "long";
                       "low", "medium", "high";
                       "low", "medium", "high"];
