@@ -1,70 +1,46 @@
-# Thesis
+# Integrated Model Predictive Fuzzy Control for Disaster Victim Detection Path Planning in MATLAB
 
-Simulation of a path-planning controller for UAV agents performing search and rescue in a disaster environment with dynamic states. The system uses a two-layer controller architecture with a TSK FIS for path-planning and an MPC controller for optimising the FIS parameters.
+This is my thesis project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. The code is currently in pre-alpha.
+
+This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters. The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents). The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation. The output of the FIS is attraction which is used by the path-planner to decide on waypoint locations for the UAVs. The MPC uses an objective function which is a combination of the accumulative priority of unscanned cells and an additional priority due to cells which are on fire. The MPC uses the patternsearch solver for the nonlinear time-limited optimisation of the FIS parameters.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+* [MATLAB](https://www.mathworks.com/products/matlab.html) - Version: '9.8'
+* [Mapping Toolbox]() - Version: '4.10'
+* [Image Processing Toolbox]() - Version: '11.1'
+* [Fuzzy Logic Toolbox](https://www.mathworks.com/products/fuzzy-logic.html) - Version: '2.7'
+* [Global Optimization Toolbox]() - Version: '4.3'
+* [Antenna Toolbox]() - Version: '4.2'
+* [Curve Fitting Toolbox]() - Version: '3.5.11'
+* [Fixed-Point Designer]() - Version: '7.0'
+* [System Identification Toolbox]() - Version: '9.12'
+* [MATLAB Coder]() - Version: '5.0'
+* [Optimization Toolbox](https://www.mathworks.com/products/optimization.html) - Version: '8.5'
+* [Simulink]() - Version: '10.1'
+* [Statistics and Machine Learning Toolbox]() - Version: '11.7'
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+This code can be installed in several easy steps.
 
-Say what the step will be
+1 - Download the project.
 
-```
-Give the example
-```
+2 - Ensure required dependencies are installed.
 
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+3 - Run the main.m script to check the project is functional.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Default tests for the project are not ready yet and will be deployed with the final version of the code.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code. Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
@@ -72,9 +48,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Craig Maxwell** - *Initial work* - [craigmax-dev](https://github.com/craigmax-dev)
 
 ## License
 
@@ -82,6 +56,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* Anahita Jamshidnejad, my supervisor.
