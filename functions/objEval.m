@@ -5,14 +5,18 @@
 % 22/06/2020 - ignore scanned cells in calculation
 % 22/06/2020 - fixed bug with non-integers being used for matrix searches
 % 22/06/2020 - fixed bug with converting m_search to same dimension as m_scan
+% 29/06/2020 - fixed bug with calculation of m_scan_env_inv
+% 17/07/2020 - Added obj_fun_scaling
 
 %% To do
-% - include consideration of other fire states in calculation
 
-function [s_obj, obj] = objEval(m_f, m_bo, m_scan, ...
-                        r_bo, r_f, ...
-                        dt_s, s_obj, ...
-                        n_x_f, n_y_f, n_x_search, n_y_search, c_f_search)
+%% Bugs
+
+function [s_obj, obj, obj_fun_scaling] = objEval(...
+            m_f, m_bo, m_scan, ...
+            r_bo, r_f, dt_s, s_obj, ...
+            n_x_f, n_y_f, n_x_search, n_y_search, c_f_search, ...
+            obj_fun_scaling)
 
     % Generate active fire map
     m_fo          = m_f;
@@ -21,10 +25,8 @@ function [s_obj, obj] = objEval(m_f, m_bo, m_scan, ...
     m_fo(m_fo==3) = 1;
     m_fo(m_fo==4) = 0;
     
-    % Inverse scan map
-    m_scan_inv = ones(size(n_x_search, n_y_search)) - m_scan;
-    % Convert inverse scan map to environment map resolution
-    m_scan_inv_env = zeros(n_x_f, n_y_f);
+    % Convert scan map to environment map resolution
+    m_scan_env = zeros(n_x_f, n_y_f);
     for i=1:n_x_search
       for j=1:n_y_search
         if m_scan(i,j) == 1
@@ -34,17 +36,26 @@ function [s_obj, obj] = objEval(m_f, m_bo, m_scan, ...
           y_min = c_f_search*(j-1) + 1;
           y_max = y_min + c_f_search - 1;
           % Set range as scanned
-          m_scan_inv_env(x_min:x_max,y_min:y_max) = 1;
+          m_scan_env(x_min:x_max,y_min:y_max) = 1;
         end
       end
     end
+    % Inverse scan map
+    m_scan_env_inv = ones(n_x_f, n_y_f) - m_scan_env;
+    % Priority due to building occupancy
+    m_P_bo = r_bo.*m_bo;
+    % Priority due to fire occupancy
+    m_P_fo = r_f.*m_fo;    
     % Priority map
-    m_P   = r_bo.*m_bo + r_f.*m_fo;
+    m_P   = m_P_bo + m_P_fo;
     % Ignore already scanned cells
-    m_P   = m_P.*m_scan_inv_env;
+    m_P   = m_P.*m_scan_env_inv;
     % Objective function for current timestep
-    obj   = sum(sum(m_P))*dt_s;       
+    obj   = sum(m_P, 'all')*dt_s;       
     % Sum of objective over time
-    s_obj = s_obj + obj;              
-
+    s_obj = s_obj + obj;
+    % Add to obj_fun_scaling
+    if(exist('obj_fun_scaling'))
+      obj_fun_scaling = [obj_fun_scaling; [m_P_bo, m_P_fo]];
+    end
 end
