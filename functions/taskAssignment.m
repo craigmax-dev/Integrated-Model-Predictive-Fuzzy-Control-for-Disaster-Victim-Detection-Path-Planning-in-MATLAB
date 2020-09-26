@@ -3,16 +3,23 @@
 
 %% Bugs
 
-function [UAV_target, m_scan_schedule] = taskAssignment(...
-  UAV, UAV_target, q, m_att, m_scan_schedule)
+function [a_target, m_scan_schedule] = taskAssignment(...
+  a, a_target, q, m_att, m_scan_schedule)
   if(sum(isnan(m_att), 'all') == numel(m_att))
-    UAV_target(UAV, :, q) = NaN;
+    a_target(a, :, q) = NaN;
   else
     % Find max attraction cells
-    [row, col] = find(m_att == max(m_att, [], 'all'));
+    [i, j] = find(m_att == max(m_att, [], 'all'));
+    if isnan(m_att(i, j))
+      fprintf("Incorrect assignment")
+    end
+    if length(i) > 1 || length(j) > 1
+      i = i(1);
+      j = j(1);
+    end
     % Assign first max attraction in case of duplicates
-    UAV_target(UAV, :, q) = [row(1), col(1)];
+    a_target(a, :, q) = [i, j];
     % Update scan schedule map
-    m_scan_schedule(row(1), col(1)) = 1;
+    m_scan_schedule(i, j) = 1;
   end
 end
