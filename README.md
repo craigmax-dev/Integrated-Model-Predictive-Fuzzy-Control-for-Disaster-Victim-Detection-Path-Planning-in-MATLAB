@@ -36,12 +36,14 @@ This code can be installed in several easy steps.
 
 ## Running the tests
 
-Default tests for the project are not ready yet and will be deployed with the final version of the code.
+There are four default tests included in the code.
 
 ## Contributing
 
-This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code. 
-Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us. For inspiration or ideas of how to contribute to the project, please read [RECOMMENDATIONS.md](RECOMMENDATIONS.md).
+This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. 
+Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code. 
+Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us. 
+For inspiration or ideas of how to contribute to the project, please read [RECOMMENDATIONS.md](RECOMMENDATIONS.md).
 
 ## Versioning
 
