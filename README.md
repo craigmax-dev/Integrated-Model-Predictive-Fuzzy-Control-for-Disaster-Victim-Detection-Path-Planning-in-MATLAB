@@ -41,9 +41,7 @@ Default tests for the project are not ready yet and will be deployed with the fi
 ## Contributing
 
 This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code. 
-<!--
 Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us.
---!>
 
 ## Versioning
 
