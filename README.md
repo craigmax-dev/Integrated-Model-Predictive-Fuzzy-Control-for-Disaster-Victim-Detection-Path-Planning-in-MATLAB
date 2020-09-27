@@ -2,7 +2,12 @@
 
 This is the code for my in-progress thesis project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology.
 
-This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters. The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents). The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation. The output of the FIS is attraction which is used by the path-planner to decide on waypoint locations for the UAVs. The MPC uses an objective function which is a combination of the accumulative priority of unscanned cells and an additional priority due to cells which are on fire. The MPC uses the patternsearch solver for the nonlinear time-limited optimisation of the FIS parameters.
+This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters. 
+The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents). 
+The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation. 
+The output of the FIS is attraction which is used by the path-planner to decide on waypoint locations for the UAVs. 
+The MPC uses an objective function which is a combination of the accumulative priority of unscanned cells and an additional priority due to cells which are on fire. 
+The MPC uses the patternsearch solver for the nonlinear time-limited optimisation of the FIS parameters.
 
 ## Getting Started
 
@@ -36,7 +41,7 @@ This code can be installed in several easy steps.
 
 ## Running the tests
 
-There are four default tests included in the code.
+Default tests will be included in the first full release of the project code.
 
 ## Contributing
 
