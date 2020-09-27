@@ -8,3 +8,4 @@ Feel free to take any of these additions as inspiration for contributing to the 
   * Population distribution
   * etc...
 * Implement error checking across simulation
+* Selection criteria for path-planning algorithm (e.g. 100 nearest cells)
