@@ -34,7 +34,7 @@ sim_name    = "";
 exp_dir     = "results";
 
 % Set up folder paths
-addpath('functions', 'inputData', 'outputData', 'figures')
+addpath('functions', 'inputData', 'figures')
 
 % Import building raster
 buildingRaster      = 'inputData\maps\portAuPrince\portAuPrince_campeche.tif';
@@ -178,7 +178,7 @@ m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_
 m_f_i(numel(m_bo)) = 1;
 
 % Initialise fire maps
-[m_f, m_f_hist, m_bt, m_dw] = fireModel(...
+[m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
       m_f_i, m_f_hist, m_r, m_bo, m_bt, dt_f, k, n_x_e, n_y_e, ...
       v_w, ang_w, c_fs_1, c_fs_2, c_f_search);
 
