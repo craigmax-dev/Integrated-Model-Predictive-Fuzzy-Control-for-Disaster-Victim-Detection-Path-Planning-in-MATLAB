@@ -1,14 +1,12 @@
 %% Coarsen raster grid
-% Generate coarsened occupancy map and raster map based on input map
+% Generate coarsened occupancy map and raster map based on input map.
 % Inputs:
 % - m_p_in - input map
-% - ref - (optional, requires l_d) raster reference map
-% - l_d - (optional, requires ref) reference cell size
-% - c_f - (optional) coarsening factor
+% - c_f - coarsening factor
+% Outputs:
 % m_occ - occupancy map (percent of each cell occupied)
 % m_r   - raster map (binary, identifies if any occupancy in cell)
-
-%% Assumptions
+% Assumptions:
 % - some error introduced by rounding - ignoring rows and column on sides
 % of matrix.
 

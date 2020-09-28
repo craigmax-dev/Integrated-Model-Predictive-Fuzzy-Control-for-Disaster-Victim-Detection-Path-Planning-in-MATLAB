@@ -1,4 +1,7 @@
-%% Calculate coarsen ratio given desired cell dimensions
+%% coarsenRatio.m
+% For a given desired cell length in a tif object, return the required 
+% coarsen ratio and resulting cell lengths in both axes in order to closest
+% match that cell length.
 
 function [c_f, l_x, l_y] = coarsenRatio(ref, l_d)
     

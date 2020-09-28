@@ -15,13 +15,15 @@
 
 % MPC configuration
 mpc_active            = false;
+% Solver options: fmincon, ga, particleswarm, patternsearch
 solver                = "patternsearch";
+% Optimisation time limit for solver
 t_opt                 = 60;
 
 % Tests 
 test_fis_sensitivity  = false;
 test_obj_sensitivity  = false;
-test_solvers          = false; % fmincon, ga, particleswarm, patternsearch
+test_solvers          = false;
 
 % Test variables
 fis_data = [];
@@ -91,26 +93,30 @@ a_target(:,:,1) = a_loc;
 r_bo  = 0.5;      % Risk weighting due to building occupancy
 r_fo  = 0.5;      % Risk weighting due to environmental fire
 
-% Wind variables
-v_w         = 2;        % Wind speed (m/s)
-ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
 c_fs_1        = 0.2;    % Wind constant 1 (for fire model)
 c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
 
-% Environment maps
-l_c_state   = 3;                        % dynamic state cell size (m)
-[c_f_env, l_x_e, l_y_e] = coarsenRatio(m_p_ref, l_c_state);
-[m_bo, m_r] = coarsen(m_p_in, c_f_env); % Coarsen grid
-n_x_e       = size(m_bo,1);             % Number of cells in x-axis of environment map
-n_y_e       = size(m_bo,2);             % Number of cells in y-axis of environment map
-n_f_i       = 1;                        % Number of initial fire outbreaks
-m_f_i       = zeros(n_x_e, n_y_e);      % Initial fire map
-m_f_i(80,1) = 3;                       % Initial fire
-m_bt        = zeros(n_x_e,n_y_e);       % Burntime map
-m_bt_hist   = zeros(n_x_e, n_y_e);      % Burntime map history
-m_f_hist    = zeros(n_x_e, n_y_e);      % Fire map history
+%% Environment models
+% Environment map cell length (m)
+l_c_e   = 3;
+% Building occupancy map
+[c_f_e, l_x_e, l_y_e] = coarsenRatio(m_p_ref, l_c_e);
+[m_bo, m_r] = coarsen(m_p_in, c_f_e);
+% Environment map dimensions
+n_x_e       = size(m_bo,1);
+n_y_e       = size(m_bo,2);
+% Wind model
+v_w         = 2;        % Wind speed (m/s)
+ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+% Initialise fire map
+m_f_i       = zeros(n_x_e, n_y_e);
+m_f_i(80,1) = 3;
+m_f_hist    = m_f_i;
+% Initialise burntime map
+m_bt        = zeros(n_x_e,n_y_e);
+m_bt_hist   = m_bt;
 
-% Search maps
+%% Search models
 c_f_search  = [5, 5]; % Search map coarsen factor from environment map
 m_bo_search = coarsen(m_bo, c_f_search); 
 n_x_s  = size(m_bo_search, 1);            % Scan map size in x direction
@@ -224,15 +230,7 @@ optTermCond = 'MaxTime';
 fminsearchOptions = optimset('Display','iter','PlotFcns',@optimplotfval);
 gaOptions         = optimoptions('ga','Display','iter', 'PlotFcn', @gaplotbestf);
 patOptions        = optimoptions('patternsearch','Display','iter', optTermCond, t_opt);
-% patOptions        = optimoptions('patternsearch','Display','iter', 'PlotFcn',@psplotbestf, optTermCond, t_opt);
 parOptions        = optimoptions('particleswarm','Display','iter', 'PlotFcn',@pswplotbestf);
-% Termination condition
-
-% Notes
-% can try different mutation functions
-% can set max number of generations
-% Can set tolerances
-% For patternsearch only or paretosearch with a single objective: 'psplotbestf' | 'psplotmeshsize' | 'psplotbestx' 
 
 %% Test setup
 
@@ -306,73 +304,12 @@ while finishFlag == false
     t_MPC = toc(t_start);
   end
   
-%   %% Sensitivity test
-%   if test_obj_sensitivity
-%     t_start = tic;
-%     if ct_mpc_sens*dt_mpc <= t && ct_mpc_sens < ct_mpc_sens_fin
-%       % Counter 
-%       ct_mpc_sens = ct_mpc_sens + 1;
-%       % Eval obj function over prediction horizon for range of MF parameters
-%       for i = 1:n_sens_1
-%         for j = 1:n_sens_2
-%           for k = 1:n_sens_3
-%             for l = 1:n_sens_4
-%               % Generate parameter array
-%               fis_params = [];
-%               for a = 1:n_a
-%                 fis_params = [fis_params, [p1(i), p2(j), p3(k), p4(l)]];
-%               end 
-%               sens_params = [];
-%               for p = 1:n_p
-%                 sens_params = [sens_params, fis_params];
-%               end
-%               % Evaluate objective function
-%               obj = mpcModel( sens_params, ...
-%               fisArray, ...
-%               m_f, m_r, m_bo, m_bt, m_scan, m_t_scan, ...
-%               dt_a, dt_c, dt_f, dt_mpc, dt_s,  ...
-%               n_a, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
-%               a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
-%               k, negAtt, ...
-%               l_x_s, l_y_s, c_f_search, ...
-%               c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
-%               r_bo, r_fo);
-%               % Save objective
-%               obj_hist_sens(i,j,k,l,ct_mpc_sens) = obj;
-%             end
-%           end
-%         end
-%       end
-%     end
-%     t_testSensitivity = toc(t_start);
-%   end
-  
   %% Path planning
-  % TO DO: reformat! only need to call once - check done in pathplanner
   t_start = tic;
   if k_c*dt_c <= t
     % Counter
     k_c = k_c + 1;
     % Path planner
-%     if test_fis_sensitivity
-%       [a_target, fis_data] = pathPlanner(...
-%         n_a, a_target, n_q, ...
-%         n_x_s, n_y_s, l_x_s, l_y_s, ...
-%         m_scan, m_t_scan, m_dw, m_prior, ...
-%         fisArray, ...
-%         a_t_trav, a_t_scan, ...
-%         ang_w, v_as, v_w, ...
-%         negAtt, test_fis_sensitivity, fis_data);
-%     else
-%       a_target = pathPlanner(...
-%         n_a, a_target, n_q, ...
-%         n_x_s, n_y_s, l_x_s, l_y_  s, ...
-%         m_scan, m_t_scan, m_dw, m_prior, ...
-%         fisArray, ...
-%         a_t_trav, a_t_scan, ...
-%         ang_w, v_as, v_w, ...
-%         negAtt, test_fis_sensitivity);    
-%     end
     a_target = pathPlanner(...
       n_a, a_target, n_q, ...
       n_x_s, n_y_s, l_x_s, l_y_s, ...
@@ -460,9 +397,10 @@ if fig_exp
     'obj_hist',         obj_hist,         true;
     'm_bo',             m_bo,             true;
     'fis',              fisArray,         true;
-    'm_prior',          m_prior,          true;
-    'm_prior_hist',     m_prior_hist,     false};
+    'm_prior',          m_prior,          true};
 
+%     'm_prior_hist',     m_prior_hist,     false
+  
   if test_obj_sensitivity
     plotData = [plotData; {'obj_hist_sens', obj_hist_sens, true}];  
   end
@@ -536,3 +474,65 @@ end
 %     m_scan_hist(:,:,ct_v) = m_scan;  
 %     m_dw_hist(:,:,ct_v)   = m_dw;
 %     m_bt_hist(:,:,ct_v)   = m_bt;
+
+%   %% Sensitivity test
+%   if test_obj_sensitivity
+%     t_start = tic;
+%     if ct_mpc_sens*dt_mpc <= t && ct_mpc_sens < ct_mpc_sens_fin
+%       % Counter 
+%       ct_mpc_sens = ct_mpc_sens + 1;
+%       % Eval obj function over prediction horizon for range of MF parameters
+%       for i = 1:n_sens_1
+%         for j = 1:n_sens_2
+%           for k = 1:n_sens_3
+%             for l = 1:n_sens_4
+%               % Generate parameter array
+%               fis_params = [];
+%               for a = 1:n_a
+%                 fis_params = [fis_params, [p1(i), p2(j), p3(k), p4(l)]];
+%               end 
+%               sens_params = [];
+%               for p = 1:n_p
+%                 sens_params = [sens_params, fis_params];
+%               end
+%               % Evaluate objective function
+%               obj = mpcModel( sens_params, ...
+%               fisArray, ...
+%               m_f, m_r, m_bo, m_bt, m_scan, m_t_scan, ...
+%               dt_a, dt_c, dt_f, dt_mpc, dt_s,  ...
+%               n_a, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
+%               a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
+%               k, negAtt, ...
+%               l_x_s, l_y_s, c_f_search, ...
+%               c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
+%               r_bo, r_fo);
+%               % Save objective
+%               obj_hist_sens(i,j,k,l,ct_mpc_sens) = obj;
+%             end
+%           end
+%         end
+%       end
+%     end
+%     t_testSensitivity = toc(t_start);
+%   end
+
+    % Path planner
+%     if test_fis_sensitivity
+%       [a_target, fis_data] = pathPlanner(...
+%         n_a, a_target, n_q, ...
+%         n_x_s, n_y_s, l_x_s, l_y_s, ...
+%         m_scan, m_t_scan, m_dw, m_prior, ...
+%         fisArray, ...
+%         a_t_trav, a_t_scan, ...
+%         ang_w, v_as, v_w, ...
+%         negAtt, test_fis_sensitivity, fis_data);
+%     else
+%       a_target = pathPlanner(...
+%         n_a, a_target, n_q, ...
+%         n_x_s, n_y_s, l_x_s, l_y_  s, ...
+%         m_scan, m_t_scan, m_dw, m_prior, ...
+%         fisArray, ...
+%         a_t_trav, a_t_scan, ...
+%         ang_w, v_as, v_w, ...
+%         negAtt, test_fis_sensitivity);    
+%     end
