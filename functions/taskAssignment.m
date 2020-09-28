@@ -1,8 +1,3 @@
-%% Change Log
-% 01/08/2020 - removed use of n_x_search and n_y_search
-
-%% Bugs
-
 function [a_target, m_scan_schedule] = taskAssignment(...
   a, a_target, q, m_att, m_scan_schedule)
   if(sum(isnan(m_att), 'all') == numel(m_att))

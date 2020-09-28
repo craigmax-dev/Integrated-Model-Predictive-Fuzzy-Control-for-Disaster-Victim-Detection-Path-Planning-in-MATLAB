@@ -2,16 +2,6 @@
 % Date:     02/06/2020
 % Author:   Craig Maxwell
 
-% To do:
-% Improve calculation of agent times - linear so can increase step size
-% Problem when timestep is too large and multiple actions can be carried out?
-% What happens if agent task = 3, unable to do any other task?
-
-%% Change Log
-% 22/06/2020 - reworked agent task assignment
-% 22/06/2020 - corrected agent distance calculations
-% 22/06/2020 - improved readability
-
 %% Bugs
 
 function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...

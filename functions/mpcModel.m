@@ -2,22 +2,6 @@
 % Simulation of system over a defined horizon. Returns sum of objective function
 % over horizon.
 
-%% Change Log
-% 02/07/2020 - Created function
-% 02/07/2020 - 
-% 02/07/2020 - 
-
-%% Notes
-% Should prediction horizon be equal to the time between MPC optimsiations?
-% Can hist varibales be removed?
-
-%% To do
-% Add plotting of optimisation results
-% Add plotting of all FIS surfaces - https://nl.mathworks.com/help/matlab/math/plot-functions.html
-% Add constraints so rules are always fired?
-
-%% Bugs
-
 function [s_obj_pred] ...
           = mpcModel( params, ...
           fisArray, test_fis_sensitivity, ...

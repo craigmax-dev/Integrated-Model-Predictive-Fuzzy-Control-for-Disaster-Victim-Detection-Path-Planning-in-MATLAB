@@ -5,16 +5,7 @@
 % paths - how to show time in path - increasing opacity
 % paths - create better system for color scale - e.g. create n divisions and split
 % over time span of simulation then approximate current time during quiver plot
-
-%% Bugs
-
-%% Change Log
-% 22/06/2020 - colormaps defined in script
-% 29/06/2020 - added UAV path plotting
-% 29/06/2020 - change obj_hist plot from scatter to plot
-% 10/08/2020 - bugfix - incorrect time in environment variable plots
-% 10/08/2020 - improvement - removed unneccesary code
-% 17/08/2020 - added FIS parameter history plotting - scatter and surface
+% Add plotting of all FIS surfaces - https://nl.mathworks.com/help/matlab/math/plot-functions.html
 
 %% Script
 function [] = plotResults( dataSet, saveDir, folder, ...

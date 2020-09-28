@@ -12,15 +12,6 @@
 % - some error introduced by rounding - ignoring rows and column on sides
 % of matrix.
 
-%% To do
-
-%% Change log
-% 22/06/2020 - improved readability
-% 22/06/2020 - removed errata with idea of randomising building flammability
-% 22/07/2020 - Implemented option for coarsening using coarsening factor
-% 22/07/2020 - Added description
-% 10/08/2020 - Separated coarsening and coarsen factor calculation
-
 %% Coarsen raster
 function [m_occ, m_r] = coarsen(m_p_in, c_f)
 

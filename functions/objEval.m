@@ -1,17 +1,6 @@
 %% Function objEval
 % Evaluate objective function
 
-%% Change log
-% 22/06/2020 - ignore scanned cells in calculation
-% 22/06/2020 - fixed bug with non-integers being used for matrix searches
-% 22/06/2020 - fixed bug with converting m_search to same dimension as m_scan
-% 29/06/2020 - fixed bug with calculation of m_scan_env_inv
-% 17/07/2020 - Added obj_fun_scaling
-
-%% To do
-
-%% Bugs
-
 function [s_obj, obj, obj_fun_scaling] = objEval(...
             m_f, m_bo, m_scan, ...
             r_bo, r_f, dt_s, s_obj, ...

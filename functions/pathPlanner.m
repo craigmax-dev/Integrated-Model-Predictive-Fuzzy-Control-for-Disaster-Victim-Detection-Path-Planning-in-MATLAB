@@ -2,35 +2,6 @@
 % Date:     02/06/2020
 % Author:   Craig Maxwell
 
-%% Change log
-% 22/06/2020 - Removed fireModel evaluation from script
-% 22/06/2020 - Removed UAV_occ flag - instead "NaN" can be used inside UAV tasks
-% 22/06/2020 - Fixed confusing indexing in travel time calculation
-% 22/06/2020 - Fixed travel time calculation
-% 22/06/2020 - Expanded travel time calculation for any value of l_queue
-% 22/06/2020 - Travel times saved after calculation
-% 29/06/2020 - Bugfix - problems with path planning when entire environment
-% scanned.
-% 01/07/2020 - Added empty attraction map consideration to conflict resolution
-% script
-% 27/07/2020 - Normalisation of time input - same for all UAVs but can change in
-% queue
-% 28/07/2020 - Simplified skip criteria
-% 30/07/2020 - bugfix - m_scan_schedule and t_nextcell_mat handling
-% 30/07/2020 - bugfix - schedule conflict execution condition
-% 30/07/2020 - syntax fix - replace nested sum function with sum(mat,'all')
-% 30/07/2020 - bugfix - task reassignment algorithm using wrong indices in if
-% statement
-% 30/07/2020 - syntax fix - use max(mat,[],'all') instead of nested max
-% 30/07/2020 - created task assignment function
-% 30/07/2020 - created attraction function
-% 30/07/2020 - created timeToNextCell function
-
-%% Notes
-
-%% To do 
-% Better method for normalisation
-
 %% Bugs
 
 function  [a_target, fis_data] = pathPlanner( ...
@@ -51,7 +22,7 @@ function  [a_target, fis_data] = pathPlanner( ...
   end
   
   % Assign tasks
-	for q = 2:l_queue
+	for q = 2:l_queue 
       % Generate t_nextcell_mat      
       [m_t_response] = timeToNextCell(...
         n_x_s, n_y_s, l_x_s, l_x_y, ...
@@ -59,7 +30,7 @@ function  [a_target, fis_data] = pathPlanner( ...
         ang_w, v_w, v_as, m_t_scan);
     for a=1:n_a
       % Generate attraction map   
-      hdl_attcalc = @(scan_state, schedule_state, t_response, prior, t_dw) attcalc (fisArray(a), scan_state, schedule_state, t_response, prior, t_dw);
+      hdl_attcalc = @(scan_state, schedule_state, t_response, prior, t_dw) attCalc (fisArray(a), scan_state, schedule_state, t_response, prior, t_dw);
       m_att(:,:,a) = arrayfun(hdl_attcalc, m_scan, m_schedule, m_t_response(:,:,a), m_prior, m_t_dw);
       % Record fis data
       if test_fis_sensitivity

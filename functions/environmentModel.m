@@ -31,10 +31,6 @@
 % t_i and t_b are estimated for a grid size of 9m^2 - so set fire map cell
 % size to 3m.
 
-%% To do
-
-%% Bugs
-
 %% Model of fire spread using cellular automa
 function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
   m_f, m_f_hist, m_s, m_p, m_bt, del_t, k, n_x_s, n_y_s, v_w, ang_w, c_fs_1, c_fs_2, c_f, flag_mpc)
