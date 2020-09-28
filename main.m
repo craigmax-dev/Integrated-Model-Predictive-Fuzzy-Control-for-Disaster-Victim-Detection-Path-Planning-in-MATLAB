@@ -11,14 +11,6 @@
 % victims.
 % - Wind is assumed to be in fixed direction and velocity
 
-% For final release: default tests set active and it will make the results
-% ST01
-% ST02
-% ST03
-% SS01
-% SS02
-% SS03
-
 %% Preprocessing
 
 % MPC configuration
