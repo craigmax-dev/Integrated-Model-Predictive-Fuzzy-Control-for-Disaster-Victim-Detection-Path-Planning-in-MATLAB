@@ -37,7 +37,7 @@ exp_dir     = "results";
 addpath('functions', 'inputData', 'figures')
 
 % Import building raster
-buildingRaster      = 'inputData\maps\portAuPrince\portAuPrince_campeche.tif';
+buildingRaster      = 'data\maps\portAuPrince\portAuPrince_campeche.tif';
 [m_p_in, m_p_ref]   = geotiffread(buildingRaster);
 m_p_in              = m_p_in(50:450, 50:250);
 
