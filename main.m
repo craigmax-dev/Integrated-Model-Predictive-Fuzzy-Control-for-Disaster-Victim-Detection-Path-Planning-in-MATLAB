@@ -99,7 +99,7 @@ c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
 
 % Environment maps
 l_c_state   = 3;                        % dynamic state cell size (m)
-[~, l_x_e, l_y_e] = coarsenRatio(m_p_ref, l_c_state);
+[c_f_env, l_x_e, l_y_e] = coarsenRatio(m_p_ref, l_c_state);
 [m_bo, m_r] = coarsen(m_p_in, c_f_env); % Coarsen grid
 n_x_e       = size(m_bo,1);             % Number of cells in x-axis of environment map
 n_y_e       = size(m_bo,2);             % Number of cells in y-axis of environment map
