@@ -35,11 +35,10 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         j = a_loc(a, 2);
         % Set cell to scanned
         m_scan(i,j) = 1;
-        m_scan_hist = [m_scan_hist; i, j];
         % Update scan history
-%         if ~flag_mpc        
-%           m_scan_hist(i,j) = t;
-%         end
+        if ~flag_mpc        
+          m_scan_hist(i,j) = t;
+        end
         % Shift target list
         a_target(a, 1, :)   = circshift(a_target(a, 1, :), -1);
         a_target(a, 2, :)   = circshift(a_target(a, 2, :), -1);        
