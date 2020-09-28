@@ -1,12 +1,5 @@
  %% Function genPlots 
 
-%% To do
-% - sort legends on all plots
-% paths - how to show time in path - increasing opacity
-% paths - create better system for color scale - e.g. create n divisions and split
-% over time span of simulation then approximate current time during quiver plot
-% Add plotting of all FIS surfaces - https://nl.mathworks.com/help/matlab/math/plot-functions.html
-
 %% Script
 function [] = plotResults( dataSet, saveDir, folder, ...
                         ax_lon_env, ax_lat_env, ax_lat_scan, ax_lon_scan, ...
