@@ -64,4 +64,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Anahita Jamshidnejad, my supervisor.
+* Dr Anahita Jamshidnejad, my supervisor.

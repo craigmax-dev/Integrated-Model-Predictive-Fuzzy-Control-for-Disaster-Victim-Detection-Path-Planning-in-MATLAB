@@ -1,9 +1,5 @@
 % Function to compare results from simulations
 
-%% To do
-% fis_param_hist scatter
-% Automate import of simulation data for comparison (by defining file names?)
-
 %% Plots
 % % fis_param_hist scatter
 

@@ -4,9 +4,6 @@
 % Description: Create a separate FIS for each agent in the system. For
 % simulation 01. 
 
-%% To do
-% Max travel time calculation for "time" input
-
 %% Script 
 function [fisArray] = createFIS(n_a)
 

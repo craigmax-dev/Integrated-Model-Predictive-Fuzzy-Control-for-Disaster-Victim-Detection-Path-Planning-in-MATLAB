@@ -1,25 +1,14 @@
 %% Coarsen raster grid
-% Generate coarsened occupancy map and raster map based on input map
+% Generate coarsened occupancy map and raster map based on input map.
 % Inputs:
 % - m_p_in - input map
-% - ref - (optional, requires l_d) raster reference map
-% - l_d - (optional, requires ref) reference cell size
-% - c_f - (optional) coarsening factor
+% - c_f - coarsening factor
+% Outputs:
 % m_occ - occupancy map (percent of each cell occupied)
 % m_r   - raster map (binary, identifies if any occupancy in cell)
-
-%% Assumptions
+% Assumptions:
 % - some error introduced by rounding - ignoring rows and column on sides
 % of matrix.
-
-%% To do
-
-%% Change log
-% 22/06/2020 - improved readability
-% 22/06/2020 - removed errata with idea of randomising building flammability
-% 22/07/2020 - Implemented option for coarsening using coarsening factor
-% 22/07/2020 - Added description
-% 10/08/2020 - Separated coarsening and coarsen factor calculation
 
 %% Coarsen raster
 function [m_occ, m_r] = coarsen(m_p_in, c_f)

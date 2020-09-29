@@ -1,8 +1,4 @@
- % Calculate travel time for UAV from one cell to another
-
-%% Change log
-% 08/08/2020 - bugfix - incorrect brackets causing incorrect distance
-% calculation
+% Calculate travel time for UAV from one cell to another
 
 function [t_travel] = travelTime(loc_1, loc_2, l_x_s, l_y_s, ...
   ang_w, v_w, v_as)

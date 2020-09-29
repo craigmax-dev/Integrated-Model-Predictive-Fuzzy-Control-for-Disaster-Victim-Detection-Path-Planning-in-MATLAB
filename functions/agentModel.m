@@ -2,23 +2,11 @@
 % Date:     02/06/2020
 % Author:   Craig Maxwell
 
-% To do:
-% Improve calculation of agent times - linear so can increase step size
-% Problem when timestep is too large and multiple actions can be carried out?
-% What happens if agent task = 3, unable to do any other task?
-
-%% Change Log
-% 22/06/2020 - reworked agent task assignment
-% 22/06/2020 - corrected agent distance calculations
-% 22/06/2020 - improved readability
-
-%% Bugs
-
 function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-            a_t_trav, a_t_trav_hist, a_t_scan] ...
+            a_t_trav, a_t_scan] ...
             = agentModel( n_a, ...
                 m_t_scan, m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-                a_t_trav, a_t_trav_hist, a_t_scan, ...
+                a_t_trav, a_t_scan, ...
                 l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, t, flag_mpc)
   for a = 1:n_a
     if a_task(a) == 1
@@ -45,11 +33,10 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         j = a_loc(a, 2);
         % Set cell to scanned
         m_scan(i,j) = 1;
-        m_scan_hist = [m_scan_hist; i, j];
         % Update scan history
-%         if ~flag_mpc        
-%           m_scan_hist(i,j) = t;
-%         end
+        if ~flag_mpc        
+          m_scan_hist(i,j) = t;
+        end
         % Shift target list
         a_target(a, 1, :)   = circshift(a_target(a, 1, :), -1);
         a_target(a, 2, :)   = circshift(a_target(a, 2, :), -1);        
@@ -60,8 +47,6 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         else
           a_t_trav(a) = travelTime(a_loc(a, :), a_target(a, :, 1), ...
             l_x_s, l_y_s, ang_w, v_w, v_as);
-          % Update a_t_trav_hist
-          a_t_trav_hist = [a_t_trav_hist; a_t_trav(a), a];
         end
       end
     elseif (a_task == 3)

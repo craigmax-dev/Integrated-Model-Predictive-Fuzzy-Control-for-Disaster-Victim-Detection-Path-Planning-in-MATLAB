@@ -1,15 +1,3 @@
-%% Notes
-% Should be for p = 1:q-1 or or p = 1:q?
-% m_t_scan(i,j) should be included for every cell? - yes. t_nextcell is a
-% measurement of time until the cell can be scanned
-% Think selection of loc_1 and loc_2 is wrong
-
-%% To do
-% Test for q > 2
-
-%% Change log
-% 08/08/2020 - bugfix - loc_2 assignment
-
 function [m_t_response] = timeToNextCell(...
           n_x_s, n_y_s, l_x_s, l_y_s, ...
           n_a, a_t_scan, a_t_trav, a_target, q, ...

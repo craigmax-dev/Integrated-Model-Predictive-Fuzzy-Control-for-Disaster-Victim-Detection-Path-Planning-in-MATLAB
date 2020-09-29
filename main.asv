@@ -50,6 +50,11 @@ finishFlag    = false;
 % Objective function
 obj           = 0;
 s_obj         = 0;
+t_hist        = [];
+
+obj_hist      = [];
+s_obj_hist    = [];
+
 
 % Risk model
 r_bo  = 0.5;      % Risk weighting due to building occupancy
@@ -74,11 +79,13 @@ ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y
 % Initialise fire map
 m_f_i       = zeros(n_x_e, n_y_e);
 m_f_i(80,1) = 3;
+m_f_hist    = m_f_i;
 % Initialise burntime map
 m_bt        = zeros(n_x_e,n_y_e);
+m_bt_hist   = m_bt;
 % Fire model parameters
-c_fs_1        = 0.5;    % Wind constant 1 (for fire model)
-c_fs_2        = 0.5;    % Wind constant 2 (for fire model)
+c_fs_1        = 0.2;    % Wind constant 1 (for fire model)
+c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
 
 %% Agent models
 % Search map coarsen factors
@@ -103,10 +110,16 @@ t_scan_m      = 0.1;              % Scan time per square metre
 a_task        = 2.*ones(n_a, 1);% Current task for UAVs
 a_loc         = [ 1, 1;
                   1, 2];          % Current locations of UAVs
+a_loc_hist    = [];
+for a = 1:n_a
+  a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, t];
+end
 % Agent targets
 a_target        = nan(n_a, 2, n_q);
 a_target(:,:,1) = a_loc;
 % Unsorted
+m_scan_hist = zeros(1,2);
+m_dw_hist   = zeros(n_x_s, n_y_s);        % Downwind map history
 m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
 a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
 for a = 1:n_a
@@ -121,6 +134,8 @@ c_prior_open      = 0.1;  % Priority constant for open space
 m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
 % Generate FIS
 [fisArray] = createFIS( n_a );
+% FIS parameters history
+fis_param_hist = fis_params;
 % Initial parameters for simulat ion
 ini_params = [];
 for i = 1:n_p
@@ -129,7 +144,7 @@ end
 
 %% MPC models
 % Prediction horizon
-n_p = 1;
+n_p     = 1;
 % Optimisation variables
 fis_params = [];
 for a = 1:n_a
@@ -161,6 +176,7 @@ gaOptions         = optimoptions('ga','Display','iter', 'PlotFcn', @gaplotbestf)
 patOptions        = optimoptions('patternsearch','Display','iter', optTermCond, t_opt);
 parOptions        = optimoptions('particleswarm','Display','iter', 'PlotFcn',@pswplotbestf);
 
+
 %% Plotting variables
 % Axes may not be entirely accurate as coarsening may remove some
 % rows/columns from original map.
@@ -171,18 +187,6 @@ ax_lon_env = linspace(m_p_ref.LongitudeLimits(1), m_p_ref.LongitudeLimits(2), n_
 ax_lat_scan = linspace(m_p_ref.LatitudeLimits(1),  m_p_ref.LatitudeLimits(2),  n_x_s);
 ax_lon_scan = linspace(m_p_ref.LongitudeLimits(1), m_p_ref.LongitudeLimits(2), n_y_s);
 % History plots
-obj_hist    = [];
-s_obj_hist  = [];
-t_hist      = [];
-m_f_hist    = m_f_i;
-m_bt_hist   = m_bt;
-a_loc_hist    = [];
-for a = 1:n_a
-  a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, t];
-end
-m_scan_hist = zeros(1,2);
-m_dw_hist   = zeros(n_x_s, n_y_s);        % Downwind map history
-fis_param_hist = fis_params;
 
 %% Simulation variables
 % Time estimation
@@ -357,7 +361,7 @@ if fig_exp
   % Generate and export figures 
   plotData  = {  
     'm_dw_hist',        m_dw_hist,        false;    
-    'm_f_hist',         m_f_hist,         true;
+    'm_f_hist',         m_f_hist,         false;
     'm_scan_hist',      m_scan_hist,      false;
     'UAV_loc_hist',     a_loc_hist,       true;
     's_obj_hist',       s_obj_hist,       true;
