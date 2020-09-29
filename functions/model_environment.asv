@@ -116,7 +116,7 @@ function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
     end
   end
     
-  % Determine if fire spread occurs    
+    % Determine if fire spread occurs    
   for i=1:n_x_e
     for j=1:n_y_e
       if m_f(i,j) == 1 && rand <= F(i,j)
@@ -125,13 +125,11 @@ function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
         if ~flag_mpc
           % Record if not prediction % TO DO: finish this!
           m_f_hist(i,j) = k;
+          m_f_hist_animate = [m_f];
         end
       end
     end
   end
-  
-  % Update m_f_hist_animate for animation
-  m_f_hist_animate(:,:,k) = m_f;
     
   % Calculate downwind map
   % Likely time for fire to spread to cell + time to become active - take

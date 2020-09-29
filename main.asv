@@ -73,13 +73,19 @@ n_y_e       = size(m_bo,2);
 v_w         = 2;        % Wind speed (m/s)
 ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
 % Initialise fire map
-m_f_i       = m_s;
-m_f_i(80:82,1:2) = 3 * m_s(80:82,1:2);
+m_f_i       = zeros(n_x_e, n_y_e);
+for i = 1:n_x_e
+  for i = 1:n_x_e
+    
+  end
+end
+
+m_f_i(50:100,1:20) = 3;
 % Initialise burntime map
 m_bt        = zeros(n_x_e,n_y_e);
 % Fire model parameters
-c_fs_1        = 0.2;    % Wind constant 1 (for fire model)
-c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
+c_fs_1        = 0.5;    % Wind constant 1 (for fire model)
+c_fs_2        = 0.5;    % Wind constant 2 (for fire model)
 
 %% Agent models
 % Search map coarsen factors
@@ -176,7 +182,6 @@ obj_hist    = [];
 s_obj_hist  = [];
 t_hist      = [];
 m_f_hist    = m_f_i;
-m_f_hist_animate(:,:,1) = m_f_i;
 m_bt_hist   = m_bt;
 a_loc_hist    = [];
 for a = 1:n_a
@@ -235,8 +240,8 @@ elseif (dk_a >= t_scan_c)
 end
 
 % Initialise fire maps
-[m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
-      m_f_i, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
+[m_f, m_f_hist, m_bt, m_dw] = model_environment(...
+      m_f_i, m_f_hist, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
       v_w, ang_w, c_fs_1, c_fs_2, c_f_s);
 
 %% Simulation
