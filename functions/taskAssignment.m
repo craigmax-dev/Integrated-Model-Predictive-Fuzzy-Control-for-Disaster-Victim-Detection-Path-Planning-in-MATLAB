@@ -7,6 +7,9 @@ function [a_target, m_schedule] = taskAssignment(...
     [i, j] = find(m_att == max(m_att, [], 'all'), 1);
     % Assign cell as target
     a_target(a, :, q) = [i, j];
+    if a_target(a, :, q) == a_target(a, :, 1)
+      fprintf("Repeat in queue \n")
+    end
     % Update scan schedule map
     m_schedule(i, j) = 1;
   end

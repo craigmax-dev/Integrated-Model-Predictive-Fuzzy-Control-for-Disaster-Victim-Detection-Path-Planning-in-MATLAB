@@ -31,20 +31,25 @@
 % t_i and t_b are estimated for a grid size of 9m^2 - so set fire map cell
 % size to 3m.
 
+%% TO DO:
+% - error checking?
+% - 
+
 %% Model of fire spread using cellular automa
 function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
-  m_f, m_f_hist, m_s, m_p, m_bt, del_t, k, n_x_s, n_y_s, v_w, ang_w, c_fs_1, c_fs_2, c_f, flag_mpc)
+  m_f, m_f_hist, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f, flag_mpc)
+
 %% Initialise variables
   t_i = 120;              % Ignition time (s)
   t_b = 600;              % Burnout time (s)
-  F   = zeros(n_x_s,n_y_s);   % Fire spread probability map
+  F   = zeros(n_x_e,n_y_e);   % Fire spread probability map
   fire_count = 0;
 
   % Downwind map
-  W_dir_ws    = zeros(n_x_s, n_y_s);
-  W_dis_ws    = zeros(n_x_s, n_y_s);
-  m_dw_fine   = zeros(n_x_s, n_y_s);
-  m_dw_temp   = zeros(n_x_s, n_y_s);
+  W_dir_ws    = zeros(n_x_e, n_y_e);
+  W_dis_ws    = zeros(n_x_e, n_y_e);
+  m_dw_fine   = zeros(n_x_e, n_y_e);
+  m_dw_temp   = zeros(n_x_e, n_y_e);
 
   % Seed random number generator using timestep fore repeatability
   rng(k); 
@@ -76,32 +81,35 @@ function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
     end
   end
 
-  for i = 1:n_x_s
-    for j = 1:n_y_s 
+  for i = 1:n_x_e
+    for j = 1:n_y_e 
       %% Advance fireMap
       % If active fire state
       if m_f(i,j) == 2
-        m_bt(i,j) = m_bt(i,j) + del_t;
+        m_bt(i,j) = m_bt(i,j) + dt_e;
         % Advance ignition to combustion
         if m_bt(i,j) >= t_i
           m_f(i,j) = 3;
         end
       elseif m_f(i,j) == 3
-        m_bt(i,j) = m_bt(i,j) + del_t;
+        fprintf("BURNING! \n")
+        m_bt(i,j) = m_bt(i,j) + dt_e;
         % Calculate fire spread probabilities
         t_ckl = m_bt(i,j);
         if t_ckl <= (t_b-t_i)/5+t_i
           p = 4/(t_b-t_i)*t_ckl+(0.2*t_b-4.2*t_i)/(t_b-t_i);
         elseif t_ckl <= t_b
           p = 5/(4*(t_b-t_i))*(-t_ckl+t_b);
+        else 
+          fprintf("t_ckl not in range: %d", t_ckl)
         end
         % Add fire spread probability in neighborhood
         for ii = 1:size(W,1)
           for jj = 1:size(W,1)
             iii = i+ii-r_w;
             jjj = j+jj-r_w;
-            if iii > 0 && iii <= n_x_s && jjj > 0 && jjj <= n_y_s                          
-              F(iii,jjj) = c_fs_1*(m_s(iii,jjj) * m_p(iii,jjj)) * W(ii,jj).^c_fs_2*p;
+            if iii > 0 && iii <= n_x_e && jjj > 0 && jjj <= n_y_e                          
+              F(iii,jjj) = c_fs_1*(m_s(iii,jjj) * m_bo(iii,jjj)) * W(ii,jj).^c_fs_2*p;
             end
           end
         end
@@ -114,10 +122,11 @@ function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
   end
     
     % Determine if fire spread occurs    
-  for i=1:n_x_s
-    for j=1:n_y_s
+  for i=1:n_x_e
+    for j=1:n_y_e
       if m_f(i,j) == 1 && rand <= F(i,j)
         % Ignition occurs
+        fprintf("IGNITION! \n")
         m_f(i,j) = 2;
         if ~flag_mpc
           % Record if not prediction % TO DO: finish this!
@@ -131,8 +140,8 @@ function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
   % Likely time for fire to spread to cell + time to become active - take
   % lowest value and calculate for all active fires in grid. May be some
   % problems with this calculation.
-  for i = 1:n_x_s
-    for j = 1:n_y_s
+  for i = 1:n_x_e
+    for j = 1:n_y_e
     % For each active fire spot calculate likely time to spread to
     % rest of map - only interested in cells immediately around W.
     % Create temp map for each active fire spot. Because chance of
@@ -150,14 +159,14 @@ function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
         fire_count = fire_count + 1;
 
         % Method 1 - expand W for each fire to match entire map
-        for m = 1:n_x_s
-          for n=1:n_y_s
+        for m = 1:n_x_e
+          for n=1:n_y_e
             % Linear direction modifier
             f_d             = atan2((m-i),(n-j));
             ang             = ang_w-f_d;
             W_dir_ws(m,n)   = exp(v_w*(c_wm_1 + c_wm_2*(cos(ang)-1))); 
             % Linear distance modifier
-            W_dis_ws(m,n)   = 1 - sqrt((m-i).^2 + (n-j).^2)/sqrt(n_x_s.^2 + n_y_s.^2);
+            W_dis_ws(m,n)   = 1 - sqrt((m-i).^2 + (n-j).^2)/sqrt(n_x_e.^2 + n_y_e.^2);
           end
         end
         % Normalise W_dir_ws
@@ -171,12 +180,12 @@ function [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
   end
 
   % Take max values 
-  for i = 1:n_x_s
-    for j = 1:n_y_s
+  for i = 1:n_x_e
+    for j = 1:n_y_e
       m_dw_fine(i,j) = max(m_dw_temp(i,j,:));
     end
   end
-  m_dw_fine = ones(n_x_s, n_y_s)-m_dw_fine;
+  m_dw_fine = ones(n_x_e, n_y_e)-m_dw_fine;
   % Coarsen to scan map size - average values
   [m_dw, ~] = coarsen(m_dw_fine, c_f);
 end
