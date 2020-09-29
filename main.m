@@ -3,10 +3,8 @@
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
 
-%% Simulation Setup
- 
 %% Simulation Settings
-mpc_active            = true;
+mpc_active            = false;
 % Solver options: fmincon, ga, particleswarm, patternsearch
 solver                = "patternsearch";
 % Optimisation time limit for solver
