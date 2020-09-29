@@ -18,13 +18,14 @@ fis_data = [];
 % Data export configuration
 data_exp    = true;
 fig_exp     = true;
-exp_folder  = "BUGFIX01";
+exp_folder  = "SS01-1";
 exp_dir     = "results";
 % Set up folder paths
-addpath('functions', 'inputData', 'figures')
+addpath('functions', 'data')
 
 %% Time steps and counters
 t       = 0;        % Current time
+t_f     = 6000;     % Simulation end time (s) - optional
 dt_s    = 5;        % Simulation step size
 dk_a    = 1;        % Agent step size
 dk_c    = 2;       % Control step size
@@ -63,8 +64,8 @@ m_p_in              = m_p_in(50:450, 50:250);
 % Environment map cell length (m)
 l_c_e   = 3;
 % Building occupancy map and structure map
-[c_f_e, l_x_e, l_y_e] = coarsenRatio(m_p_ref, l_c_e);
-[m_bo, m_s] = coarsen(m_p_in, c_f_e);
+[c_f_e, l_x_e, l_y_e] = calc_coarsenRatio(m_p_ref, l_c_e);
+[m_bo, m_s] = func_coarsen(m_p_in, c_f_e);
 % Environment map dimensions
 n_x_e       = size(m_bo,1);
 n_y_e       = size(m_bo,2);
@@ -72,28 +73,25 @@ n_y_e       = size(m_bo,2);
 v_w         = 2;        % Wind speed (m/s)
 ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
 % Initialise fire map
-m_f_i       = zeros(n_x_e, n_y_e);
-m_f_i(80,1) = 3;
+m_f_i       = m_s;
+m_f_i(80:82,1:2) = 3 * m_s(80:82,1:2);
 % Initialise burntime map
 m_bt        = zeros(n_x_e,n_y_e);
 % Fire model parameters
-c_fs_1        = 0.5;    % Wind constant 1 (for fire model)
-c_fs_2        = 0.5;    % Wind constant 2 (for fire model)
+c_fs_1        = 0.2;    % Wind constant 1 (for fire model)
+c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
 
 %% Agent models
 % Search map coarsen factors
 c_f_s  = [5, 5];
 % Search map building occupancy
-m_bo_s = coarsen(m_bo, c_f_s); 
+m_bo_s = func_coarsen(m_bo, c_f_s); 
 % Search map dimensions
 n_x_s  = size(m_bo_s, 1);
 n_y_s  = size(m_bo_s, 2);
 % Search map cell lengths
 l_x_s     = c_f_s(1)*l_x_e;
 l_y_s     = c_f_s(2)*l_y_e;
-% Search map cell scan time
-t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
-m_scan      = zeros(n_x_s, n_y_s);        % Scan map
 % Agent parameters
 n_a           = 2;                % Number of UAVs in simulation
 n_q           = 2;                % Queue length for UAV tasks
@@ -106,6 +104,9 @@ a_loc         = [ 1, 1;
 % Agent targets
 a_target        = nan(n_a, 2, n_q);
 a_target(:,:,1) = a_loc;
+% Search map cell scan time
+t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
+m_scan      = zeros(n_x_s, n_y_s);        % Scan map
 % Unsorted
 m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
 a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
@@ -120,20 +121,19 @@ c_prior_open      = 0.1;  % Priority constant for open space
 % Calculate Priority map
 m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
 % Generate FIS
-[fisArray] = createFIS( n_a );
-% Initial parameters for simulat ion
-ini_params = [];
-for i = 1:n_p
-  ini_params = [ini_params, fis_params];
-end
+[fisArray] = initialise_FIS( n_a );
 
 %% MPC models
 % Prediction horizon
 n_p = 1;
-% Optimisation variables
+% Initialise optimisation parameters
 fis_params = [];
 for a = 1:n_a
   fis_params = [fis_params, fisArray(a).Outputs.MembershipFunctions.Parameters];
+end
+ini_params = [];
+for i = 1:n_p
+  ini_params = [ini_params, fis_params];
 end
 % Constraints
 A       = [];
@@ -145,9 +145,9 @@ ub      = [];
 nonlcon = [];
 nvars = size(ini_params, 2);
 % Function handle
-fun = @(params)mpcModel(params, ...
+fun = @(params)model_MPC(params, ...
   fisArray, test_fis_sensitivity, ...
-  m_f, [], m_s, m_bo, m_bt, m_scan, m_t_scan, ...
+  m_f, m_s, m_bo, m_bt, m_scan, m_t_scan, ...
   dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
   n_a, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
   a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
@@ -175,6 +175,7 @@ obj_hist    = [];
 s_obj_hist  = [];
 t_hist      = [];
 m_f_hist    = m_f_i;
+m_f_hist_animate = m_f_i;
 m_bt_hist   = m_bt;
 a_loc_hist    = [];
 for a = 1:n_a
@@ -233,8 +234,8 @@ elseif (dk_a >= t_scan_c)
 end
 
 % Initialise fire maps
-[m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
-      m_f_i, m_f_hist, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
+[m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
+      m_f_i, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
       v_w, ang_w, c_fs_1, c_fs_2, c_f_s);
 
 %% Simulation
@@ -279,7 +280,7 @@ while finishFlag == false
     % Counter
     k_c = k_c + 1;
     % Path planner
-    a_target = pathPlanner(...
+    a_target = model_pathPlanning(...
       n_a, a_target, n_q, ...
       n_x_s, n_y_s, l_x_s, l_y_s, ...
       m_scan, m_t_scan, m_dw, m_prior, ...
@@ -297,7 +298,7 @@ while finishFlag == false
     % Agent model
     [ m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
       a_t_trav, a_t_scan] ...
-        = agentModel( n_a, ...
+        = model_agent( n_a, ...
         m_t_scan, m_scan, m_scan_hist, ...
         a_loc, a_loc_hist, a_task, a_target, ...
         a_t_trav, a_t_scan, ...
@@ -311,8 +312,8 @@ while finishFlag == false
     % Counter 
     k_e = k_e + 1;
     % Environment map
-    [m_f, m_f_hist, m_bt, m_dw] = environmentModel(...
-      m_f, m_f_hist, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
+    [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
+      m_f, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
       v_w, ang_w, c_fs_1, c_fs_2, c_f_s, false);
   end
   t_environment = toc(t_start);
@@ -326,28 +327,25 @@ while finishFlag == false
   end
 
   %% Objective function evaluation
-  [s_obj, obj]  = objEval(m_f, m_bo, m_scan, r_bo, r_fo, dt_s, s_obj, n_x_e, n_y_e, n_x_s, n_y_s, c_f_s);
+  [s_obj, obj]  = calc_obj(m_f, m_bo, m_scan, r_bo, r_fo, dt_s, s_obj, n_x_e, n_y_e, n_x_s, n_y_s, c_f_s);
   %% Advance timestep
   t = t + dt_s;
   k = k + 1;
     
   %% Progress report
   if k_prog * dk_prog <= t
-    progReport(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
+    report_progress(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
     k_prog = k_prog + 1;
   end
   
   %% Check end condition
-  [finishFlag] = simEndCondition(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
+  [finishFlag] = flag_endCondition(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
 end
 
 % Simulation time  
 t_end = toc(t_sim);
 
 %% Postprocessing
-
-% % Additional maps
-% m_prior_hist = (ones(size(m_scan_hist)) - m_scan_hist).*m_prior;
 
 % Generate folder name
 dateTime = datestr(now,'yyyy-mm-dd-HH-MM');
@@ -356,17 +354,15 @@ folder = strcat(dateTime, '-', exp_folder);
 if fig_exp
   % Generate and export figures 
   plotData  = {  
-    'm_dw_hist',        m_dw_hist,        false;    
+    'm_dw_hist',        m_dw_hist,        true;    
     'm_f_hist',         m_f_hist,         true;
-    'm_scan_hist',      m_scan_hist,      false;
+    'm_scan_hist',      m_scan_hist,      true;
     'UAV_loc_hist',     a_loc_hist,       true;
     's_obj_hist',       s_obj_hist,       true;
     'obj_hist',         obj_hist,         true;
     'm_bo',             m_bo,             true;
     'fis',              fisArray,         true;
     'm_prior',          m_prior,          true};
-
-%     'm_prior_hist',     m_prior_hist,     false
   
   if test_obj_sensitivity
     plotData = [plotData; {'obj_hist_sens', obj_hist_sens, true}];  
@@ -376,7 +372,7 @@ if fig_exp
     plotData = [plotData; {'fis_param_hist', fis_param_hist, true}]; 
   end
 
-  plotResults( plotData, exp_dir, folder, ...
+  plot_simulationData( plotData, exp_dir, folder, ...
             ax_lon_env, ax_lat_env, ax_lon_scan, ax_lat_scan, ...
             dk_v, t, n_x_s, n_y_s, n_a, ct_v, fisArray);
 end
