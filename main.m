@@ -18,7 +18,7 @@ fis_data = [];
 % Data export configuration
 data_exp    = true;
 fig_exp     = true;
-exp_folder  = "BUGFIX_ENVIRONMENT";
+exp_folder  = "SS01-1";
 exp_dir     = "results";
 % Set up folder paths
 addpath('functions', 'data')
@@ -114,13 +114,26 @@ for a = 1:n_a
     a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
 end
 
+%% Path planner models
+% Priority map 
+c_prior_building  = 1;    % Priority constant for building
+c_prior_open      = 0.1;  % Priority constant for open space
+% Calculate Priority map
+m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
+% Generate FIS
+[fisArray] = initialise_FIS( n_a );
+
 %% MPC models
 % Prediction horizon
 n_p = 1;
-% Optimisation variables
+% Initialise optimisation parameters
 fis_params = [];
 for a = 1:n_a
   fis_params = [fis_params, fisArray(a).Outputs.MembershipFunctions.Parameters];
+end
+ini_params = [];
+for i = 1:n_p
+  ini_params = [ini_params, fis_params];
 end
 % Constraints
 A       = [];
@@ -134,7 +147,7 @@ nvars = size(ini_params, 2);
 % Function handle
 fun = @(params)model_MPC(params, ...
   fisArray, test_fis_sensitivity, ...
-  m_f, [], m_s, m_bo, m_bt, m_scan, m_t_scan, ...
+  m_f, m_s, m_bo, m_bt, m_scan, m_t_scan, ...
   dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
   n_a, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
   a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
@@ -147,20 +160,6 @@ fminsearchOptions = optimset('Display','iter','PlotFcns',@optimplotfval);
 gaOptions         = optimoptions('ga','Display','iter', 'PlotFcn', @gaplotbestf);
 patOptions        = optimoptions('patternsearch','Display','iter', optTermCond, t_opt);
 parOptions        = optimoptions('particleswarm','Display','iter', 'PlotFcn',@pswplotbestf);
-
-%% Path planner models
-% Priority map 
-c_prior_building  = 1;    % Priority constant for building
-c_prior_open      = 0.1;  % Priority constant for open space
-% Calculate Priority map
-m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
-% Generate FIS
-[fisArray] = initialise_FIS( n_a );
-% Initial parameters for simulat ion
-ini_params = [];
-for i = 1:n_p
-  ini_params = [ini_params, fis_params];
-end
 
 %% Plotting variables
 % Axes may not be entirely accurate as coarsening may remove some
@@ -176,7 +175,7 @@ obj_hist    = [];
 s_obj_hist  = [];
 t_hist      = [];
 m_f_hist    = m_f_i;
-m_f_hist_animate(:,:,1) = m_f_i;
+m_f_hist_animate = m_f_i;
 m_bt_hist   = m_bt;
 a_loc_hist    = [];
 for a = 1:n_a
@@ -313,8 +312,8 @@ while finishFlag == false
     % Counter 
     k_e = k_e + 1;
     % Environment map
-    [m_f, m_f_hist, m_bt, m_dw] = model_environment(...
-      m_f, m_f_hist, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
+    [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
+      m_f, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
       v_w, ang_w, c_fs_1, c_fs_2, c_f_s, false);
   end
   t_environment = toc(t_start);
@@ -348,9 +347,6 @@ t_end = toc(t_sim);
 
 %% Postprocessing
 
-% % Additional maps
-% m_prior_hist = (ones(size(m_scan_hist)) - m_scan_hist).*m_prior;
-
 % Generate folder name
 dateTime = datestr(now,'yyyy-mm-dd-HH-MM');
 folder = strcat(dateTime, '-', exp_folder);
@@ -358,17 +354,15 @@ folder = strcat(dateTime, '-', exp_folder);
 if fig_exp
   % Generate and export figures 
   plotData  = {  
-    'm_dw_hist',        m_dw_hist,        false;    
+    'm_dw_hist',        m_dw_hist,        true;    
     'm_f_hist',         m_f_hist,         true;
-    'm_scan_hist',      m_scan_hist,      false;
+    'm_scan_hist',      m_scan_hist,      true;
     'UAV_loc_hist',     a_loc_hist,       true;
     's_obj_hist',       s_obj_hist,       true;
     'obj_hist',         obj_hist,         true;
     'm_bo',             m_bo,             true;
     'fis',              fisArray,         true;
     'm_prior',          m_prior,          true};
-
-%     'm_prior_hist',     m_prior_hist,     false
   
   if test_obj_sensitivity
     plotData = [plotData; {'obj_hist_sens', obj_hist_sens, true}];  
@@ -378,7 +372,7 @@ if fig_exp
     plotData = [plotData; {'fis_param_hist', fis_param_hist, true}]; 
   end
 
-  plotResults( plotData, exp_dir, folder, ...
+  plot_simulationData( plotData, exp_dir, folder, ...
             ax_lon_env, ax_lat_env, ax_lon_scan, ax_lat_scan, ...
             dk_v, t, n_x_s, n_y_s, n_a, ct_v, fisArray);
 end

@@ -13,7 +13,9 @@ function  [a_target, fis_data] = model_pathPlanning( ...
   % Initialise maps
   m_schedule   = zeros(n_x_s, n_y_s);
   for a=1:n_a
-    m_schedule(a_target(a, 1, 1), a_target(a, 2, 1)) = 1;  
+    if ~isnan(a_target(a, :, 1))
+      m_schedule(a_target(a, 1, 1), a_target(a, 2, 1)) = 1;
+    end
   end
   % Assign tasks
 	for q = 2:l_q 
