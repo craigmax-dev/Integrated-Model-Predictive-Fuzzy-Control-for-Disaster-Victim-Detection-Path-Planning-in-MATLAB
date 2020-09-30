@@ -11,9 +11,9 @@
 % Define function handles
 h_init_sim_1 = @()initialise_simulation();
 h_init_env_1 = @()initialise_environment();
-h_init_agt_1 = @(m_bo)initialise_agent();
-h_init_pp_1 = @()initialise_pathPlanning();
-h_init_MPC_1 = @()initialise_MPC();
+h_init_agt_1 = @(m_bo, l_x_e, l_y_e)initialise_agent(m_bo, l_x_e, l_y_e);
+h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning(m_bo_s, n_a);
+h_init_MPC_1 = @(n_a, fisArray)initialise_MPC(n_a, fisArray);
 h_plotting = @()initialise_plotting();
 
 % Allocate appropriate function handles to appropriate simulation
@@ -26,7 +26,7 @@ simulation_set = {
 
 for sim = 1:size(simulation_set,1)
   %% Initialise simulation data
-  [flag_mpc, solver, t_opt, ...
+  [flag_mpc, solver, ...
   test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
   flag_data_exp, flag_fig_exp, exp_folder, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
@@ -40,12 +40,12 @@ for sim = 1:size(simulation_set,1)
   % Agent
   [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
-  m_scan, m_t_scan] = simulation_set{sim,4}(m_bo);
+  m_scan, m_t_scan] = simulation_set{sim,4}(m_bo, l_x_e, l_y_e);
   % Path planning
-  [c_prior_building, c_prior_open, m_prior, fisArray] = simulation_set{sim,5}();
+  [c_prior_building, c_prior_open, m_prior, fisArray] = simulation_set{sim,5}(m_bo_s, n_a);
   % MPC
   [n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
-  nvars, h_MPC, fminsearchOptions, gaOptions, patOptions, parOptions] = simulation_set{sim,6}();
+  nvars, h_MPC, fminsearchOptions, gaOptions, patOptions, parOptions, t_opt] = simulation_set{sim,6}(n_a, fisArray);
 
   %% Plotting variables
   % Axes may not be entirely accurate as coarsening may remove some
@@ -119,8 +119,8 @@ for sim = 1:size(simulation_set,1)
     return
   end
 
-  % Initialise plotting
-  [] = h_plotting();
+%   % Initialise plotting
+%   [] = h_plotting();
   
   %% Simulation
   while finishFlag == false
