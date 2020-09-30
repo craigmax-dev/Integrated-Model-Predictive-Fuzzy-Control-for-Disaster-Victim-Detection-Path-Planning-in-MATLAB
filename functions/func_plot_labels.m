@@ -1,5 +1,5 @@
 function [lab_title, lab_x, lab_y, lab_legend] = func_plot_labels(data_name)
-  if data_name == "m_f_hist_animate"
+  if data_name == " "
     lab_title = "";
     lab_x = "Latitude";
     lab_y = "Longitude";
