@@ -3,7 +3,9 @@
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
 
-% TO DO: combine initialise fis and initialise path planning?
+% TO DO: 
+% combine initialise fis and initialise path planning?
+% move MPC into one function
 
 %% Define simulation set
 % Define function handles
@@ -12,6 +14,7 @@ h_init_env_1 = @()initialise_environment();
 h_init_agt_1 = @(m_bo)initialise_agent();
 h_init_pp_1 = @()initialise_pathPlanning();
 h_init_MPC_1 = @()initialise_MPC();
+h_plotting = @()initialise_plotting();
 
 % Allocate appropriate function handles to appropriate simulation
 simulation_set = {
@@ -116,6 +119,9 @@ for sim = 1:size(simulation_set,1)
     return
   end
 
+  % Initialise plotting
+  [] = h_plotting();
+  
   %% Simulation
   while finishFlag == false
     % Start timer
