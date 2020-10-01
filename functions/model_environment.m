@@ -32,8 +32,8 @@
 % size to 3m.
 
 %% Model of fire spread using cellular automa
-function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
-  m_f, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
+function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw] = model_environment(...
+  m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
 
 %% Initialise variables
   t_i = 120;              % Ignition time (s)
@@ -142,19 +142,10 @@ function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
     % For each active fire spot calculate likely time to spread to
     % rest of map - only interested in cells immediately around W.
     % Create temp map for each active fire spot. Because chance of
-    % spread is assumed linear should be good approximation. Also
-    % note - if linear, should be much easier way to do this. Any
-    % matrix method to do entire calculation at once? Other options
-    % - interpolation? - test several methods for this - first one
-    % just using extended fire spread model for entire map
-    % Treat m_f == 2 and m_f == 3 differently?
-    % Should also be related to a and b coefficients?
-
+    % spread is assumed linear should be good approximation.
       if m_f(i,j) == 2 || m_f(i,j) == 3
-
         % Initialise temp layer and circle count
         fire_count = fire_count + 1;
-
         % Method 1 - expand W for each fire to match entire map
         for m = 1:n_x_e
           for n=1:n_y_e
@@ -175,7 +166,6 @@ function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
       end
     end
   end
-
   % Take max values 
   for i = 1:n_x_e
     for j = 1:n_y_e
@@ -185,6 +175,8 @@ function [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
   m_dw_fine = ones(n_x_e, n_y_e)-m_dw_fine;
   % Coarsen to scan map size - average values
   [m_dw, ~] = func_coarsen(m_dw_fine, c_f_s);
+  % Update m_dw_hist_animate for animation
+  m_dw_hist_animate = cat(3, m_dw_hist_animate, m_dw);
 end
 
 %% Model notes

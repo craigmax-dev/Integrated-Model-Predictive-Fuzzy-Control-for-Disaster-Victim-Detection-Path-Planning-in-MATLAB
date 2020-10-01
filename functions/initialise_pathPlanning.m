@@ -1,12 +1,13 @@
-%% Function fis_01
-% Author: Craig Maxwell
-% Date: 13/06/2020
-% Description: Create a separate FIS for each agent in the system. For
-% simulation 01. 
+%% Function initialise_pathPlanning
+% Initialise path planning model
 
-%% Script 
-function [fisArray] = initialise_FIS(n_a)
-
+function [c_prior_building, c_prior_open, m_prior, fisArray] = initialise_pathPlanning(m_bo_s, n_a)
+  % Priority map 
+  c_prior_building  = 1;    % Priority constant for building
+  c_prior_open      = 0.1;  % Priority constant for open space
+  % Calculate Priority map
+  m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
+  % Generate FIS
   n_in            = 3;
   n_out           = 1;
   n_MF_in         = [3 3 3];

@@ -1,4 +1,4 @@
-function [finishFlag] = flag_endCondition(endCondition, t, t_f, m_scan, n_x_search, n_y_search)
+function [finishFlag] = func_endCondition(endCondition, t, t_f, m_scan, n_x_search, n_y_search)
   % Time based
   if endCondition == "time"
     if t >= t_f
