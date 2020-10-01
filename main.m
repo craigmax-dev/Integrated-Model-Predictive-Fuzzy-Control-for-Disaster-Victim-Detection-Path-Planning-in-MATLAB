@@ -9,29 +9,32 @@ h_init_sim_1 = @()initialise_simulation();
 h_init_env_1 = @()initialise_environment();
 h_init_agt_1 = @(m_bo, l_x_e, l_y_e)initialise_agent(m_bo, l_x_e, l_y_e);
 h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning(m_bo_s, n_a);
-h_init_MPC_1 = @(n_a, fisArray)initialise_MPC(n_a, fisArray);
-h_plotting = @()initialise_plotting();
+h_init_MPC_1 = @(n_a, fisArray)initialise_MPC_01(n_a, fisArray);
+h_init_MPC_2 = @(n_a, fisArray)initialise_MPC_02(n_a, fisArray);
+h_init_MPC_3 = @(n_a, fisArray)initialise_MPC_03(n_a, fisArray);
+h_init_MPC_4 = @(n_a, fisArray)initialise_MPC_04(n_a, fisArray);
 
 % Allocate appropriate function handles to appropriate simulation
 simulation_set = {
   "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+  "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_2;
+  "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_3;
+  "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4;
   };
-%   "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, hand_init_MPC_2;
-%   "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, hand_init_MPC_3;
-%   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, hand_init_MPC_4;
 
 for sim = 1:size(simulation_set,1)
+  % Export folder for simulation
+  exp_folder = simulation_set{sim, 1};
   %% Initialise simulation data
-  [flag_mpc, solver, ...
-  test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
-  flag_data_exp, flag_fig_exp, exp_folder, exp_dir, ...
+  [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
+  flag_data_exp, flag_fig_exp, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
   k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
   obj, s_obj, r_bo, r_fo] = simulation_set{sim,2}();
   %% Initialise models
-  % Environment
+  % Environment 
   [l_x_e, l_y_e, ...
-    m_bo, m_s, m_f_i, m_bt, ...
+    m_bo, m_s, m_f, m_bt, ...
     c_fs_1, c_fs_2, v_w, ang_w] = simulation_set{sim,3}();
   % Agent
   [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
@@ -40,38 +43,19 @@ for sim = 1:size(simulation_set,1)
   % Path planning
   [c_prior_building, c_prior_open, m_prior, fisArray] = simulation_set{sim,5}(m_bo_s, n_a);
   % MPC
-  [n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
+  [flag_mpc, solver, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
   nvars, h_MPC, fminsearchOptions, gaOptions, patOptions, parOptions, t_opt] = simulation_set{sim,6}(n_a, fisArray);
 
-  %% Plotting variables
-  % Axes may not be entirely accurate as coarsening may remove some
-  % rows/columns from original map.
-  % Axes for dynamic environment states
-  ax_lat_env = linspace(m_p_ref.LatitudeLimits(1),  m_p_ref.LatitudeLimits(2),  n_x_e);
-  ax_lon_env = linspace(m_p_ref.LongitudeLimits(1), m_p_ref.LongitudeLimits(2), n_y_e);
-  % Axes for search map
-  ax_lat_scan = linspace(m_p_ref.LatitudeLimits(1),  m_p_ref.LatitudeLimits(2),  n_x_s);
-  ax_lon_scan = linspace(m_p_ref.LongitudeLimits(1), m_p_ref.LongitudeLimits(2), n_y_s);
-  % History plots
-  obj_hist    = [];
-  s_obj_hist  = [];
-  t_hist      = [];
-  m_f_hist    = m_f_i;
-  m_f_hist_animate = m_f_i;
-  m_bt_hist   = m_bt;
-  a_loc_hist    = [];
-  for a = 1:n_a
-    a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, t];
-  end
-  m_scan_hist = zeros(1,2);
-  m_dw_hist   = zeros(n_x_s, n_y_s);        % Downwind map history
-  fis_param_hist = fis_params;
+  %% Initialise plotting data
+  [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
+  m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
+  m_scan_hist, a_loc_hist, t_hist, fis_param_hist, obj_hist, s_obj_hist] ...
+  = initialise_plotting(m_p_ref, n_x_e, n_y_e, n_x_s, n_y_s, m_f, m_bt, n_a, a_loc, k, fis_params);
 
-  %% Simulation variables
-  % Time estimation
+  %% Define timestep for saving variables
   % Number of desired data points
   n_prog_data = 100;
-  % Avg travel time
+  % Estimated avg travel time
   k_trav_avg = (t_scan_c + l_x_s/v_as)/dt_s;
   % Estimated sim time
   k_sim_est = k_trav_avg * n_x_s * n_y_s / n_a;
@@ -80,7 +64,6 @@ for sim = 1:size(simulation_set,1)
   ct_v = 0;
 
   %% Test setup
-
   % Objective function sensitivity test setup
   if test_obj_sensitivity
     p1_i = fis_params(1);
@@ -106,20 +89,8 @@ for sim = 1:size(simulation_set,1)
     p4        = p4_i*linspace(1-r_sens, 1+r_sens, n_sens_4);
   end
 
-  %% Error checking
-  if (v_w >= v_as)
-    fprintf("ERROR: UAV airspeed lower than wind speed")
-    return
-  elseif (dk_a >= t_scan_c)
-    fprintf("ERROR: UAV airspeed lower than wind speed")
-    return
-  end
-
-%   % Initialise plotting
-%   [] = h_plotting();
-  
   %% Simulation
-  while finishFlag == false
+  while flag_finish == false
     % Start timer
     t_sim = tic;
     %% MPC
@@ -168,8 +139,8 @@ for sim = 1:size(simulation_set,1)
       % Counter 
       k_e = k_e + 1;
       % Environment map
-      [m_f, m_f_hist, m_f_hist_animate, m_bt, m_dw] = model_environment(...
-        m_f, m_f_hist, m_f_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
+      [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw] = model_environment(...
+        m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, ...
         v_w, ang_w, c_fs_1, c_fs_2, c_f_s, false);
     end
 
@@ -192,9 +163,9 @@ for sim = 1:size(simulation_set,1)
       report_progress(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
       k_prog = k_prog + 1;
     end
-
+ 
     %% Check end condition
-    [finishFlag] = flag_endCondition(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
+    [flag_finish] = func_endCondition(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
   end
 
   % Simulation time  
@@ -202,34 +173,32 @@ for sim = 1:size(simulation_set,1)
 
   %% Postprocessing
 
-  % Generate folder name
-  dateTime = datestr(now,"yyyy-mm-dd-HH-MM");
-  folder = strcat(dateTime, "-", exp_folder);
-
   if flag_fig_exp
     % Generate and export figures 
-    plotData  = {  
-      "m_dw_hist",        m_dw_hist,        true;    
-      "m_f_hist",         m_f_hist,         true;
-      "m_scan_hist",      m_scan_hist,      true;
-      "UAV_loc_hist",     a_loc_hist,       true;
-      "s_obj_hist",       s_obj_hist,       true;
-      "obj_hist",         obj_hist,         true;
-      "m_bo",             m_bo,             true;
-      "fis",              fisArray,         true;
-      "m_prior",          m_prior,          true};
+    plotData = {
+      "m_f_hist_animate", m_f_hist_animate, "animate", true;
+      "m_dw_hist_animate", m_dw_hist_animate, "animate", false;
+      "m_bo", m_bo, "map", false;
+      "m_prior", m_prior, "map", false;
+      "m_f_hist", m_f_hist, "map", false;
+      "m_scan_hist", m_scan_hist, "map", false;
+      "obj_hist", obj_hist, "variable", false;
+      "s_obj_hist", s_obj_hist, "variable", false;
+      "a_loc_hist", a_loc_hist, "agent", false;
+      "fis_param_hist", fis_param_hist, "fis", false;
+    };
 
     if test_obj_sensitivity
       plotData = [plotData; {"obj_hist_sens", obj_hist_sens, true}];  
     end
-
+ 
     if mpc_active
       plotData = [plotData; {"fis_param_hist", fis_param_hist, true}]; 
     end
 
-    plot_simulationData( plotData, exp_dir, folder, ...
-              ax_lon_env, ax_lat_env, ax_lon_scan, ax_lat_scan, ...
-              dk_v, t, n_x_s, n_y_s, n_a, ct_v, fisArray);
+    plot_simulationData( plotData, exp_dir, exp_folder, ...
+                axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
+                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
   end
 
   % Export data
@@ -239,11 +208,15 @@ for sim = 1:size(simulation_set,1)
     % Change to save directory
     cd(exp_dir); 
     % Save workspace  
-    mkdir(folder);
-    cd(folder);
-    save(folder);
+    mkdir(exp_folder);
+    cd(exp_folder);
+    save(exp_folder);
     % Go back to working directory
     cd(work_dir);
   end
+end
 
+% Simulation set plots
+for sim = 1:size(simulation_set,1)
+  data = {};
 end

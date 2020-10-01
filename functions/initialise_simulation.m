@@ -1,13 +1,9 @@
-function [flag_mpc, solver, ...
-  test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
-  flag_data_exp, flag_fig_exp, exp_folder, exp_dir, ...
+function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
+  flag_data_exp, flag_fig_exp, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
   k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
   obj, s_obj, r_bo, r_fo] = initialise_simulation()
 %% Simulation Settings
-flag_mpc            = false;
-% Solver options: fmincon, ga, particleswarm, patternsearch
-solver                = "patternsearch";
 % Tests 
 test_fis_sensitivity  = false;
 test_obj_sensitivity  = false;
@@ -17,8 +13,7 @@ fis_data = [];
 % Data export configuration
 flag_data_exp    = true;
 flag_fig_exp     = true;
-exp_folder  = "SS01-1";
-exp_dir     = "results";
+exp_dir     = "simulations";
 % Set up folder paths
 addpath('functions', 'data')
 

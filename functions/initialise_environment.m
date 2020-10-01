@@ -2,7 +2,7 @@
 % Initialise environment model
 
 function [l_x_e, l_y_e, ...
-  m_bo, m_s, m_f_i, m_bt, ...
+  m_bo, m_s, m_f, m_bt, ...
   c_fs_1, c_fs_2, v_w, ang_w] = initialise_environment()
   % Import building raster
   buildingRaster      = 'data\maps\portAuPrince\portAuPrince_campeche.tif';
@@ -20,8 +20,8 @@ function [l_x_e, l_y_e, ...
   v_w         = 2;        % Wind speed (m/s)
   ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
   % Initialise fire map
-  m_f_i       = m_s;
-  m_f_i(80:82,1:2) = 3 * m_s(80:82,1:2);
+  m_f       = m_s;
+  m_f(80:82,1:2) = 3 * m_s(80:82,1:2);
   % Initialise burntime map
   m_bt        = zeros(n_x_e,n_y_e);
   % Fire model parameters

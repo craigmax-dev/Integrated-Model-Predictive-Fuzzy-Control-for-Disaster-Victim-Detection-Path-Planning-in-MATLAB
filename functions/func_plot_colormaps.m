@@ -1,5 +1,5 @@
 % Function func_plot_colormaps
-% Return colourmap for plot
+% Return colourmap for plots
 
 function [cmap, cmap_axis] = func_plot_colormaps(data_name)
   if data_name == "m_f_hist_animate"
@@ -9,5 +9,8 @@ function [cmap, cmap_axis] = func_plot_colormaps(data_name)
               1,   0,   0;    % 3
               0,   0,   0];   % 4  
     cmap_axis = [0 4];
+  else
+    cmap = [];
+    cmap_axis = [];
   end
 end
