@@ -14,8 +14,6 @@ fis_data = [];
 flag_data_exp    = true;
 flag_fig_exp     = true;
 exp_dir     = "simulations";
-% Set up folder paths
-addpath('functions', 'data')
 
 %% Time steps and counters
 t       = 0;        % Current time

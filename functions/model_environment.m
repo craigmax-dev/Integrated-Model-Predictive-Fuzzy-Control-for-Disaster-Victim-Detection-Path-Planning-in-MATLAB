@@ -32,8 +32,10 @@
 % size to 3m.
 
 %% Model of fire spread using cellular automa
-function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw] = model_environment(...
-  m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
+function [m_f, m_f_hist, m_f_hist_animate, m_t_dw_hist_animate, ...
+  m_bt, m_t_dw] = model_environment(...
+  m_f, m_f_hist, m_f_hist_animate, m_t_dw_hist_animate, m_s, m_bo, m_bt, ...
+  dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
 
 %% Initialise variables
   t_i = 120;              % Ignition time (s)
@@ -44,8 +46,8 @@ function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw] = mode
   % Downwind map
   W_dir_ws    = zeros(n_x_e, n_y_e);
   W_dis_ws    = zeros(n_x_e, n_y_e);
-  m_dw_fine   = zeros(n_x_e, n_y_e);
-  m_dw_temp   = zeros(n_x_e, n_y_e);
+  m_t_dw_fine   = zeros(n_x_e, n_y_e);
+  m_t_dw_temp   = zeros(n_x_e, n_y_e);
 
   % Seed random number generator using timestep fore repeatability
   rng(k); 
@@ -160,23 +162,23 @@ function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw] = mode
         % Normalise W_dir_ws
         W_dir_ws = mat2gray(W_dir_ws);
         % Wind map
-        m_dw_temp(:,:,fire_count)   = W_dir_ws(:,:).*W_dis_ws(:,:);
+        m_t_dw_temp(:,:,fire_count)   = W_dir_ws(:,:).*W_dis_ws(:,:);
         % Set fire spot to maximum value
-        m_dw_temp(i,j,fire_count)   = 1;
+        m_t_dw_temp(i,j,fire_count)   = 1;
       end
     end
   end
   % Take max values 
   for i = 1:n_x_e
     for j = 1:n_y_e
-      m_dw_fine(i,j) = max(m_dw_temp(i,j,:));
+      m_t_dw_fine(i,j) = max(m_t_dw_temp(i,j,:));
     end
   end
-  m_dw_fine = ones(n_x_e, n_y_e)-m_dw_fine;
+  m_t_dw_fine = ones(n_x_e, n_y_e)-m_t_dw_fine;
   % Coarsen to scan map size - average values
-  [m_dw, ~] = func_coarsen(m_dw_fine, c_f_s);
-  % Update m_dw_hist_animate for animation
-  m_dw_hist_animate = cat(3, m_dw_hist_animate, m_dw);
+  [m_t_dw, ~] = func_coarsen(m_t_dw_fine, c_f_s);
+  % Update m_t_dw_hist_animate for animation
+  m_t_dw_hist_animate = cat(3, m_t_dw_hist_animate, m_t_dw);
 end
 
 %% Model notes
@@ -285,13 +287,13 @@ end
 %                             if iii > 0 && iii < n_x && jjj > 0 && jjj < n_y
 %                                 % Extend
 %                                 if ii < 0 && jj < 0     % LD
-%                                     m_dw_temp(iii,jjj,fire_count) = m_dw_temp(iii-1,jjj-1,fire_count) + ; % This is wrong method
+%                                     m_t_dw_temp(iii,jjj,fire_count) = m_t_dw_temp(iii-1,jjj-1,fire_count) + ; % This is wrong method
 %                                 elseif ii < 0 && jj > 0 % LU
-%                                     m_dw_temp(iii,jjj,fire_count) = ;                                    
+%                                     m_t_dw_temp(iii,jjj,fire_count) = ;                                    
 %                                 elseif ii > 0 && jj < 0 % RD
-%                                     m_dw_temp(iii,jjj,fire_count) = ;                                    
+%                                     m_t_dw_temp(iii,jjj,fire_count) = ;                                    
 %                                 elseif ii > 0 && jj > 0 % RU
-%                                     m_dw_temp(iii,jjj,fire_count) = ;                                    
+%                                     m_t_dw_temp(iii,jjj,fire_count) = ;                                    
 %                                 end
 %                             end
 %                         end
