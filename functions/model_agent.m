@@ -7,7 +7,7 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
             = model_agent( n_a, ...
                 m_t_scan, m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
                 a_t_trav, a_t_scan, ...
-                l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, t, flag_mpc)
+                l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, flag_mpc)
   for a = 1:n_a
     if a_task(a) == 1
       % Travel
@@ -18,7 +18,7 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         % Update agent location
         a_loc(a, :) = a_target(a, :, 1); 
         % Update agent location history
-        a_loc_hist    = [a_loc_hist; a_loc(a, :), a, t];        
+        a_loc_hist    = [a_loc_hist; a_loc(a, :), a, k];        
         % Initialise remaining scantime, using additional time from the travel
         a_t_scan(a) = m_t_scan(a_loc(a, 1), a_loc(a, 2)) + a_t_trav(a);
       end
@@ -35,7 +35,7 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         m_scan(i,j) = 1;
         % Update scan history
         if ~flag_mpc        
-          m_scan_hist(i,j) = t;
+          m_scan_hist(i,j) = k;
         end
         % Shift target list
         a_target(a, 1, :)   = circshift(a_target(a, 1, :), -1);

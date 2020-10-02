@@ -7,7 +7,7 @@
 
 %% Script
 function [] = plot_simulationData( ...
-                simulation_plots, exp_folder, ...
+                plotData, exp_folder, ...
                 axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
                 t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
                       
@@ -21,12 +21,12 @@ function [] = plot_simulationData( ...
   axis_t_v = linspace(0, t_f, ct_v);
  
   % Plotting
-  for i = 1:size(simulation_plots,1)
+  for i = 1:size(plotData,1)
     % Load data
-    data_name = simulation_plots{i,1};
-    data      = simulation_plots{i,2};
-    data_type = simulation_plots{i,3};
-    flag_plot = simulation_plots{i,4};
+    data_name = plotData{i,1};
+    data      = plotData{i,2};
+    data_type = plotData{i,3};
+    flag_plot = plotData{i,4};
     [lab_title, lab_x, lab_y, lab_legend] = func_plot_labels(data_name);
     [cmap, cmap_axis] = func_plot_colormaps(data_name);
     
@@ -41,7 +41,7 @@ function [] = plot_simulationData( ...
       axis square tight manual
       % Animations
       if data_type == "animate"
-        file_name = strcat(exp_folder, "\", data_name, ".gif");
+        file_name = strcat(data_name, ".gif");
         % Create frames
         for n = 1:size(data,3)
           title(lab_title);
@@ -64,27 +64,28 @@ function [] = plot_simulationData( ...
           end
          end
         close(f);
-      elseif data_type == "environment_map"
-        imagesc(axis_x_e, axis_y_e, data)
-      elseif data_type == "search_map"
-        imagesc(axis_x_s, axis_y_s, data)
+      elseif data_type == "map"
+        imagesc(axis_x, axis_y, data)
       elseif data_type == "variable"
         plot(axis_t_v, data)
       elseif data_type == "comparison"
         
       end
+      
     end
-  end
+    
   %% Save figures as .fig and .jpg files
-  fig_list = findobj(allchild(0), "Type", "figure");
+  fig_list = findobj(allchild(0), "flat", "Type", "figure");
   for iFig = 1:length(fig_list)
     h_fig = fig_list(iFig); 
     fig_name   = get(h_fig, "Name");
-    exp_fig = strcat(exp_folder, "\", fig_name);
-    savefig(h_fig, strcat(exp_fig, ".fig"));
-    saveas(h_fig, strcat(exp_fig, ".jpg"));
+    exp_folder
+    
+    savefig(h_fig, strcat(fig_name, ".fig"));
+    saveas(h_fig, strcat(fig_name, ".jpg"));
   end
-end
+  
+  end
   
   %% TO ORGANISE
 % FIS SENSITIVITY
