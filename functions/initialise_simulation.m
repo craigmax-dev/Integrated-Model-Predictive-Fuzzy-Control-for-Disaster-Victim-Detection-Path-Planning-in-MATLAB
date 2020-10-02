@@ -1,5 +1,5 @@
 function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
-  flag_data_exp, flag_fig_exp, exp_dir, ...
+  flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
   k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
   obj, s_obj, r_bo, r_fo] = initialise_simulation()
@@ -12,7 +12,8 @@ test_solvers          = false;
 fis_data = [];
 % Data export configuration
 flag_data_exp    = true;
-flag_fig_exp     = true;
+flag_fig_sim     = true;
+flag_fig_simSet  = true;
 exp_dir     = "simulations";
 
 %% Time steps and counters

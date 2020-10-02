@@ -3,7 +3,7 @@
 
 function [l_x_e, l_y_e, n_x_e, n_y_e, ...
   m_bo, m_s, m_f, m_bt, m_dw, m_p_ref, ...
-  c_fs_1, c_fs_2, c_f_s, v_w, ang_w] = initialise_environment(dt_e, k)
+  c_fs_1, c_fs_2, c_f_s, v_w, ang_w] = initialise_environment_01(dt_e, k)
   % Import building raster
   buildingRaster      = 'data\maps\portAuPrince\portAuPrince_campeche.tif';
   [m_p_in, m_p_ref]   = geotiffread(buildingRaster);

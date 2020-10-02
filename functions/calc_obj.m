@@ -1,11 +1,11 @@
 %% Function objEval
 % Evaluate objective function
 
-function [s_obj, obj, obj_fun_scaling] = calc_obj(...
+function [s_obj, obj] = calc_obj(...
             m_f, m_bo, m_scan, ...
             r_bo, r_fo, dt_s, s_obj, ...
             n_x_e, n_y_e, n_x_s, n_y_s, c_f_s, ...
-            obj_fun_scaling)
+            test_obj_sensitivity)
 
     % Generate active fire map
     m_fo          = m_f;
@@ -44,7 +44,7 @@ function [s_obj, obj, obj_fun_scaling] = calc_obj(...
     % Sum of objective over time
     s_obj = s_obj + obj;
     % Add to obj_fun_scaling
-    if(exist('obj_fun_scaling'))
-      obj_fun_scaling = [obj_fun_scaling; [m_P_bo, m_P_fo]];
+    if test_obj_sensitivity    
+%       test_obj_sensitivity = [test_obj_sensitivity; [m_P_bo, m_P_fo]];      
     end
 end

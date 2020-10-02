@@ -3,7 +3,7 @@
 
 function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
-  m_scan, m_t_scan, m_bo_s] = initialise_agent(m_bo, l_x_e, l_y_e)
+  m_scan, m_t_scan, m_bo_s] = initialise_agent_01(m_bo, l_x_e, l_y_e)
   % Search map coarsen factors
   c_f_s  = [5, 5];
   % Search map building occupancy
