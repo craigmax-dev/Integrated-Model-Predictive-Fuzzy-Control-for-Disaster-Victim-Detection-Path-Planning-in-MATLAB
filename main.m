@@ -5,6 +5,7 @@
 
 % Clear workspace
 clear all
+close all
 
 % Set up folder paths
 addpath('functions', 'data')
@@ -35,21 +36,21 @@ h_init_MPC_4 = @(fisArray, n_a)initialise_MPC_04(fisArray, n_a);
 %   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4;
 %   };
 % Simulation set 2
-simulation_set_name = "SS02";
-simulation_set = {
-  "SS02-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
-  "SS02-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
-  "SS02-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_3;
-  "SS02-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_4;
-  };
-% % Simulation set 3
-% simulation_set_name = "SS03";
+% simulation_set_name = "SS02";
 % simulation_set = {
-%   "SS03-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
-%   "SS03-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_2;
-%   "SS03-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_3;
-%   "SS03-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_4;
+%   "SS02-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
+%   "SS02-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
+%   "SS02-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_3;
+%   "SS02-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_4;
 %   };
+% Simulation set 3
+simulation_set_name = "SS03";
+simulation_set = {
+  "SS03-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
+  "SS03-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_2;
+  "SS03-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_3;
+  "SS03-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_4;
+  };
 % % Simulation set 4
 % simulation_set_name = "SS04";
 % simulation_set = {
