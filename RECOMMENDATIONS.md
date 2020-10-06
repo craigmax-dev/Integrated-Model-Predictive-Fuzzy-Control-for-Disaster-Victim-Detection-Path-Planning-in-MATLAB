@@ -9,7 +9,6 @@ A more advanced model could choose a type of agent to model, for instance quadco
   * Environment modelling - The environment model used in the simulation is a simple discrete 2D top-down model of a disaster environment and includes static models for wind and building coverage, and a cellular automata-based dynamic model, for fire.
 Further work could develop a 3D environment model based on LIDAR datasets of disaster environments, 3D dynamic modelling of wind, and physics-based 3D modelling of fire.
 Additional models could also be implemented in the simulation if they could have relevance to the operation of the system, such as smoke, victim location, search team, charging stations, building damage, and so on.
-There are plenty of datasets which could be used for these models, such as the 2010 Haiti earthquake datasets found here: https://www.gislounge.com/haiti-maps-and-gis-data-resources
 * Controller Design
   * Path planning controller - If 3D simulation models are implemented, the path planning controller should also operate with 3D waypoints.
 Further changes could include obstacle avoidance implementation for navigating a 3D environment and discretisation of the environment into polygonal search cells, instead of dividing it into a grid, according to the fastest search patterns - for example, identifying individual buildings as separate search cells, as it would be most efficient to scan one building all at the same time.
@@ -27,3 +26,11 @@ This line of research should also focus on determining a balance between the com
   * System Design - Finally, the work in this thesis would compose one small part of the overall search and rescue operations, and should integrate seamlessly into the existing search and rescue operations structure.
 For example, this would require interfacing between the autonomous search and rescue system and linked systems such as rescue personnel and sources of a-priori data (satellite imagery, etc).
 The potential for further work in this area is near limitless, but a suggested first avenue of research would be in the full system design of a search and rescue system implementing the work in this project.
+* Potential resources
+  * [Gazebo](http://gazebosim.org/) - Robotics simulations
+  * [Open Topography](https://opentopography.org/news/ridgecrest-earthquake-lidar-released) - LIDAR datasets
+  * [OpenStreetMap](https://www.openstreetmap.org/) - Open source world map dataset
+  * [2010 Haiti earthquake datasets](https://www.gislounge.com/haiti-maps-and-gis-data-resources)
+  * [Harvard Haiti Earthquake Datasets](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZT2DJW)
+  * [QGIS](https://www.qgis.org/) - GIS Software
+  
