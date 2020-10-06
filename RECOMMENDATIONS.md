@@ -27,10 +27,9 @@ This line of research should also focus on determining a balance between the com
 For example, this would require interfacing between the autonomous search and rescue system and linked systems such as rescue personnel and sources of a-priori data (satellite imagery, etc).
 The potential for further work in this area is near limitless, but a suggested first avenue of research would be in the full system design of a search and rescue system implementing the work in this project.
 * Potential resources
-  * [Gazebo](http://gazebosim.org/) - Robotics simulations
+  * [Gazebo](http://gazebosim.org/) - Robotics simulation software
+  * [QGIS](https://www.qgis.org/) - GIS software
   * [Open Topography](https://opentopography.org/news/ridgecrest-earthquake-lidar-released) - LIDAR datasets
   * [OpenStreetMap](https://www.openstreetmap.org/) - Open source world map dataset
-  * [2010 Haiti earthquake datasets](https://www.gislounge.com/haiti-maps-and-gis-data-resources)
-  * [Harvard Haiti Earthquake Datasets](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZT2DJW) - Raser files
-  * [QGIS](https://www.qgis.org/) - GIS Software
+  * [Harvard Haiti Earthquake Datasets](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZT2DJW) - Datasets from the 2010 Haiti Earthquake
   
