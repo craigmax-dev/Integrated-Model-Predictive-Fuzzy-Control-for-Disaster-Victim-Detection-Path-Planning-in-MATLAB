@@ -31,6 +31,6 @@ The potential for further work in this area is near limitless, but a suggested f
   * [Open Topography](https://opentopography.org/news/ridgecrest-earthquake-lidar-released) - LIDAR datasets
   * [OpenStreetMap](https://www.openstreetmap.org/) - Open source world map dataset
   * [2010 Haiti earthquake datasets](https://www.gislounge.com/haiti-maps-and-gis-data-resources)
-  * [Harvard Haiti Earthquake Datasets](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZT2DJW)
+  * [Harvard Haiti Earthquake Datasets](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ZT2DJW) - Raser files
   * [QGIS](https://www.qgis.org/) - GIS Software
   
