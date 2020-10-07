@@ -1,9 +1,10 @@
 %% Function initialise_MPC
 % Initialise MPC model
+% MPC not active
 
-function [flag_mpc, solver, ...
+function [flag_mpc, solver, options, ...
   n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
-  nvars, fminsearchOptions, gaOptions, patOptions, parOptions, t_opt] ...
+  nvars] ...
   = initialise_MPC_01(fisArray, n_a)
 flag_mpc = false;
 % Solver options: fmincon, ga, particleswarm, patternsearch
@@ -30,9 +31,6 @@ nonlcon = [];
 nvars = size(ini_params, 2);
 % Solver options
 optTermCond       = 'MaxTime';
-t_opt             = 60;
-fminsearchOptions = optimset('Display','iter','PlotFcns',@optimplotfval);
-gaOptions         = optimoptions('ga','Display','iter', 'PlotFcn', @gaplotbestf);
-patOptions        = optimoptions('patternsearch','Display','iter', optTermCond, t_opt);
-parOptions        = optimoptions('particleswarm','Display','iter', 'PlotFcn',@pswplotbestf);
+optTermCond_value = 60;
+options        = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 end
