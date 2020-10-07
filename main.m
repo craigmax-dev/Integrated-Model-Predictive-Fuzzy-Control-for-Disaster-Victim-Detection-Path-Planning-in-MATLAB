@@ -10,55 +10,151 @@ close all
 % Set up folder paths
 addpath('functions', 'data')
 
-%% Define simulation set
-% Simulation sets are defined as a cell array of handles to initialisation
-% functions, each row of which defines a simulation in the simulation set
+%% Define function handles
+% Function handles are used to refer to the different scripts used in the
+% simulations
 
 % Define function handles
 h_init_sim_1 = @()initialise_simulation();
 h_init_env_1 = @(dt_e, k)initialise_environment_01(dt_e, k);
+
+% Agent with n_a = 1, l_q = 1/n_a = 2, l_q = 1/n_a = 1, l_q = 2 respectively
 h_init_agt_1 = @(m_bo, l_x_e, l_y_e)initialise_agent_01(m_bo, l_x_e, l_y_e);
 h_init_agt_2 = @(m_bo, l_x_e, l_y_e)initialise_agent_02(m_bo, l_x_e, l_y_e);
 h_init_agt_3 = @(m_bo, l_x_e, l_y_e)initialise_agent_03(m_bo, l_x_e, l_y_e);
+
+% Path planning
 h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning_01(m_bo_s, n_a);
-h_init_pp_2 = @(m_bo_s, n_a)initialise_pathPlanning_02(m_bo_s, n_a);
+
+% MPC not active
 h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
+
+% MPC with n_p = 1, t_opt = 60/120/300
 h_init_MPC_2 = @(fisArray, n_a)initialise_MPC_02(fisArray, n_a);
 h_init_MPC_3 = @(fisArray, n_a)initialise_MPC_03(fisArray, n_a);
 h_init_MPC_4 = @(fisArray, n_a)initialise_MPC_04(fisArray, n_a);
 
-% % Simulation set 1
-% simulation_set_name = "SS01";
+% MPC with n_p = 2, t_opt = 60/120/300
+h_init_MPC_2_2 = @(fisArray, n_a)initialise_MPC_02_2(fisArray, n_a);
+h_init_MPC_3_2 = @(fisArray, n_a)initialise_MPC_03_2(fisArray, n_a);
+h_init_MPC_4_2 = @(fisArray, n_a)initialise_MPC_04_2(fisArray, n_a);
+
+% MPC with optTermCond = 'MaxFunctionEvaluations';
+h_init_MPC_maxfunceval_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_02(fisArray, n_a);
+h_init_MPC_maxfunceval_3 = @(fisArray, n_a)initialise_MPC_maxfunceval_03(fisArray, n_a);
+h_init_MPC_maxfunceval_2_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_02_02(fisArray, n_a);
+h_init_MPC_maxfunceval_3_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_03_02(fisArray, n_a);
+
+% % Model handles  
+% h_model_MPC_1 = @()model_MPC_module_1();
+% h_model_MPC_2 = @()model_MPC_module_2();
+% h_model_pp_1 = @()model_pathPlanning_1();
+% h_model_agt_1 = @()model_agent_1();
+% h_model_env_1 = @()model_environment_1();
+
+%% Define simulation set - remove or run again?
+% Simulation sets are defined as a cell array of handles to initialisation
+% functions, each row of which defines a simulation in the simulation set
+
+% % % Simulation set 1
+% % simulation_set_name = "SS01";
+% % simulation_set = {
+% %   "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+% %   "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_2;
+% %   "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_3;
+% %   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4;
+% %   };
+% % Simulation set 2 - n_a = 3
+% % simulation_set_name = "SS02";
+% % simulation_set = {
+% %   "SS02-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
+% %   "SS02-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
+% %   "SS02-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_3;
+% %   "SS02-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_4;
+% %   };
+% % Simulation set 3 - l_q = 2
+% % simulation_set_name = "SS03";
+% % simulation_set = {
+% %   "SS03-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
+% %   "SS03-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_2;
+% %   "SS03-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_3;
+% %   "SS03-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_4;
+% %   };
+% % % Simulation set 4 - n_p = 2
+% % simulation_set_name = "SS04";
+% % simulation_set = {
+% %   "SS04-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+% %   "SS04-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_2_2;
+% %   "SS04-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_3_2;
+% %   "SS04-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4_2;
+% %   };
+
+%% Simulations initialising MPC with pre-tuned parameters
+
+% Simulation set 1
+% simulation_set_name = "SS01_2";
 % simulation_set = {
-%   "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
-%   "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_3;
-%   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4;
+%   "SS01-1_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS01-2_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_2;
+%   "SS01-3_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_3;
+%   "SS01-4_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4;
 %   };
 % Simulation set 2
-% simulation_set_name = "SS02";
+% simulation_set_name = "SS02_2";
 % simulation_set = {
-%   "SS02-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
-%   "SS02-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
-%   "SS02-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_3;
-%   "SS02-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_4;
+%   "SS02-1_2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
+%   "SS02-2_2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_2;
+%   "SS02-3_2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_3;
+%   "SS02-4_2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_4;
 %   };
 % Simulation set 3
-simulation_set_name = "SS03";
-simulation_set = {
-  "SS03-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
-  "SS03-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_2;
-  "SS03-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_3;
-  "SS03-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_4;
-  };
-% % Simulation set 4
-% simulation_set_name = "SS04";
+% simulation_set_name = "SS03_2";
 % simulation_set = {
-%   "SS04-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SS04-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_2;
-%   "SS04-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_3;
-%   "SS04-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_4;
+%   "SS03-1_2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
+%   "SS03-2_2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_2;
+%   "SS03-3_2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_3;
+%   "SS03-4_2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_4;
 %   };
+% % Simulation set 4 
+% simulation_set_name = "SS04_2";
+% simulation_set = {
+%   "SS04-1_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS04-2_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_2;
+%   "SS04-3_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_3;
+%   "SS04-4_2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_4 ;
+%   };
+
+%% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
+% Simulation set 1
+% simulation_set_name = "SS01-FUNC";
+% simulation_set = {
+%   "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
+%   "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
+%   };
+% Simulation set 2
+% simulation_set_name = "SS02-FUNC";
+% simulation_set = {
+%   "SS02-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
+%   "SS02-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_2;
+%   "SS02-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_3;
+%   };
+% Simulation set 3
+% simulation_set_name = "SS03-FUNC";
+% simulation_set = {
+%   "SS03-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
+%   "SS03-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_2;
+%   "SS03-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_3;
+%   };
+% % Simulation set 4 
+simulation_set_name = "SS04-FUNC";
+simulation_set = {
+  "SS04-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+  "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2_2;
+  "SS04-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3_2;
+  };
+
+
 for sim = 1:size(simulation_set,1)
   % Export folder for simulation
   simulation_name = simulation_set{sim, 1};
@@ -80,8 +176,8 @@ for sim = 1:size(simulation_set,1)
   % Path planning
   [c_prior_building, c_prior_open, m_prior, fisArray] = simulation_set{sim,5}(m_bo_s, n_a);
   % MPC
-  [flag_mpc, solver, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
-  nvars, fminsearchOptions, gaOptions, patOptions, parOptions, t_opt] = simulation_set{sim,6}(fisArray, n_a);
+  [flag_mpc, solver, options, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, ...
+  nvars] = simulation_set{sim,6}(fisArray, n_a);
 
   %% Initialise plotting data
   [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
@@ -134,10 +230,9 @@ for sim = 1:size(simulation_set,1)
     if flag_mpc
       if k_mpc*dk_mpc <= t
         [fisArray, ini_params, fis_param_hist] = ...
-          model_MPC_module(fisArray, ini_params, fis_param_hist, ...
-          solver, n_a, ...
+          model_MPC_module_02(fisArray, ini_params, fis_param_hist, ...
+          solver, options, n_a, ...
           nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
-          fminsearchOptions, gaOptions, patOptions, parOptions, ...
           test_fis_sensitivity, ...
           m_f, m_bo, m_bt, m_s, m_scan, m_t_scan, ...
           dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
@@ -250,7 +345,6 @@ for sim = 1:size(simulation_set,1)
   end
 end
 
-%% TO DO
 %% Simulation set plots
 % Plot settings
 simulationSet_plots = {
