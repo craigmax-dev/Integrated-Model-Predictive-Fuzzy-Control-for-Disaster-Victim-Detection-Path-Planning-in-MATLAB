@@ -15,7 +15,9 @@ function [] = plot_simulationData( ...
   close all
 
   % Create save directory
-  mkdir(exp_folder);
+  if(~exist(exp_folder, 'dir'))
+    mkdir(exp_folder)
+  end
   
   % Time vectors
   axis_t_v = linspace(0, t_f, ct_v);

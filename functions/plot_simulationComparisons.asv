@@ -2,10 +2,8 @@
 function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
   flag_normalise, simulation_set, simulation_set_name)
 
-% TO DO: 
-% Normalised plots
-% - will be different lengths. Fill in missing data with 0 for obj_fun
-% - dividing by 0 will result in NaN - actually want  
+% TO DO: problem with normalised plots - will be different lengths. Fill in
+% missing data with 0 for obj_fun, as is reduced to  zero at end
               
 	% Close any open figures
   close all
@@ -13,7 +11,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
   if(~exist(exp_route, 'dir'))
     mkdir(exp_route)
   end
-  %% Plotting
+  %% Variable plots
   % Iterate through each plot in set
   for i = 1:size(plots_simSet,1)
     % Load data information
@@ -21,7 +19,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
     flag_plot = plots_simSet{i,2};
 %     [lab_title, lab_x, lab_y, ~] = func_plot_labels(data_name);
 %     lab_legend = {};
-    % Variable plots
+      % Variable plots
     if flag_plot
       % Create figure
       f = figure("name", data_name);
@@ -39,43 +37,35 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
         data = getfield(data_struct, fields{1});
         axis_t = getfield(data_struct, fields{2});
         % Plot each row
-        plot(axis_t, data);
+        plot(axis_t, data(sim, :));
   %       lab_legend{sim} = data_set;
       end
-      % Normalised variable plots
+    end
+    
+    
       if flag_normalise
-        % Create figure
+        % Normalised variable plots
         f = figure("name", data_name);
-        hold on;
-        % Iterate through each simulation in set
-        for sim = 1:size(simulation_set,1)
-          % Get files
-          sim_name = simulation_set{sim, 1};        
-          sim_route = strcat(exp_route, ...
-                                "\", sim_name, ...
-                                "\", sim_name, ".mat");
+        hold on;      
+        % Get files
+        for sim = 1:size(plots_simSet,1)
+          data_name = plots_simSet{sim, 1};
+          sim_route = strcat(exp_dir, ...
+                                "\", data_name, ".mat");
           data_struct = load(sim_route, data_name, "t_hist");
           % Extract data into data array
           fields = fieldnames(data_struct);
-          new_data = getfield(data_struct, fields{1});
-          % Append if not same length?
-%           if(size(new_data, 1) > size(data, 1))
-%             size(new_data)
-%             new_data = new_data(1:size(data,1));
-%           end
-          data(sim, 1:numel(new_data)) = new_data;
-          new_axis = getfield(data_struct, fields{2});
-          axis_t(sim, 1:numel(new_axis)) = new_axis;
+          data(sim, :) = getfield(data_struct, fields{1});
+          axis_t = getfield(data_struct, fields{2});
         end
         % Normalise
         data = data./data(1, :);
         % Plot each row
         for sim = 1:size(plots_simSet,1)
-%           plot(axis_t(sim, 1:112), data(sim, 1:112));
-          semilogy(axis_t(sim, 1:112), data(sim, 1:112));
+          plot(axis_t, data(sim, :));
     %       lab_legend{sim} = data_set;
         end
-      end      
+      end
     end
   end
   
