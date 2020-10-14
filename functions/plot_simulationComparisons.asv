@@ -1,135 +1,115 @@
 % Function to compare results from simulations
 function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
-  flag_normalise, simulation_set, simulation_set_name)
+  simulation_set, simulation_set_name)
 
-% TO DO: problem with normalised plots - will be different lengths. Fill in
-% missing data with 0 for obj_fun, as is reduced to  zero at end
-              
-	% Close any open figures
+  % Close any open figures
   close all
+  % Export directory address
+  exp_dir = strcat(exp_route, "/", simulation_set_name);
   % Create save directory
-  if(~exist(exp_route, 'dir'))
-    mkdir(exp_route)
+  if(~exist(exp_dir, 'dir'))
+    mkdir(exp_dir)
   end
-  %% Variable plots
+  % Make sure default formatter is latex
+  set(groot, 'defaultLegendInterpreter','latex');
+  %% Plotting
   % Iterate through each plot in set
   for i = 1:size(plots_simSet,1)
     % Load data information
     data_name = plots_simSet{i,1};
-    flag_plot = plots_simSet{i,2};
-%     [lab_title, lab_x, lab_y, ~] = func_plot_labels(data_name);
-%     lab_legend = {};
-      % Variable plots
+    data_type = plots_simSet{i,2};
+    flag_plot = plots_simSet{i,3};
+    % Labels
+    [lab_title, lab_x, lab_y, ~] = func_plot_labels(data_name);
+    
     if flag_plot
-      % Create figure
-      f = figure("name", data_name);
-      hold on;
-      % Iterate through each simulation in set
-      for sim = 1:size(simulation_set,1) 
+      % Load data into matrix
+      for sim = 1:size(simulation_set,1)
         % Get files
         sim_name = simulation_set{sim, 1};        
         sim_route = strcat(exp_route, ...
                               "\", sim_name, ...
                               "\", sim_name, ".mat");
         data_struct = load(sim_route, data_name, "t_hist");
-        % Extract data into data array
+        % Extract data
         fields = fieldnames(data_struct);
-        data = getfield(data_struct, fields{1});
-        axis_t = getfield(data_struct, fields{2});
-        % Plot each row
-        plot(axis_t, data(sim, :));
-  %       lab_legend{sim} = data_set;
+        % Data array
+        new_data = getfield(data_struct, fields{1});
+        data_obj{sim} = new_data;
+        % Time array
+        new_axis = getfield(data_struct, fields{2});
+        axis_t_obj{sim} = new_axis;
+        % Legend
+        lab_legend{sim} = sim_name;
       end
-    end
-    
-    
-      if flag_normalise
-        % Normalised variable plots
-        f = figure("name", data_name);
-        hold on;      
-        % Get files
-        for sim = 1:size(plots_simSet,1)
-          data_name = plots_simSet{sim, 1};
-          sim_route = strcat(exp_dir, ...
-                                "\", data_name, ".mat");
-          data_struct = load(sim_route, data_name, "t_hist");
-          % Extract data into data array
-          fields = fieldnames(data_struct);
-          data(sim, :) = getfield(data_struct, fields{1});
-          axis_t = getfield(data_struct, fields{2});
+      % Plot
+      if data_type == "variable"
+        % Figure name
+        fig_name = data_name;
+        % Create figure
+        f = figure("name", fig_name);
+        hold on;
+        for sim = 1:size(simulation_set,1) 
+          % Plot each row
+          plot(axis_t_obj{sim}, data_obj{sim});
+        end
+      elseif data_type == "normalise"
+        % Change data name
+        fig_name = strcat(data_name, "_norm");
+        % Create figure
+        f = figure("name", fig_name);
+        hold on;
+        for sim = 1:size(simulation_set,1)
+          data(sim, 1:numel(data_obj{sim})) = data_obj{sim};
+          axis_t(sim, 1:numel(axis_t_obj{sim})) = axis_t_obj{sim};
         end
         % Normalise
-        data = data./data(1, :);
+        data = data./data(1, :); 
         % Plot each row
-        for sim = 1:size(plots_simSet,1)
-          plot(axis_t, data(sim, :));
-    %       lab_legend{sim} = data_set;
+        for sim = 1:size(simulation_set,1)
+          plot(axis_t(sim, :), data(sim, :));
         end
+      elseif data_type == "fis"
+        
+        % Iterate through each simulation in set
+        for mpc = 1:size(data_obj{2},1)
+          % Figure name
+          fig_name = strcat(data_name, "_", num2str(mpc));
+          % Create figure
+          f = figure("name", fig_name);
+          hold on;
+          for sim = 1:size(simulation_set,1)
+            if sim == 1
+              data = data_obj{sim};
+            else
+              data = data_obj{sim}(mpc, :);
+            end
+            scatter(axis_x, data(mpc, :))
+          end
+        end
+        
+          axis_x = 1:size(data,2);
+          for mpc = 1:size(data,1)
+            scatter(axis_x, data(mpc, :))
+          end
       end
+      % Labels
+      title(lab_title);
+      xlabel(lab_x);
+      ylabel(lab_y);
+      lab_legend_arr = string(lab_legend);
+      legend(lab_legend_arr);
     end
   end
-  
-    % Labels
-%     title(lab_title);
-%     xlabel(lab_x);
-%     ylabel(lab_y);
-%     lab_legend_arr = string(lab_legend);
-%     legend(lab_legend_arr); 
-%     opengl software
 
-%   %% Save figures as .fig and .jpg files
-%   fig_list = findobj(allchild(0), "Type", "figure");
-%   for iFig = 1:length(fig_list)
-%     h_fig = fig_list(iFig); 
-%     fig_name   = get(h_fig, "Name");
-%     exp_fig = strcat(exp_folder, "\", fig_name);
-%     savefig(h_fig, strcat(exp_fig, ".fig"));
-%     saveas(h_fig, strcat(exp_fig, ".jpg"));
-%   end
+  %% Save figures as .fig and .jpg files
+  fig_list = findobj(allchild(0), "Type", "figure");
+  for iFig = 1:length(fig_list)
+    h_fig = fig_list(iFig); 
+    fig_name   = get(h_fig, "Name");
+    exp_fig = strcat(exp_dir, "\", fig_name);
+    savefig(h_fig, strcat(exp_fig, ".fig"));
+    saveas(h_fig, strcat(exp_fig, ".jpg"));
+  end
   
 end
-
-%% Normalised plots
-
-%% FIS plots
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% Plots
-% % % fis_param_hist scatter
-% 
-% % obj_sum_hist
-% data_name = ["SC0.1", "SOPAT0.2", "SOPAT0.3"];
-% data_t_end = [9340, 6820, 6460];
-% 
-% h = figure('name','s_obj_hist_comparison');
-% hold on;
-% grid on;
-% xlabel("Time (s)"); 
-% ylabel("Objective function sum");
-% title("Objective function sum over time comparison");
-% 
-% for i = 1:length(data)
-%   t_v = linspace(0, data_t_end(i), size(data{i},2));
-%   plot(t_v, data{i})
-% end
-% 
-% legend(data_name)
-% 
-% % obj_hist
-% data_name = ["SC0.1", "SOPAT0.2", "SOPAT0.3"];
-% data_t_end = [9340, 6820, 6460];
-% t_v = linspace(0, t_end, ct_v);
-% 
-% h = figure('name','obj_hist_comparison');
-% hold on;
-% grid on;
-% xlabel("Time (s)"); 
-% ylabel("Objective function");
-% title("Objective function over time comparison");
-% 
-% for i = 1:length(data)
-%   t_v = linspace(0, data_t_end(i), size(data{i},2));
-%   plot(t_v, data{i})
-% end
-% 
-% legend(data_name)

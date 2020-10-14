@@ -127,11 +127,12 @@ h_init_MPC_maxfunceval_3_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_03_02(fi
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % Simulation set 1
 % simulation_set_name = "SS01-FUNC";
-% simulation_set = {
-%   "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
-%   "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
-%   };
+simulation_set_name = "ST01-PLOT";
+simulation_set = {
+  "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+  "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
+  "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
+  };
 % Simulation set 2
 % simulation_set_name = "SS02-FUNC";
 % simulation_set = {
@@ -147,12 +148,12 @@ h_init_MPC_maxfunceval_3_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_03_02(fi
 %   "SS03-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_3;
 %   };
 % % Simulation set 4 
-simulation_set_name = "ST01-PLOT";
-simulation_set = {
-  "SS04-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-  "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2_2;
-  "SS04-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3_2;
-  };
+% simulation_set_name = "SS04-FUNC";
+% simulation_set = {
+%   "SS04-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2_2;
+%   "SS04-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3_2;
+%   };
 
 
 for sim = 1:size(simulation_set,1)
@@ -348,15 +349,14 @@ end
 %% Simulation set plots
 % Plot settings
 plots_simSet = {
-  "obj_hist", true;
-  "s_obj_hist", false;
-  "fis_param_hist", false;
+  "obj_hist", "variable", true;
+  "obj_hist", "normalise", true;
+  "s_obj_hist", "variable", true;
+  "s_obj_hist", "normalise", true;
+  "fis_param_hist", "fis", false;
   };
-flag_normalise = false;
-% Export folder
-exp_route = strcat(exp_dir, "\", simulation_set_name);
 % Plotting function
-plot_simulationComparisons(plots_simSet, exp_route, flag_normalise, simulation_set, simulation_set)
+plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name)
 
 % if flag_fig_simSet
 %   % Close open figures

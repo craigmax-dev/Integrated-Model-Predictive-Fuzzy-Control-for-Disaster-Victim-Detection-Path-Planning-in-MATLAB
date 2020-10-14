@@ -345,17 +345,17 @@ for sim = 1:size(simulation_set,1)
 %     save(exp_file)
 %   end
 end
-
 %% Simulation set plots
 % Plot settings
 plots_simSet = {
-  "obj_hist", true;
-  "s_obj_hist", true;
-  "fis_param_hist", false;
+  "obj_hist", "variable", false;
+  "obj_hist", "normalise", false;
+  "s_obj_hist", "variable", false;
+  "s_obj_hist", "normalise", false;
+  "fis_param_hist", "fis", true;
   };
-flag_normalise = true;
 % Plotting function
-plot_simulationComparisons(plots_simSet, exp_dir, flag_normalise, simulation_set, simulation_set_name)
+plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name)
 
 % if flag_fig_simSet
 %   % Close open figures
