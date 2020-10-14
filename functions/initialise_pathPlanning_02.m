@@ -1,7 +1,7 @@
 %% Function initialise_pathPlanning
 % Initialise path planning model
 
-function [c_prior_building, c_prior_open, m_prior, fisArray] = initialise_pathPlanning_02(m_bo_s, n_a)
+function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initialise_pathPlanning_02(m_bo_s, n_a)
   % Priority map 
   c_prior_building  = 1;    % Priority constant for building
   c_prior_open      = 0.1;  % Priority constant for open space

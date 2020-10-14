@@ -37,13 +37,17 @@ function [s_obj_pred] ...
     
     %% Update FIS parameters
     if ct_mpc_pred*dk_mpc < k_pred
-      range = 1 + ct_mpc_pred * n_a * n_MF_out * 4;
+      range_low = 1 + ct_mpc_pred * n_a * n_MF_out * 4;
+      fprintf("Starting index for prediction timestep")
+range_low
       for a=1:n_a
         for mf = 1:n_MF_out
-          newParams = params(range:range+3);
+          range_low = range_low + (mf - 1) * 4
+          range_high = range_low + 3
+          newParams = params(range_low:range_high);
           fisArray(a).Outputs.MembershipFunctions(mf).Parameters = newParams;
-          range = range + 4;
         end
+        range_low = range_low + (a - 1) * n_MF_out * 4;
       end
       ct_mpc_pred = ct_mpc_pred + 1;
     end
