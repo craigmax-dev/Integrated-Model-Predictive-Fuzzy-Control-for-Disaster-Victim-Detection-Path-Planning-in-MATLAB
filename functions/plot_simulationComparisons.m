@@ -53,9 +53,9 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
           % Plot each row
           plot(axis_t_obj{sim}, data_obj{sim});
         end
-      elseif data_type == "normalise"
+      elseif data_type == "relative"
         % Change data name
-        fig_name = strcat(data_name, "_norm");
+        fig_name = strcat(data_name, "_relative");
         % Create figure
         f = figure("name", fig_name);
         hold on;
@@ -63,7 +63,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
           data(sim, 1:numel(data_obj{sim})) = data_obj{sim};
           axis_t(sim, 1:numel(axis_t_obj{sim})) = axis_t_obj{sim};
         end
-        % Normalise
+        % Relative
         data = data./data(1, :); 
         % Plot each row
         for sim = 1:size(simulation_set,1)
