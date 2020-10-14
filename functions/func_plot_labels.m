@@ -44,7 +44,7 @@ function [lab_title, lab_x, lab_y, lab_legend] = func_plot_labels(data_name)
   elseif data_name == "s_obj_hist"
     lab_title = "Objective function sum over simulation";
     lab_x = "Time (s)";
-    lab_y = "$$ \sum_{k=0}^{t/dt_s} J $$";
+    lab_y = "$$\sum_{k=0}^{t/dt_s} J $$";
     lab_legend = "";
   else
     lab_title = "";

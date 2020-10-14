@@ -25,7 +25,6 @@ h_init_agt_3 = @(m_bo, l_x_e, l_y_e)initialise_agent_03(m_bo, l_x_e, l_y_e);
 
 % Path planning
 h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning_01(m_bo_s, n_a);
-h_init_pp_2 = @(m_bo_s, n_a)initialise_pathPlanning_02(m_bo_s, n_a);
 
 % MPC not active
 h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
@@ -41,14 +40,10 @@ h_init_MPC_3_2 = @(fisArray, n_a)initialise_MPC_03_2(fisArray, n_a);
 h_init_MPC_4_2 = @(fisArray, n_a)initialise_MPC_04_2(fisArray, n_a);
 
 % MPC with optTermCond = 'MaxFunctionEvaluations';
-% n_funceval = 10
 h_init_MPC_maxfunceval_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_02(fisArray, n_a);
-h_init_MPC_maxfunceval_2_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_02_02(fisArray, n_a);
-% n_funceval = 40
 h_init_MPC_maxfunceval_3 = @(fisArray, n_a)initialise_MPC_maxfunceval_03(fisArray, n_a);
+h_init_MPC_maxfunceval_2_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_02_02(fisArray, n_a);
 h_init_MPC_maxfunceval_3_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_03_02(fisArray, n_a);
-% n_funceval = 100
-h_init_MPC_maxfunceval_4 = @(fisArray, n_a)initialise_MPC_maxfunceval_04(fisArray, n_a);
 
 % % Model handles  
 % h_model_MPC_1 = @()model_MPC_module_1();
@@ -132,12 +127,12 @@ h_init_MPC_maxfunceval_4 = @(fisArray, n_a)initialise_MPC_maxfunceval_04(fisArra
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % Simulation set 1
 % simulation_set_name = "SS01-FUNC";
-% simulation_set_name = "SS01-FUNC";
-% simulation_set = {
-%   "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
-%   "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
-%   };
+simulation_set_name = "ST01-PLOT";
+simulation_set = {
+  "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+  "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
+  "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
+  };
 % Simulation set 2
 % simulation_set_name = "SS02-FUNC";
 % simulation_set = {
@@ -159,14 +154,6 @@ h_init_MPC_maxfunceval_4 = @(fisArray, n_a)initialise_MPC_maxfunceval_04(fisArra
 %   "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2_2;
 %   "SS04-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3_2;
 %   };
-
-%% Simulation with two output surfaces per FIS
-simulation_set_name = "SS05";
-simulation_set = {
-  "SS05-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SS05-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_2;
-  "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_4;
-  };
 
 
 for sim = 1:size(simulation_set,1)
@@ -358,14 +345,15 @@ for sim = 1:size(simulation_set,1)
 %     save(exp_file)
 %   end
 end
+
 %% Simulation set plots
 % Plot settings
 plots_simSet = {
-  "obj_hist", "variable", false;
-  "obj_hist", "relative", false;
-  "s_obj_hist", "variable", false;
-  "s_obj_hist", "relative", false;
-  "fis_param_hist", "fis", true;
+  "obj_hist", "variable", true;
+  "obj_hist", "normalise", true;
+  "s_obj_hist", "variable", true;
+  "s_obj_hist", "normalise", true;
+  "fis_param_hist", "fis", false;
   };
 % Plotting function
 plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name)
