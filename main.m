@@ -131,13 +131,15 @@ h_init_MPC_maxfunceval_4 = @(fisArray, n_a)initialise_MPC_maxfunceval_04(fisArra
 
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % Simulation set 1
-% simulation_set_name = "SS01-FUNC";
-% simulation_set_name = "SS01-FUNC";
+simulation_set_name = "SS01-FUNC";
 % simulation_set = {
 %   "SS01-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "SS01-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_2;
 %   "SS01-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_3;
 %   };
+simulation_set = {
+  "SS01-FUNC-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_4;  
+};
 % Simulation set 2
 % simulation_set_name = "SS02-FUNC";
 % simulation_set = {
@@ -161,13 +163,7 @@ h_init_MPC_maxfunceval_4 = @(fisArray, n_a)initialise_MPC_maxfunceval_04(fisArra
 %   };
 
 %% Simulation with two output surfaces per FIS
-simulation_set_name = "SS05";
-simulation_set = {
-  "SS05-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SS05-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_2;
-  "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_4;
-  };
-
+  
 
 for sim = 1:size(simulation_set,1)
   % Export folder for simulation

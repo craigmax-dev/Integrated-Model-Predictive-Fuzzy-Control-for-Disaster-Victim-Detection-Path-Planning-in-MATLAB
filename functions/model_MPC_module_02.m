@@ -38,11 +38,14 @@ function [fisArray, ini_params, fis_param_hist] = ...
     [mpc_params,~] = particleswarm(h_MPC, nvars, lb, ub, options);   
   end
   % Update FIS Parameters
-  for a=1:n_a
-    range       = 1 + (a - 1) * 4;
-    fis_params  = mpc_params(range:range+3);
-    fisArray(a).Outputs.MembershipFunctions.Parameters = fis_params;
+  range = 1;
+  for a = 1:n_a
+    for mf = 1:n_MF_out
+      fis_params  = mpc_params(range:range+3);
+      fisArray(a).Outputs.MembershipFunctions(mf).Parameters = fis_params;
+      range       = range + 4;
+    end
   end
   % Record new parameters
-  fis_param_hist = [fis_param_hist; mpc_params(1:n_a*4)];
+  fis_param_hist = [fis_param_hist; mpc_params(1:n_a*n_MF_out*4)];
 end
