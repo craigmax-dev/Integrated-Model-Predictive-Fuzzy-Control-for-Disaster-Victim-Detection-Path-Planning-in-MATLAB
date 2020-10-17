@@ -12,6 +12,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
   end
   % Make sure default formatter is latex
   set(groot, 'defaultLegendInterpreter','latex');
+  opengl software
   %% Plotting
   % Iterate through each plot in set
   for i = 1:size(plots_simSet,1)

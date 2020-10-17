@@ -3,12 +3,12 @@
 
 function [flag_mpc, solver, options, n_p, fis_params, ini_params, ...
   A, b, Aeq, beq, lb, ub, nonlcon, nvars] ...
-  = initialise_MPC_maxfunceval_02(fisArray, n_a)
+  = initialise_MPC_maxfunceval_40_02(fisArray, n_a)
 flag_mpc = true;
 % Solver options: fmincon, ga, particleswarm, patternsearch
 solver = "patternsearch";
 % Prediction horizon
-n_p = 1;
+n_p = 2;
 % Initialise optimisation parameters
 fis_params = [];
 for a = 1:n_a
@@ -29,6 +29,6 @@ nonlcon = [];
 nvars = size(ini_params, 2);
 % Solver options
 optTermCond       = 'MaxFunctionEvaluations';
-optTermCond_value = 10;
+optTermCond_value = 40;
 options        = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 end

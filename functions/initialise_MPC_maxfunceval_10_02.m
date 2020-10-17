@@ -3,7 +3,7 @@
 
 function [flag_mpc, solver, options, n_p, fis_params, ini_params, ...
   A, b, Aeq, beq, lb, ub, nonlcon, nvars] ...
-  = initialise_MPC_maxfunceval_02_02(fisArray, n_a)
+  = initialise_MPC_maxfunceval_10_02(fisArray, n_a)
 flag_mpc = true;
 % Solver options: fmincon, ga, particleswarm, patternsearch
 solver = "patternsearch";
