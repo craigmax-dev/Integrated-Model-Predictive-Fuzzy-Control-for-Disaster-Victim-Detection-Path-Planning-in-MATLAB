@@ -18,7 +18,7 @@ addpath('functions', 'data')
 h_init_sim_1 = @()initialise_simulation();
 h_init_env_1 = @(dt_e, k)initialise_environment_01(dt_e, k);
 
-% Agent with n_a = 1, l_q = 1/n_a = 2, l_q = 1/n_a = 1, l_q = 2 respectively
+% Agent with n_a = 2, l_q = 1/n_a = 3, l_q = 1/n_a = 2, l_q = 2 respectively
 h_init_agt_1 = @(m_bo, l_x_e, l_y_e)initialise_agent_01(m_bo, l_x_e, l_y_e);
 h_init_agt_2 = @(m_bo, l_x_e, l_y_e)initialise_agent_02(m_bo, l_x_e, l_y_e);
 h_init_agt_3 = @(m_bo, l_x_e, l_y_e)initialise_agent_03(m_bo, l_x_e, l_y_e);
@@ -118,9 +118,6 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "ST01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_particleswarm;
 %   "ST01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_patternsearch;
 %   };
-
-%% BUGFIX
-
 % % FIS sensitivity
 % simulation_set_name = "ST02-FIS-SENSITIVITY";
 
