@@ -7,7 +7,7 @@ function [s_obj_pred] ...
           fisArray, test_fis_sensitivity, ...
           m_f, m_bo, m_bt, m_s, m_scan, m_t_scan, ...
           dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
-          n_a, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
+          n_a, n_MF_out, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
           a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
           l_x_s, l_y_s, c_f_s, ...
           c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
@@ -20,8 +20,8 @@ function [s_obj_pred] ...
   k_a     = 0;
   k_c     = 0;
   k_e     = 0;
+  k_mpc   = 0;
   s_obj_pred   = 0;
-  ct_mpc_pred = 0;
   
   dt_a    = dk_a*dt_s;
   dt_e    = dk_e*dt_s;
@@ -36,13 +36,16 @@ function [s_obj_pred] ...
   while k_pred <= dk_mpc*n_p
     
     %% Update FIS parameters
-    if ct_mpc_pred*dk_mpc < k_pred
-      for UAV=1:n_a
-        range = 1 + (ct_mpc_pred * n_a * 4) + (UAV - 1) * 4;
-        newParams = params(range:range+3);
-        fisArray(UAV).Outputs.MembershipFunctions.Parameters = newParams;
+    if k_mpc*dk_mpc < k_pred
+      range = 1 + k_mpc * n_a * n_MF_out * 4;
+      for a=1:n_a
+        for mf = 1:n_MF_out
+          newParams = params(range:range+3);
+          fisArray(a).Outputs.MembershipFunctions(mf).Parameters = newParams;
+          range = range + 4;
+        end
       end
-      ct_mpc_pred = ct_mpc_pred + 1;
+      k_mpc = k_mpc + 1;
     end
     %% Path planning
     if k_c*dk_c <= k_pred
@@ -81,7 +84,8 @@ function [s_obj_pred] ...
             false);
 
     %% Advance timestep
-    k_pred = k_pred + dt_s;
+    k_pred = k_pred + 1;
     k      = k + 1;
   end
+  fprintf("End of prediction horizon")
 end
