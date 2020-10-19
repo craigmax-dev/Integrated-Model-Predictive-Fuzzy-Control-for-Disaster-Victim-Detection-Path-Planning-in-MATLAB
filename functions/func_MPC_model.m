@@ -20,8 +20,8 @@ function [s_obj_pred] ...
   k_a     = 0;
   k_c     = 0;
   k_e     = 0;
+  k_mpc   = 0;
   s_obj_pred   = 0;
-  ct_mpc_pred = 0;
   
   dt_a    = dk_a*dt_s;
   dt_e    = dk_e*dt_s;
@@ -36,8 +36,8 @@ function [s_obj_pred] ...
   while k_pred <= dk_mpc*n_p
     
     %% Update FIS parameters
-    if ct_mpc_pred*dk_mpc < k_pred
-      range = 1 + ct_mpc_pred * n_a * n_MF_out * 4;
+    if k_mpc*dk_mpc < k_pred
+      range = 1 + k_mpc * n_a * n_MF_out * 4;
       for a=1:n_a
         for mf = 1:n_MF_out
           newParams = params(range:range+3);
@@ -45,7 +45,7 @@ function [s_obj_pred] ...
           range = range + 4;
         end
       end
-      ct_mpc_pred = ct_mpc_pred + 1;
+      k_mpc = k_mpc + 1;
     end
     %% Path planning
     if k_c*dk_c <= k_pred
@@ -84,7 +84,8 @@ function [s_obj_pred] ...
             false);
 
     %% Advance timestep
-    k_pred = k_pred + dt_s;
+    k_pred = k_pred + 1;
     k      = k + 1;
   end
+  fprintf("End of prediction horizon")
 end

@@ -30,13 +30,20 @@ h_init_pp_2 = @(m_bo_s, n_a)initialise_pathPlanning_02(m_bo_s, n_a);
 % MPC not active
 h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
 
-% MPC with optTermCond = 'MaxFunctionEvaluations';
+% MPC with optTermCond = 'MaxFunctionEvaluations'; / n_p = 1
 h_init_MPC_maxfunceval_10 = @(fisArray, n_a)initialise_MPC_maxfunceval_10(fisArray, n_a);
-h_init_MPC_maxfunceval_10_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_10_02(fisArray, n_a);
 h_init_MPC_maxfunceval_40 = @(fisArray, n_a)initialise_MPC_maxfunceval_40(fisArray, n_a);
-h_init_MPC_maxfunceval_40_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_40_02(fisArray, n_a);
 h_init_MPC_maxfunceval_100 = @(fisArray, n_a)initialise_MPC_maxfunceval_100(fisArray, n_a);
+
+% MPC with optTermCond = 'MaxFunctionEvaluations'; / n_p = 2
+h_init_MPC_maxfunceval_10_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_10_02(fisArray, n_a);
+h_init_MPC_maxfunceval_40_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_40_02(fisArray, n_a);
 h_init_MPC_maxfunceval_100_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_100_02(fisArray, n_a);
+
+% MPC with optTermCond = 'MaxFunctionEvaluations'; / n_p = 3
+h_init_MPC_maxfunceval_10_3 = @(fisArray, n_a)initialise_MPC_maxfunceval_10_03(fisArray, n_a);
+h_init_MPC_maxfunceval_40_3 = @(fisArray, n_a)initialise_MPC_maxfunceval_40_03(fisArray, n_a);
+h_init_MPC_maxfunceval_100_3 = @(fisArray, n_a)initialise_MPC_maxfunceval_100_03(fisArray, n_a);
 
 % Handles for solver test
 h_init_MPC_SOLV_fminsearch = @(fisArray, n_a)initialise_MPC_ST01_fminsearch(fisArray, n_a);
@@ -70,13 +77,13 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS03-FUNC-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 %   };
 % % Simulation set 4 
-simulation_set_name = "SS04-FUNC";
-simulation_set = {
-  "SS04-FUNC-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;  
-  };        
+% simulation_set_name = "SS04-FUNC";
+% simulation_set = {
 %   "SS04-FUNC-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10_2;
+%   "SS04-FUNC-2", h_init_sim_1, h_init_env_1, h_in  it_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10_2;
 %   "SS04-FUNC-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40_2;
+%   "SS04-FUNC-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;  
+%   };        
 % % Simulation set 5 - multiple output surfaces
 % simulation_set_name = "SS05-FUNC";
 % simulation_set = {
@@ -85,8 +92,23 @@ simulation_set = {
 %   "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40;
 %   "SS05-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   };     
-% % Simulation set 6 - multiple output surfaces and multiple prediction steps
- 
+% % Simulation set 6 - n_MF_out = 2, n_p = 2
+% simulation_set_name = "SS05-FUNC";
+% simulation_set = {
+%   "SS05-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS05-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10_2;
+%   "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40_2;
+%   "SS05-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   };
+% % Simulation set 7 - n_MF_out = 2, n_p = 3
+% simulation_set_name = "SS05-FUNC";
+% simulation_set = {
+%   "SS05-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS05-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10_3;
+%   "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40_3;
+%   "SS05-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_3;
+%   };
+
 %% Tests
 % % Solver test
 % simulation_set_name = "ST01-SOLVER";
@@ -96,6 +118,8 @@ simulation_set = {
 %   "ST01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_particleswarm;
 %   "ST01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_patternsearch;
 %   };
+
+%% BUGFIX
 
 % % FIS sensitivity
 % simulation_set_name = "ST02-FIS-SENSITIVITY";

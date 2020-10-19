@@ -27,8 +27,8 @@ function [fisArray, ini_params, fis_param_hist] = ...
     l_x_s, l_y_s, c_f_s, ...
     c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
     r_bo, r_fo, fis_data);
-  % For reproducibility
-  rng default;
+%   % For reproducibility
+%   rng(k);
   % Optimisation
   if solver == "fminsearch"
     [mpc_params, ~] = fminsearch(h_MPC, ini_params, options);
