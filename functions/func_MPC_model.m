@@ -87,5 +87,4 @@ function [s_obj_pred] ...
     k_pred = k_pred + 1;
     k      = k + 1;
   end
-  fprintf("End of prediction horizon")
 end
