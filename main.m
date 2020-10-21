@@ -69,28 +69,28 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   };
 %   "SS02-NEW-TEST-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 % % Simulation set 3 - l_q = 3
-% simulation_set_name = "SS03-NEW-TEST";
-% simulation_set = {
-%   "SS03-NEW-TEST-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
-%   "SS03-NEW-TEST-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_10;
-%   "SS03-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_40;
-%   };
+simulation_set_name = "SS03-NEW-TEST";
+simulation_set = {
+  "SS03-NEW-TEST-1", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
+  "SS03-NEW-TEST-2", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_10;
+  "SS03-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_40;
+  };
 %   "SS03-NEW-TEST-4", h_init_sim_1, h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 % % Simulation set 4 - n_p = 2
 % simulation_set_name = "SS04-NEW-TEST";
 % simulation_set = {
-%   "SS04-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40_2;
-%   };        
 %   "SS04-NEW-TEST-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "SS04-NEW-TEST-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10_2;
+%   "SS04-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40_2;
+%   };        
 %   "SS04-NEW-TEST-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;  
 % % Simulation set 5 - multiple output surfaces
-simulation_set_name = "SS05-NEW-TEST";
-simulation_set = {
-  "SS05-NEW-TEST-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SS05-NEW-TEST-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10;
-  "SS05-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40;
-  };     
+% simulation_set_name = "SS05-NEW-TEST";
+% simulation_set = {
+%   "SS05-NEW-TEST-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS05-NEW-TEST-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10;
+%   "SS05-NEW-TEST-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40;
+%   };     
 %   "SS05-NEW-TEST-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 % % Simulation set 6 - n_MF_out = 2, n_p = 2
 % simulation_set_name = "SS06-NEW-TEST";
@@ -151,7 +151,7 @@ for sim = 1:size(simulation_set,1)
   %% Initialise plotting data
   [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
   m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_t_dw_hist_animate, ...
-  m_scan_hist, a_loc_hist, t_hist, fis_param_hist, obj_hist, s_obj_hist] ...
+  m_scan_hist, a_loc_hist, t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
   = initialise_plotting(m_p_ref, n_x_e, n_y_e, n_x_s, n_y_s, m_f, m_bt, n_a, a_loc, k, fis_params);
 
   %% Define timestep for saving variables
