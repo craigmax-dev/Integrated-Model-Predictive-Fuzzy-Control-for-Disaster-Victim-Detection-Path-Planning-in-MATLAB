@@ -21,7 +21,11 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
     data_type = plots_simSet{i,2};
     flag_plot = plots_simSet{i,3};
     % Labels
-    [lab_title, lab_x, lab_y, ~] = func_plot_labels(data_name);
+    lab_title = '';
+    lab_x = '';
+    lab_y = '';
+    % Retrieve desired labels from label function
+    [~, ~, ~, ~, pos] = func_plot_labels(data_name);
     
     if flag_plot
       % Load data into matrix
@@ -43,6 +47,8 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
         % Legend
         lab_legend{sim} = sim_name;
       end
+      % Array for legend
+      lab_legend_arr = string(lab_legend);
       % Plot
       if data_type == "variable"
         % Figure name
@@ -60,15 +66,21 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
         % Create figure
         f = figure("name", fig_name);
         hold on;
+        % Change legend position
+        pos = [0.5, 0.8, 0.1, 0.1];
         for sim = 1:size(simulation_set,1)
           data(sim, 1:numel(data_obj{sim})) = data_obj{sim};
           axis_t(sim, 1:numel(axis_t_obj{sim})) = axis_t_obj{sim};
         end
         % Relative
         data = data./data(1, :); 
-        % Plot each row
+        % Remove additional elements added to end of vector and plot each row
         for sim = 1:size(simulation_set,1)
-          plot(axis_t(sim, :), data(sim, :));
+          curr_axis = axis_t(sim, :);
+          curr_data = data(sim, :);
+          trim_axis = curr_axis(1:find(curr_axis~=0,1,'last'));
+          trim_data = curr_data(1:length(trim_axis));
+          plot(trim_axis, trim_data);
         end
       elseif data_type == "fis"
         % Iterate through each simulation in set
@@ -89,11 +101,14 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       title(lab_title);
       xlabel(lab_x);
       ylabel(lab_y);
-      lab_legend_arr = string(lab_legend);
-      legend(lab_legend_arr);
+      lab_legend_arr = ["Simulation 1";
+                        "Simulation 2"; 
+                        "Simulation 3"; 
+                        "Simulation 4"];
+      legend(lab_legend_arr, 'position', pos);
     end
   end
-
+    
   %% Save figures as .fig and .jpg files
   fig_list = findobj(allchild(0), "Type", "figure");
   for iFig = 1:length(fig_list)
