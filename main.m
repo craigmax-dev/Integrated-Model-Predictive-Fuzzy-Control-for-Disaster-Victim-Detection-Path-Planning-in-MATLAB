@@ -54,13 +54,13 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % % Simulation set 1
-simulation_set_name = "SS01";
-simulation_set = {
-  "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-  "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10;
-  "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40;
-  "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;  
-  };
+% simulation_set_name = "SS01";
+% simulation_set = {
+%   "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10;
+%   "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40;
+%   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;  
+%   };
 % % Simulation set 2 - n_a = 3
 % simulation_set_name = "SS02";
 % simulation_set = {
@@ -94,13 +94,13 @@ simulation_set = {
 %   "SS05-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   };
 % % Simulation set 6 - n_MF_out = 2, n_p = 2
-% simulation_set_name = "SS06";
-% simulation_set = {
-%   "SS06-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SS06-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10_2;
-%   "SS06-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40_2;
-%   "SS06-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   };
+simulation_set_name = "SS06";
+simulation_set = {
+  "SS06-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SS06-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10_2;
+  "SS06-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40_2;
+  "SS06-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  };
 % % Simulation set 7 - n_MF_out = 2, n_p = 3
 % simulation_set_name = "SS07";
 % simulation_set = {
