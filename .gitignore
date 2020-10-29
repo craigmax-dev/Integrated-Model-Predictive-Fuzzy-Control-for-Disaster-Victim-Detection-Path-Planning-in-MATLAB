@@ -1,2 +1,10 @@
 # Previous simulation result directories 
 simulations/previous
+# Simulation figures
+m_bo*
+m_f_hist*
+m_prior*
+m_scan_hist*
+# Note: ignoring certain file types - can use instead
+# *.json
+# !spec/*.json
