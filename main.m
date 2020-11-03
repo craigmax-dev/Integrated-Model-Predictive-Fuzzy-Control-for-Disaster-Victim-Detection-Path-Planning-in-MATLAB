@@ -1,4 +1,4 @@
-
+ure
 %% Main simulation script
 % Author: Craig Maxwell
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
@@ -9,7 +9,7 @@ clear all
 close all
  
 % Set up folder paths
-addpath('functions', 'data')
+addpath('data', 'functions', 'functions/models', 'functions/initialisation')
 
 %% Define function handles
 % Function handles are used to refer to the different scripts used in the
@@ -124,10 +124,18 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % n_MF_out = 2
 % n_p = 3
 % dk_mpc = 480
-% simulation_set_name = "SP01";
+simulation_set_name = "SP01";
+simulation_set = {
+  "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  };
+
+%  every 5 control timesteps, run mpc - needs simulation initialisation file
+
+% simulation_set_name = "SP02";
 % simulation_set = {
-%   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SP02-4", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_3;
+%   "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
 %   };
 
 %% Tests

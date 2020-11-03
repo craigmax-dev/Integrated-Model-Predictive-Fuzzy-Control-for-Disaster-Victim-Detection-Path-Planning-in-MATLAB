@@ -108,15 +108,15 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       legend(lab_legend_arr, 'position', pos);
     end
   end
-    
+
   %% Save figures as .fig and .jpg files
   fig_list = findobj(allchild(0), "Type", "figure");
   for iFig = 1:length(fig_list)
     h_fig = fig_list(iFig); 
     fig_name   = get(h_fig, "Name");
     exp_fig = strcat(exp_dir, "\", fig_name);
-    savefig(h_fig, strcat(exp_fig, ".fig"));
-    saveas(h_fig, strcat(exp_fig, ".jpg"));
+    exportgraphics(h_fig, strcat(exp_fig, ".fig"));
+    exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
   end
   
 end

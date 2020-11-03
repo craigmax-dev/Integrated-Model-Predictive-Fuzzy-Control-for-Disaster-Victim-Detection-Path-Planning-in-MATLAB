@@ -68,12 +68,12 @@ function [] = plot_simulationData( ...
         close(f);
       elseif data_type == "environment_map"
         imagesc(axis_x_e, axis_y_e, data)
+        colorbar;
       elseif data_type == "search_map"
         imagesc(axis_x_s, axis_y_s, data)
+        colorbar;
       elseif data_type == "variable"
         plot(axis_t_v, data)
-      elseif data_type == "comparison"
-        
       end
     end
   end
