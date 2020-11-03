@@ -1,3 +1,4 @@
+
 %% Main simulation script
 % Author: Craig Maxwell
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
@@ -116,6 +117,17 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS08-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10_3;
 %   "SS08-3", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40_3;
 %   "SS08-4", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_3;
+%   };
+
+%% Paper tests
+% % Simulation 1
+% n_MF_out = 2
+% n_p = 3
+% dk_mpc = 480
+% simulation_set_name = "SP01";
+% simulation_set = {
+%   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP02-4", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_3;
 %   };
 
 %% Tests
