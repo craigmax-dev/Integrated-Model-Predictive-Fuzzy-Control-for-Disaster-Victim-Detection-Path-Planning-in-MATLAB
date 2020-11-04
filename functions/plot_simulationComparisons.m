@@ -115,7 +115,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
     h_fig = fig_list(iFig); 
     fig_name   = get(h_fig, "Name");
     exp_fig = strcat(exp_dir, "\", fig_name);
-    exportgraphics(h_fig, strcat(exp_fig, ".fig"));
+%     exportgraphics(h_fig, strcat(exp_fig, ".fig"));
     exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
   end
   

@@ -1,3 +1,7 @@
+% Initialise simulation for paper simulations
+% dk_mpc  = 60 - equal to 30 control steps - reduced compared to other
+% simulations
+
 function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
   flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
@@ -23,7 +27,7 @@ dt_s    = 5;        % Simulation step size
 dk_a    = 1;        % Agent step size
 dk_c    = 2;        % Control step size
 dk_e    = 12;       % Fire step size
-dk_mpc  = 80;      % MPC step size
+dk_mpc  = 120;      % MPC step size
 dk_prog = 120;      % Progress report step size
 dt_a    = dk_a*dt_s;
 dt_c    = dk_c*dt_s;

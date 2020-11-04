@@ -36,7 +36,6 @@ h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
 h_init_MPC_maxfunceval_10 = @(fisArray, n_a)initialise_MPC_maxfunceval_10(fisArray, n_a);
 h_init_MPC_maxfunceval_40 = @(fisArray, n_a)initialise_MPC_maxfunceval_40(fisArray, n_a);
 h_init_MPC_maxfunceval_100 = @(fisArray, n_a)initialise_MPC_maxfunceval_100(fisArray, n_a);
-h_init_MPC_maxfunceval_200 = @(fisArray, n_a)initialise_MPC_maxfunceval_200(fisArray, n_a);
 
 % MPC with optTermCond = 'MaxFunctionEvaluations'; / n_p = 2
 h_init_MPC_maxfunceval_10_2 = @(fisArray, n_a)initialise_MPC_maxfunceval_10_02(fisArray, n_a);
@@ -127,9 +126,8 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % dk_mpc = 480
 simulation_set_name = "SP01_2";
 simulation_set = {
-  "SP01_2-1", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SP01_2-2", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP01_2-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_200;
+  "SP01-1", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SP01-2", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
   };
 % simulation_set_name = "SP02";
 % simulation_set = {

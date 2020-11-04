@@ -31,14 +31,15 @@ function [s_obj_pred] ...
   m_t_dw    = zeros(n_x_s, n_x_s);
   % Priority map 
   m_prior = zeros(n_x_s, n_y_s);
-      
+  % Range
+  range = 1;
   %% Prediction
   while k_pred <= dk_mpc*n_p
     
     %% Update FIS parameters
-    if k_mpc*dk_mpc < k_pred
-      range = 1 + k_mpc * n_a * n_MF_out * 4;
-      for a=1:n_a
+    if k_mpc*dk_mpc <= k_pred
+%       range = 1 + k_mpc * n_a * n_MF_out * 4;
+      for a = 1:n_a
         for mf = 1:n_MF_out
           newParams = params(range:range+3);
           fisArray(a).Outputs.MembershipFunctions(mf).Parameters = newParams;

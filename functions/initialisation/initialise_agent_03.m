@@ -2,7 +2,7 @@
 % Initialise agent model
 
 % Changes from base initialisation:
-% n_a = 3
+% n_q = 3
 
 function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
@@ -19,7 +19,7 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   l_y_s     = c_f_s(2)*l_y_e;
   % Agent parameters
   n_a           = 2;                % Number of UAVs in simulation
-  n_q           = 2;                % Queue length for UAV tasks
+  n_q           = 3;                % Queue length for UAV tasks
   v_as          = 5;                % UAV airspeed (m/s)
   a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
   t_scan_m      = 0.1;              % Scan time per square metre

@@ -33,11 +33,11 @@ function [fisArray, ini_params, fis_param_hist] = ...
   if solver == "fminsearch"
     [mpc_params, ~] = fminsearch(h_MPC, ini_params, options);
   elseif solver == "ga"
-    [mpc_params,~] = ga(h_MPC, nvars, A, b, Aeq, beq, lb, ub, nonlcon, options);   
+    [mpc_params, ~] = ga(h_MPC, nvars, A, b, Aeq, beq, lb, ub, nonlcon, options);   
   elseif solver == "patternsearch"
-    [mpc_params,~] = patternsearch(h_MPC, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, options);   
+    [mpc_params, ~] = patternsearch(h_MPC, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, options);   
   elseif solver == "particleswarm"
-    [mpc_params,~] = particleswarm(h_MPC, nvars, lb, ub, options);   
+    [mpc_params, ~] = particleswarm(h_MPC, nvars, lb, ub, options);   
   end
   % Update FIS Parameters
   range = 1;

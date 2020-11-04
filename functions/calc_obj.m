@@ -44,7 +44,7 @@ function [s_obj, obj] = calc_obj(...
     % Sum of objective over time
     s_obj = s_obj + obj;
     % Add to obj_fun_scaling
-    if test_obj_sensitivity    
+%     if test_obj_sensitivity    
 %       test_obj_sensitivity = [test_obj_sensitivity; [m_P_bo, m_P_fo]];      
-    end
+%     end
 end
