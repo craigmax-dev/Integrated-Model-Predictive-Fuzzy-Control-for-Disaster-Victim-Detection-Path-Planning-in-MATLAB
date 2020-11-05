@@ -34,7 +34,7 @@ function [s_obj_pred] ...
   % Range
   range = 1;
   %% Prediction
-  while k_pred <= dk_mpc*n_p
+  while k_pred < dk_mpc*n_p
     
     %% Update FIS parameters
     if k_mpc*dk_mpc <= k_pred

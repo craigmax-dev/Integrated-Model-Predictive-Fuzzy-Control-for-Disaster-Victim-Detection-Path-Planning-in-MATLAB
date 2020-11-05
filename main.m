@@ -56,13 +56,13 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % Simulation set 1
-% simulation_set_name = "SS01";
+% simulation_set_name = "SS01-BUGFIX-MPC-01";
 % simulation_set = {
-%   "SS01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SS01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10;
-%   "SS01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40;
-%   "SS01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;  
+%   "SS01-BUGFIX-MPC-01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SS01-BUGFIX-MPC-01-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10;
+%   "SS01-BUGFIX-MPC-01-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_40;
 %   };
+%   "SS01-BUGFIX-MPC-01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 % % Simulation set 2 - n_a = 3
 % simulation_set_name = "SS02";
 % simulation_set = {
@@ -125,18 +125,19 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % n_MF_out = 2
 % n_p = 3
 % dk_mpc = 480
-simulation_set_name = "SP01_2";
-simulation_set = {
-  "SP01_2-1", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SP01_2-2", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP01_2-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_200;
-  };
-% simulation_set_name = "SP02";
+% every 5 control timesteps, run mpc - needs simulation initialisation file
+% simulation_set_name = "SP01_TEST_MPC_BUG";
 % simulation_set = {
-%   "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP01_TEST_MPC_BUG-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP01_TEST_MPC_BUG-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP01_TEST_MPC_BUG-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   };
-%  every 5 control timesteps, run mpc - needs simulation initialisation file
+simulation_set_name = "SP02";
+simulation_set = {
+  "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  };
 
 %% Tests
 % % Solver test
