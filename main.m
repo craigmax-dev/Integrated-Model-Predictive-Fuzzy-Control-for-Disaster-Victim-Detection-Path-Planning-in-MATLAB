@@ -14,10 +14,13 @@ addpath('data', 'functions', 'functions/models', 'functions/initialisation')
 % Function handles are used to refer to the different scripts used in the
 % simulations
 
-% Simulation variables
+% Simulation variables - different mpc step sizes
 h_init_sim_1 = @()initialise_simulation();
 h_init_sim_2 = @()initialise_simulation_2();
 h_init_sim_3 = @()initialise_simulation_3();
+h_init_sim_4 = @()initialise_simulation_4();
+h_init_sim_5 = @()initialise_simulation_5();
+
 h_init_env_1 = @(dt_e, k)initialise_environment_01(dt_e, k);
 
 % Agent with n_a = 2, n_q = 2/n_a = 3, n_q = 2/n_a = 2, n_q = 3 respectively
@@ -64,12 +67,12 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   };
 %   "SS01-BUGFIX-MPC-01-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 % % Simulation set 2 - n_a = 3
-% simulation_set_name = "SS02";
+% simulation_set_name = "SS02_RERUN_1";
 % simulation_set = {
-%   "SS02-1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
-%   "SS02-2", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_10;
-%   "SS02-3", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_40;
-%   "SS02-4", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_100;  
+%   "SS02-1_RERUN_1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
+%   "SS02-2_RERUN_1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_10;
+%   "SS02-3_RERUN_1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_40;
+%   "SS02-4_RERUN_1", h_init_sim_1, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_100;  
 %   };
 % Simulation set 3 - n_q = 3
 % simulation_set_name = "SS03";
@@ -88,12 +91,12 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS04-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;  
 %   };        
 % % Simulation set 5 - multiple output surfaces
-% simulation_set_name = "SS05";
+% simulation_set_name = "SS05_RERUN_1";
 % simulation_set = {
-%   "SS05-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SS05-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10;
-%   "SS05-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40;
-%   "SS05-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SS05_RERUN_1-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS05_RERUN_1-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10;
+%   "SS05_RERUN_1-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_40;
+%   "SS05_RERUN_1-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   };
 % % Simulation set 6 - n_MF_out = 2, n_p = 2
 % simulation_set_name = "SS06";
@@ -126,17 +129,44 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % n_p = 3
 % dk_mpc = 480
 % every 5 control timesteps, run mpc - needs simulation initialisation file
-% simulation_set_name = "SP01_TEST_MPC_BUG";
+% simulation_set_name = "SP01";
 % simulation_set = {
-%   "SP01_TEST_MPC_BUG-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SP01_TEST_MPC_BUG-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP01_TEST_MPC_BUG-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   };
-simulation_set_name = "SP02";
+% simulation_set_name = "SP02";
+% simulation_set = {
+%   "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   };
+% simulation_set_name = "SP03";
+% simulation_set = {
+%   "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   };
+
+% Simulation init 1 - 240
+% Simulation init 2 - 480
+% Simulation init 3 - 120
+% Simulation init 4 - 600
+% Simulation init 5 - 
+
+simulation_set_name = "paper_plot";
 simulation_set = {
-  "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  "SP03-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  "SP03-3", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
   "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP03-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+  "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
   };
 
 %% Tests

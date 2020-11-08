@@ -101,10 +101,22 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       title(lab_title);
       xlabel(lab_x);
       ylabel(lab_y);
-      lab_legend_arr = ["Simulation 1";
-                        "Simulation 2"; 
-                        "Simulation 3"; 
-                        "Simulation 4"];
+%       lab_legend_arr = ["Simulation 1";
+%                         "Simulation 2"; 
+%                         "Simulation 3"; 
+%                         "Simulation 4"];
+      lab_legend_arr = ["Control";
+                        "n_p = 1, dk_{mpc} = 120"; 
+                        "n_p = 1, dk_{mpc} = 240"; 
+                        "n_p = 1, dk_{mpc} = 480"; 
+                        "n_p = 1, dk_{mpc} = 600"; 
+                        "n_p = 1, dk_{mpc} = 900"; 
+                        "n_p = 2, dk_{mpc} = 120"; 
+                        "n_p = 2, dk_{mpc} = 240"; 
+                        "n_p = 2, dk_{mpc} = 480";
+                        "n_p = 2, dk_{mpc} = 600";
+                        "n_p = 1, dk_{mpc} = 900"]; 
+                      
       legend(lab_legend_arr, 'position', pos);
     end
   end
