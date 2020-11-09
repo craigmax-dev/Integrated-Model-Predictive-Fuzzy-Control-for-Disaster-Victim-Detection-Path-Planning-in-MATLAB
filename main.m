@@ -207,21 +207,6 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   }; 
 % TO DO: complete
 
-%% BUG SIM
-simulation_set_name = "SB01";
-simulation_set = {
-  "SB01-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_10;
-  };
-% differences in s_obj and prediction
-% s_obj_pred        s_obj             difference
-% 2078445     -     2001051     =     77394
-% 3436354     -     3267273     =     169081
-% 4024496     -     3876045     =     148451
-% 4137867     -     4083942     =     53925
-
-k_pred = 0;
-% s_m_f = 0;
-
 for sim = 1:size(simulation_set,1)
   % Export folder for simulation
   simulation_name = simulation_set{sim, 1};
@@ -288,7 +273,7 @@ for sim = 1:size(simulation_set,1)
     p3        = p3_i*linspace(1-r_sens, 1+r_sens, n_sens_3);
     p4        = p4_i*linspace(1-r_sens, 1+r_sens, n_sens_4);
   end
-
+  
   %% Simulation
   while flag_finish == false
     % Start timer
@@ -296,15 +281,12 @@ for sim = 1:size(simulation_set,1)
     %% MPC
     if flag_mpc 
       if k_mpc*dk_mpc <= k
-        obj_pred = 0;
-
-        [fisArray, ini_params, fis_param_hist, obj_pred] = ...
+        [fisArray, ini_params, fis_param_hist] = ...
           model_MPC_module_02(fisArray, ini_params, fis_param_hist, ...
           solver, options, n_a, n_MF_out, ...
           nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
           test_fis_sensitivity, ...
-          s_obj, obj_pred, ...
-          m_f, m_bo, m_bt, m_s, m_scan, m_t_scan, ...
+          m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, ...
           dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
           n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
           a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
@@ -321,13 +303,13 @@ for sim = 1:size(simulation_set,1)
       % Counter
       k_c = k_c + 1;
       % Path planner
-      a_target = model_pathPlanning(...
+      [a_target, ~] = model_pathPlanning(...
         n_a, a_target, n_q, ...
         n_x_s, n_y_s, l_x_s, l_y_s, ...
         m_scan, m_t_scan, m_t_dw, m_prior, ...
         fisArray, ...
         a_t_trav, a_t_scan, ...
-        ang_w, v_as, v_w, test_fis_sensitivity); 
+        ang_w, v_as, v_w, test_fis_sensitivity, []);   
     end
 
     %% Agent actions

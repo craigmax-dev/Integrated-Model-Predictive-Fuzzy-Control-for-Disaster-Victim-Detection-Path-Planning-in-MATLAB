@@ -16,7 +16,7 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         % Set task to scan
         a_task(a)   = 2;                            
         % Update agent location
-        a_loc(a, :) = a_target(a, :, 1); 
+        a_loc(a, :) = a_target(a, :, 1);
         % Update agent location history
         a_loc_hist    = [a_loc_hist; a_loc(a, :), a, k];        
         % Initialise remaining scantime, using additional time from the travel
