@@ -13,7 +13,7 @@ function [s_obj_pred] ...
           c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
           r_bo, r_fo, fis_data)
   flag_mpc = true;
-  
+      
   %% Variables
   % Counters
   k_pred  = 0;
@@ -87,5 +87,7 @@ function [s_obj_pred] ...
     %% Advance timestep
     k_pred = k_pred + 1;
     k      = k + 1;
-  end  
+  end
+  
+  fprintf("prediction timestep = %.2f \n", k);
 end
