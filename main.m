@@ -154,20 +154,36 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % Simulation init 4 - 600
 % Simulation init 5 - 
 
-simulation_set_name = "paper_plot";
-simulation_set = {
-  "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP03-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP03-3", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-  "SP03-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-  "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-  "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-  "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-  };
+% simulation_set_name = "paper_plot";
+% simulation_set = {
+%   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP03-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP03-3", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP03-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
+%   };
+
+% SP04 - n_out = 1
+% simulation_set_name = "SP04";
+% simulation_set = {
+%   "SP04-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
+%   "SP04-2", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
+%   "SP04-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
+%   "SP04-4", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
+%   "SP04-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
+%   "SP04-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
+%   "SP04-7", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
+%   "SP04-8", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
+%   "SP04-9", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
+%   "SP04-10", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
+%   "SP04-11", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
+%   };
 
 %% Tests
 % % Solver test
@@ -257,20 +273,20 @@ for sim = 1:size(simulation_set,1)
     p3        = p3_i*linspace(1-r_sens, 1+r_sens, n_sens_3);
     p4        = p4_i*linspace(1-r_sens, 1+r_sens, n_sens_4);
   end
-
+  
   %% Simulation
   while flag_finish == false
     % Start timer
     t_sim = tic;
     %% MPC
-    if flag_mpc
+    if flag_mpc 
       if k_mpc*dk_mpc <= k
         [fisArray, ini_params, fis_param_hist] = ...
           model_MPC_module_02(fisArray, ini_params, fis_param_hist, ...
           solver, options, n_a, n_MF_out, ...
           nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
           test_fis_sensitivity, ...
-          m_f, m_bo, m_bt, m_s, m_scan, m_t_scan, ...
+          m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, ...
           dk_a, dk_c, dk_e, dk_mpc, dt_s, k, ...
           n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
           a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
@@ -287,13 +303,13 @@ for sim = 1:size(simulation_set,1)
       % Counter
       k_c = k_c + 1;
       % Path planner
-      a_target = model_pathPlanning(...
+      [a_target, ~] = model_pathPlanning(...
         n_a, a_target, n_q, ...
         n_x_s, n_y_s, l_x_s, l_y_s, ...
         m_scan, m_t_scan, m_t_dw, m_prior, ...
         fisArray, ...
         a_t_trav, a_t_scan, ...
-        ang_w, v_as, v_w, test_fis_sensitivity); 
+        ang_w, v_as, v_w, test_fis_sensitivity, []);   
     end
 
     %% Agent actions
