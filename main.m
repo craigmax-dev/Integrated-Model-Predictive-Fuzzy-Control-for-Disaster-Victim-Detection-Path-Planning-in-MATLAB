@@ -134,55 +134,8 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
 %   "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
 %   "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   };
-% simulation_set_name = "SP02";
-% simulation_set = {
-%   "SP02-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
 %   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
 %   "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   };
-% simulation_set_name = "SP03";
-% simulation_set = {
-%   "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   };
-
-% Simulation init 1 - 240
-% Simulation init 2 - 480
-% Simulation init 3 - 120
-% Simulation init 4 - 600
-% Simulation init 5 - 
-
-% simulation_set_name = "paper_plot";
-% simulation_set = {
-%   "SP01-1", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SP01-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP03-2", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP01-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP03-3", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP03-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-%   "SP02-3", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   "SP03-4", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   "SP02-2", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   "SP03-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   "SP03-7", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
-%   };
-
-% SP04 - n_out = 1
-% simulation_set_name = "SP04";
-% simulation_set = {
-%   "SP04-1", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   "SP04-2", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
-%   "SP04-3", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
-%   "SP04-4", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
-%   "SP04-5", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
-%   "SP04-6", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100;
-%   "SP04-7", h_init_sim_3, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
-%   "SP04-8", h_init_sim_1, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
-%   "SP04-9", h_init_sim_2, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
-%   "SP04-10", h_init_sim_4, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
-%   "SP04-11", h_init_sim_5, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_100_2;
 %   };
 
 %% Tests
