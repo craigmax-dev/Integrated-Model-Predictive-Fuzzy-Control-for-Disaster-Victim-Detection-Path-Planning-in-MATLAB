@@ -3,7 +3,7 @@
 
 function [cmap, cmap_axis] = func_plot_colormaps(data_name, multiplot)
   if multiplot
-    cmap = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d", "#666666"];
+    cmap = ["#1b9e77', '#d95f02', '#7570b3', 'e7298a', '#66a61e', '#e6ab02'];
     cmap_axis = [];
   elseif data_name == "m_f_hist_animate"
     cmap  = [ 1,   1,   1;    % 0

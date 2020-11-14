@@ -29,8 +29,8 @@ function [] = plot_simulationData( ...
     data      = simulation_plots{i,2};
     data_type = simulation_plots{i,3};
     flag_plot = simulation_plots{i,4};
-    [lab_title, lab_x, lab_y, lab_legend] = func_plot_labels(data_name);
-    [cmap, cmap_axis] = func_plot_colormaps(data_name);
+    [lab_title, lab_x, lab_y, lab_legend, lab_cmap, ~, ~] = func_plot_labels(data_name, data_type);
+    [cmap, cmap_axis] = func_plot_colormaps(data_name, false);
     
     if flag_plot == true
       % Create figure
@@ -68,12 +68,24 @@ function [] = plot_simulationData( ...
         close(f);
       elseif data_type == "environment_map"
         imagesc(axis_x_e, axis_y_e, data)
-        colorbar;
+        xlabel(lab_x, 'Interpreter', 'latex');
+        ylabel(lab_y, 'Interpreter', 'latex');
+        c = colorbar;
+        c.Label.String = lab_cmap;
+        c.Label.Interpreter = 'latex';
+        c.Label.Rotation = 0;
       elseif data_type == "search_map"
         imagesc(axis_x_s, axis_y_s, data)
-        colorbar;
+        xlabel(lab_x, 'Interpreter', 'latex');
+        ylabel(lab_y, 'Interpreter', 'latex');
+        c = colorbar;
+        c.Label.String = lab_cmap;
+        c.Label.Interpreter = 'latex';
+        c.Label.Rotation = 0;
       elseif data_type == "variable"
         plot(axis_t_v, data)
+        xlabel(lab_x, 'Interpreter', 'latex');
+        ylabel(lab_y, 'Interpreter', 'latex');
       end
     end
   end
@@ -83,8 +95,7 @@ function [] = plot_simulationData( ...
     h_fig = fig_list(iFig); 
     fig_name   = get(h_fig, "Name");
     exp_fig = strcat(exp_folder, "\", fig_name);
-    savefig(h_fig, strcat(exp_fig, ".fig"));
-    saveas(h_fig, strcat(exp_fig, ".jpg"));
+    exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
   end
 end
   

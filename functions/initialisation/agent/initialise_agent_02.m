@@ -25,8 +25,7 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   t_scan_m      = 0.1;              % Scan time per square metre
   a_task        = 2.*ones(n_a, 1);% Current task for UAVs
   a_loc         = [ 1, 1;
-                    1, 2;
-                    1, 3];          % Current locations of UAVs
+                    1, 2];          % Current locations of UAVs
   % Agent targets
   a_target        = nan(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;

@@ -10,8 +10,6 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
   if(~exist(exp_dir, 'dir'))
     mkdir(exp_dir)
   end
-  % Color map
-  [cmap, ~] = func_plot_colormaps('', true);
   % Make sure default formatter is latex
   set(groot, 'defaultLegendInterpreter','latex');
   opengl software
@@ -27,7 +25,8 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
     lab_x = '';
     lab_y = '';
     % Retrieve desired labels from label function
-    [~, lab_x, lab_y, ~, ~, pos, ylimits,] = func_plot_labels(data_name, data_type);
+    [~, lab_x, lab_y, ~, pos, ylimits] = func_plot_labels(data_name);
+    % Color map
     if flag_plot
       % Load data into matrix
       for sim = 1:size(simulation_set,1)
@@ -77,20 +76,15 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
         data = data./data(1, :); 
         % Remove additional elements added to end of vector and plot each row
         for sim = 1:size(simulation_set,1)
-          % Temp solution - define line styles for simulations
-          if sim <= 4
-            lineStyle = "-";
-            colour = sim;
-          else
-            lineStyle = "--";
-            colour = sim - 3;
-          end
-            
           curr_axis = axis_t(sim, :);
           curr_data = data(sim, :);
           trim_axis = curr_axis(1:find(curr_axis~=0,1,'last'));
           trim_data = curr_data(1:length(trim_axis));
-          plot(trim_axis, trim_data, 'LineWidth', 1.5, 'color', cmap(colour), 'LineStyle', lineStyle);
+          if(data_name == 's_obj_hist')
+            plot(trim_axis, trim_data, 'LineWidth', 1.5);
+          else            
+            plot(trim_axis, trim_data, 'LineWidth', 1.2);
+          end
         end
       elseif data_type == "fis"
         % Iterate through each simulation in set
@@ -120,8 +114,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
                         "$$n_p = 1, \Delta k_{mpc} = 100$$"; 
                         "$$n_p = 2, \Delta k_{mpc} = 10$$"; 
                         "$$n_p = 2, \Delta k_{mpc} = 50$$"; 
-                        "$$n_p = 2, \Delta k_{mpc} = 100$$"];      
-      legend(lab_legend_arr, 'position', pos);
+                        "$$n_p = 2, \Delta k_{mpc} = 100$$"];      legend(lab_legend_arr, 'position', pos);
       legend('boxoff');
     end
   end
