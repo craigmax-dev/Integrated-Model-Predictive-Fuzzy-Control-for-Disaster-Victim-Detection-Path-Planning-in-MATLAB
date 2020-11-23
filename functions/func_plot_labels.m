@@ -38,7 +38,7 @@ function [lab_title, lab_x, lab_y, lab_legend, lab_cmap, pos, ylimits] = func_pl
     lab_x = "Latitude";
     lab_y = "Longitude";
     lab_legend = "Ignition time (s)";
-    lab_cmap = "$$t_{i}$$";
+    lab_cmap = "$$t_{ig}$$";
     pos = pos_topRight;
   elseif data_name == "m_scan_hist"
     lab_title = "Scan time (s)";
@@ -55,9 +55,9 @@ function [lab_title, lab_x, lab_y, lab_legend, lab_cmap, pos, ylimits] = func_pl
     pos = pos_topRight;
   elseif data_name == "s_obj_hist"
     if data_type == "variable"
-      lab_y = '$$\sum_{k=0}^{t/dt_s} J $$';
+      lab_y = '$$\sum_{k=0}^{k_{f}} J $$';
     elseif data_type == "relative"
-      lab_y = '$$\frac{\sum_{k=0}^{t/dt_s}J_{n}}{\sum_{k=0}^{t/dt_s}J_{1}}$$';
+      lab_y = '$$\frac{\sum_{k=0}^{k_{f}}J_{n}}{\sum_{k=0}^{k_{f}}J_{1}}$$';
     end
     lab_title = "Objective function sum over simulation";
     lab_x = '$t(s)$';

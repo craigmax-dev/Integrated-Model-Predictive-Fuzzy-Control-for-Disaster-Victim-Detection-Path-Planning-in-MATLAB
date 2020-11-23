@@ -114,13 +114,14 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       xlabel(lab_x, 'Interpreter', 'latex');
       y = ylabel(lab_y, 'Interpreter', 'latex', 'rotation', 0);
       set(y, 'position', get(y,'position')-[200,0,0]); 
-      lab_legend_arr = ["Control";
-                        "$$n_p = 1, \Delta k_{mpc} = 10$$"; 
-                        "$$n_p = 1, \Delta k_{mpc} = 50$$"; 
-                        "$$n_p = 1, \Delta k_{mpc} = 100$$"; 
-                        "$$n_p = 2, \Delta k_{mpc} = 10$$"; 
-                        "$$n_p = 2, \Delta k_{mpc} = 50$$"; 
-                        "$$n_p = 2, \Delta k_{mpc} = 100$$"];      
+      lab_legend_arr = ["1: Control";
+                        "2: $$n_p = 1, n_{mpc} = 10$$"; 
+                        "3: $$n_p = 1, n_{mpc} = 50$$"; 
+                        "4: $$n_p = 1, n_{mpc} = 100$$"; 
+                        "5: $$n_p = 2, n_{mpc} = 10$$"; 
+                        "6: $$n_p = 2, n_{mpc} = 50$$"; 
+                        "7: $$n_p = 2, n_{mpc} = 100$$";
+                        ];      
       legend(lab_legend_arr, 'position', pos);
       legend('boxoff');
     end
