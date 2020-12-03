@@ -1,11 +1,11 @@
 % Function to compare results from simulations
-function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
-  simulation_set, simulation_set_name)
+function [] = plot_simulationComparisons(plots_simSet, exp_dir, ...
+  simulation_set, simulation_set_name, simulation_set_names)
 
   % Close any open figures
   close all
   % Export directory address
-  exp_dir = strcat(exp_route, "/", simulation_set_name);
+  exp_dir = strcat(exp_dir, "/", simulation_set_name);
   % Create save directory
   if(~exist(exp_dir, 'dir'))
     mkdir(exp_dir)
@@ -33,7 +33,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       for sim = 1:size(simulation_set,1)
         % Get files
         sim_name = simulation_set{sim, 1};        
-        sim_route = strcat(exp_route, ...
+        sim_route = strcat(exp_dir, ...
                               "\", sim_name, ...
                               "\", sim_name, ".mat");
         data_struct = load(sim_route, data_name, "t_hist");
@@ -90,7 +90,8 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
           curr_data = data(sim, :);
           trim_axis = curr_axis(1:find(curr_axis~=0,1,'last'));
           trim_data = curr_data(1:length(trim_axis));
-          plot(trim_axis, trim_data, 'LineWidth', 1.5, 'color', cmap(colour), 'LineStyle', lineStyle);
+          plot(trim_axis, trim_data, 'LineWidth', 1.5, 'LineStyle', lineStyle);
+%           plot(trim_axis, trim_data, 'LineWidth', 1.5, 'color', cmap(colour), 'LineStyle', lineStyle);
         end
       elseif data_type == "fis"
         % Iterate through each simulation in set
@@ -114,15 +115,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_route, ...
       xlabel(lab_x, 'Interpreter', 'latex');
       y = ylabel(lab_y, 'Interpreter', 'latex', 'rotation', 0);
       set(y, 'position', get(y,'position')-[200,0,0]); 
-      lab_legend_arr = ["1: Control";
-                        "2: $$n_p = 1, n_{mpc} = 10$$"; 
-                        "3: $$n_p = 1, n_{mpc} = 50$$"; 
-                        "4: $$n_p = 1, n_{mpc} = 100$$"; 
-                        "5: $$n_p = 2, n_{mpc} = 10$$"; 
-                        "6: $$n_p = 2, n_{mpc} = 50$$"; 
-                        "7: $$n_p = 2, n_{mpc} = 100$$";
-                        ];      
-      legend(lab_legend_arr, 'position', pos);
+      legend(simulation_set_names, 'position', pos);
       legend('boxoff');
     end
   end

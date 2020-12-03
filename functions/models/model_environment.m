@@ -35,7 +35,7 @@
 function [m_f, m_f_hist, m_f_hist_animate, m_t_dw_hist_animate, ...
   m_bt, m_t_dw] = model_environment(...
   m_f, m_f_hist, m_f_hist_animate, m_t_dw_hist_animate, m_s, m_bo, m_bt, ...
-  dt_e, k, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
+  dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc)
 
 %% Initialise variables
   t_i = 120;              % Ignition time (s)
@@ -50,7 +50,7 @@ function [m_f, m_f_hist, m_f_hist_animate, m_t_dw_hist_animate, ...
   m_t_dw_temp   = zeros(n_x_e, n_y_e);
 
   % Seed random number generator using timestep fore repeatability
-  rng(k); 
+  rng(seed + k); 
 
   %% Calculate W    
   % Wind fire spread probability model
