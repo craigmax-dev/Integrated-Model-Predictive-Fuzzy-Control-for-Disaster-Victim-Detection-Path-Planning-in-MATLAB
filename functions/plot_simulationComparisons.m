@@ -27,7 +27,7 @@ function [] = plot_simulationComparisons(plots_simSet, exp_dir, ...
     lab_x = '';
     lab_y = '';
     % Retrieve desired labels from label function
-    [~, lab_x, lab_y, ~, ~, pos, ylimits,] = func_plot_labels(data_name, data_type);
+    [~, lab_x, lab_y, ~, ~, pos, ylimits] = func_plot_labels(data_name, data_type);
     if flag_plot
       % Load data into matrix
       for sim = 1:size(simulation_set,1)

@@ -1,4 +1,4 @@
-%% Main simulation script
+ %% Main simulation script
 % Author: Craig Maxwell
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
