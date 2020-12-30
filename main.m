@@ -189,14 +189,14 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % Simulation set 7 - average performance by randomising rng seeding - think
 % about how to do this - may need to write another script which calls main.m
 % multiple times
-simulation_set_name = "SS07";
-simulation_set = {
-  "SS07-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SS07-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;
-  };
-numIterations = 10;
+% simulation_set_name = "SS07";
+% simulation_set = {
+%   "SS07-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS07-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;
+%   };
+% numIterations = 10;
 
-%% Tests
+%% Tests - currently incomplete
 % % Solver test
 % simulation_set_name = "ST01-SOLVER";
 % simulation_set = {
@@ -205,6 +205,7 @@ numIterations = 10;
 %   "ST01-3", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_particleswarm;
 %   "ST01-4", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_SOLV_patternsearch;
 %   };
+
 % % FIS sensitivity
 % simulation_set_name = "ST02-FIS-SENSITIVITY";
 
@@ -216,9 +217,6 @@ numIterations = 10;
 %   "ST03-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "ST03-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   }; 
-% TO DO: complete
-
-    
 
 for iteration = 1:numIterations
   % Set seed for this iteration
@@ -424,5 +422,4 @@ for iteration = 1:numIterations
     };
   % Plotting function
   plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name, simulation_set_names);
-
 end
