@@ -94,6 +94,11 @@ for plt = 1:size(plots_simSet, 1)
     "Sim 9"; 
     "Sim 10"; 
     ];
+  
+%   lab_legend = [
+%     "$$n_{\text{mpc}} = 10$$";
+%     ];
+  
   legend(lab_legend);
   legend('boxoff');
   axis([0 8000 -inf inf])

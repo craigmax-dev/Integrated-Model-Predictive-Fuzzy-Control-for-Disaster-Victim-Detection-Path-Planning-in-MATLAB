@@ -189,12 +189,14 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 % Simulation set 7 - average performance by randomising rng seeding - think
 % about how to do this - may need to write another script which calls main.m
 % multiple times
-% simulation_set_name = "SS07";
-% simulation_set = {
-%   "SS07-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-%   "SS07-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;
-%   };
-% numIterations = 10;
+simulation_set_name = "SS08";
+simulation_set = {
+  "SS08-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+  "SS08-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+  "SS08-3", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;  
+  };
+
+numIterations = 10;
 
 %% Tests - currently incomplete
 % % Solver test
@@ -387,23 +389,23 @@ for iteration = 1:numIterations
 
     % Simulation figures
     if flag_fig_sim
-      % Generate and export figures 
-      simulation_plots = {
-        "m_f_hist_animate", m_f_hist_animate, "animate", false;
-        "m_t_dw_hist_animate", m_t_dw_hist_animate, "animate", false;
-        "m_bo", m_bo, "environment_map", false;
-        "m_prior", m_prior, "search_map", false;
-        "m_f_hist", m_f_hist, "environment_map", true;
-        "m_scan_hist", m_scan_hist, "search_map", false;
-        "obj_hist", obj_hist, "variable", false;
-        "s_obj_hist", s_obj_hist, "variable", false;
-        "a_loc_hist", a_loc_hist, "agent", false;
-        "fis_param_hist", fis_param_hist, "fis", false;
-      };
-
-      plot_simulationData( simulation_plots, exp_folder, ...
-                  axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-                  t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
+%       % Generate and export figures 
+%       simulation_plots = {
+%         "m_f_hist_animate", m_f_hist_animate, "animate", false;
+%         "m_t_dw_hist_animate", m_t_dw_hist_animate, "animate", false;
+%         "m_bo", m_bo, "environment_map", false;
+%         "m_prior", m_prior, "search_map", false;
+%         "m_f_hist", m_f_hist, "environment_map", true;
+%         "m_scan_hist", m_scan_hist, "search_map", false;
+%         "obj_hist", obj_hist, "variable", false;
+%         "s_obj_hist", s_obj_hist, "variable", false;
+%         "a_loc_hist", a_loc_hist, "agent", false;
+%         "fis_param_hist", fis_param_hist, "fis", false;
+%       };
+% 
+%       plot_simulationData( simulation_plots, exp_folder, ...
+%                   axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
+%                   t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
     end
 
     % Export data 
@@ -412,14 +414,14 @@ for iteration = 1:numIterations
       save(exp_file)
     end
   end
-  % Plot settings
-  plots_simSet = { 
-    "obj_hist", "variable", true;
-    "obj_hist", "relative", true;
-    "s_obj_hist", "variable", true;
-    "s_obj_hist", "relative", true;
-    "fis_param_hist", "fis", true;
-    };
-  % Plotting function
-  plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name, simulation_set_names);
+%   % Plot settings
+%   plots_simSet = { 
+%     "obj_hist", "variable", true;
+%     "obj_hist", "relative", true;
+%     "s_obj_hist", "variable", true;
+%     "s_obj_hist", "relative", true;
+%     "fis_param_hist", "fis", true;
+%     };
+%   % Plotting function
+%   plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name, simulation_set_names);
 end
