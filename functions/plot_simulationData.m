@@ -9,7 +9,7 @@
 function [] = plot_simulationData( ...
                 simulation_plots, exp_folder, ...
                 axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
+                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s)
                       
 	% Close any open figures
   close all
@@ -67,6 +67,9 @@ function [] = plot_simulationData( ...
          end
         close(f);
       elseif data_type == "environment_map"
+        if data_name == "m_f_hist"
+          data = dt_s.*data;
+        end
         imagesc(axis_x_e, axis_y_e, data)
         xlabel(lab_x, 'Interpreter', 'latex');
         ylabel(lab_y, 'Interpreter', 'latex');

@@ -3,15 +3,6 @@
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
 
-% lab_legend_arr = ["1: Control";
-%                   "2: $$n_p = 1, n_{mpc} = 10$$"; 
-%                   "3: $$n_p = 1, n_{mpc} = 50$$"; 
-%                   "4: $$n_p = 1, n_{mpc} = 100$$"; 
-%                   "5: $$n_p = 2, n_{mpc} = 10$$"; 
-%                   "6: $$n_p = 2, n_{mpc} = 50$$"; 
-%                   "7: $$n_p = 2, n_{mpc} = 100$$";
-%                   ];      
-
 % Clear workspace
 clear all
 close all
@@ -23,7 +14,6 @@ addpath('data', ...
   'functions/initialisation/simulation', ...
   'functions/initialisation/plotting', ...
   'functions/initialisation/pathPlanning', ...
-  'functions/initialisation/mpc', ...
   'functions/initialisation/mpc', ...
   'functions/initialisation/environment', ...
   'functions/initialisation/agent');
@@ -70,6 +60,7 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %% Simulations initialising MPC with pre-tuned parameters and using max function evaluation limit
 % Simulation set 1
 % simulation_set_name = "SS01";
+% multiSim = false;
 % simulation_set = {
 %   "SS01-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "SS01-2", h_init_sim_10, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_50;
@@ -80,16 +71,18 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS01-7", h_init_sim_100, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_maxfunceval_50_2;
 %   };
 % simulation_set_names = [
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   "Simulation 4";
+%   "Simulation 5";
+%   "Simulation 6";
+%   "Simulation 7";
 %   ];
+%  
 % Simulation set 2 - n_q = 3
 % simulation_set_name = "SS02";
+% multiSim = false;
 % simulation_set = {
 %   "SS02-1", h_init_sim_50, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_1;
 %   "SS02-2", h_init_sim_10, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_50;
@@ -100,16 +93,17 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS02-7", h_init_sim_100, h_init_env_1, h_init_agt_2, h_init_pp_1, h_init_MPC_maxfunceval_50_2;
 %   };
 % simulation_set_names = [
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   "Simulation 4";
+%   "Simulation 5";
+%   "Simulation 6";
+%   "Simulation 7";
 %   ];
 % Simulation set 3 - n_a = 3
 % simulation_set_name = "SS03";
+% multiSim = false;
 % simulation_set = {
 %   "SS03-1", h_init_sim_50,   h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_1;
 %   "SS03-2", h_init_sim_10,  h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_50;
@@ -120,16 +114,17 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS03-7", h_init_sim_100,   h_init_env_1, h_init_agt_3, h_init_pp_1, h_init_MPC_maxfunceval_50_2;
 %   };
 % simulation_set_names = [
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   "Simulation 4";
+%   "Simulation 5";
+%   "Simulation 6";
+%   "Simulation 7";
 %   ];
 % Simulation set 4 - n_mf_out = 2
 % simulation_set_name = "SS04";
+% multiSim = false;
 % simulation_set = {
 %   "SS04-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
 %   "SS04-2", h_init_sim_10, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50;
@@ -142,18 +137,60 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS04-9", h_init_sim_200, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;
 %   };
 % simulation_set_names = [
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   "Simulation 4";
+%   "Simulation 5";
+%   "Simulation 6";
+%   "Simulation 7";
+%   "Simulation 8";
+%   "Simulation 9";
 %   ];
+% simulation_set_name = "SS04-comp-1";
+% multiSim = false;
+% simulation_set = {
+%   "SS01-1";
+%   "SS01-2";
+%   "SS01-3";
+%   "SS01-4";
+%   "SS04-2";
+%   "SS04-3";
+%   "SS04-4";
+%   };
+% simulation_set_names = [
+%   "SS01-1";
+%   "SS01-5";
+%   "SS01-6";
+%   "SS01-7";
+%   "SS04-5";
+%   "SS04-6";
+%   "SS04-7";
+%   ];
+% simulation_set_name = "SS04-comp-2";
+% multiSim = false;
+% simulation_set = {
+%   "SS01-1";
+%   "SS01-5";
+%   "SS01-6";
+%   "SS01-7";
+%   "SS04-5";
+%   "SS04-6";
+%   "SS04-7";
+%   };
+% simulation_set_names = [
+%   "SS01-1";
+%   "SS01-2";
+%   "SS01-3";
+%   "SS01-4";
+%   "SS04-2";
+%   "SS04-3";
+%   "SS04-4";
+%   ];
+
 % Simulation set 5 - number of function evaluations
 % simulation_set_name = "SS05";
+% multiSim = false;
 % simulation_set = {
 %   "SS05-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
 %   "SS05-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_10;
@@ -164,16 +201,17 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "SS05-7", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100_2;
 %   };
 % simulation_set_names = [
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
-%   "";
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   "Simulation 4";
+%   "Simulation 5";
+%   "Simulation 6";
+%   "Simulation 7";
 %   ];
-% Simulation set 6 - with and without active fire 
+% % Simulation set 6 - with and without active fire 
 % simulation_set_name = "SS06";
+% multiSim = false;
 % simulation_set = {
 %   "SS06-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
 %   "SS06-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50;
@@ -186,17 +224,62 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 %   "Fire model not active, FIS";
 %   "Fire model not active, MPFC";
 %   ];
+% simulation_set_name = "SS06-part1";
+% multiSim = false;
+% simulation_set = {
+%   "SS06-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS06-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50;
+%   };
+% simulation_set_names = [
+%   "Simulation 1";
+%   "Simulation 2";
+%   ];
+% simulation_set_names = [
+%   "Fire model active, FIS";
+%   "Fire model active, MPFC";
+%   ];
+% simulation_set_name = "SS06-part2";
+% multiSim = false;
+% simulation_set = {
+%   "SS06-3", h_init_sim_50, h_init_env_2, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS06-4", h_init_sim_50, h_init_env_2, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50;
+%   };
+% simulation_set_names = [
+%   "Simulation 1";
+%   "Simulation 2";
+%   ];
+% simulation_set_names = [
+%   "Fire model not active, FIS";
+%   "Fire model not active, MPFC";
+%   ];
+
 % Simulation set 7 - average performance by randomising rng seeding - think
 % about how to do this - may need to write another script which calls main.m
 % multiple times
-simulation_set_name = "SS08";
-simulation_set = {
-  "SS08-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
-  "SS08-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
-  "SS08-3", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;  
-  };
-
-numIterations = 10;
+% simulation_set_name = "SS07";
+% multiSim = true;
+% numIterations = 10;
+% simulation_set = {
+%   "SS07-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS07-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;  
+%   };
+% simulation_set_names = [
+%   "Simulation 1";
+%   "Simulation 2";
+%   ];
+% simulation_set_name = "SS08";
+% numIterations = 10;
+% multiSim = true;
+% simulation_set = {
+%   "SS08-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_1;
+%   "SS08-2", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_100;
+%   "SS08-3", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_2, h_init_MPC_maxfunceval_50_2;  
+%   };
+% simulation_set_names = [
+%   "Simulation 1";
+%   "Simulation 2";
+%   "Simulation 3";
+%   ];
 
 %% Tests - currently incomplete
 % % Solver test
@@ -218,12 +301,20 @@ numIterations = 10;
 %   "ST03-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "ST03-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
 %   "ST03-1", h_init_sim_50, h_init_env_1, h_init_agt_1, h_init_pp_1, h_init_MPC_1;
-%   }; 
+%   };
+
+if ~multiSim
+  numIterations = 1;
+end
 
 for iteration = 1:numIterations
   % Set seed for this iteration
-  seed = posixtime(datetime('now'));
-  
+  if multiSim
+    seed = posixtime(datetime('now'));
+  else
+    seed = 0;  
+  end
+    
   for sim = 1:size(simulation_set,1)
     % Export folder for simulation
     simulation_name = simulation_set{sim, 1};
@@ -383,29 +474,31 @@ for iteration = 1:numIterations
     t_end = toc(t_sim);
 
     %% Postprocessing
-    simulation_name = strcat(simulation_name, "_iter_", num2str(iteration));
+    if numIterations > 1
+      simulation_name = strcat(simulation_name, "_iter_", num2str(iteration));
+    end
     exp_folder = strcat(exp_dir, "\", simulation_name);
     exp_file = strcat(exp_folder,"\", simulation_name);
 
     % Simulation figures
     if flag_fig_sim
 %       % Generate and export figures 
-%       simulation_plots = {
+      simulation_plots = {
+        "m_f_hist", m_f_hist, "environment_map", true;
+      };
 %         "m_f_hist_animate", m_f_hist_animate, "animate", false;
 %         "m_t_dw_hist_animate", m_t_dw_hist_animate, "animate", false;
 %         "m_bo", m_bo, "environment_map", false;
 %         "m_prior", m_prior, "search_map", false;
-%         "m_f_hist", m_f_hist, "environment_map", true;
 %         "m_scan_hist", m_scan_hist, "search_map", false;
 %         "obj_hist", obj_hist, "variable", false;
 %         "s_obj_hist", s_obj_hist, "variable", false;
 %         "a_loc_hist", a_loc_hist, "agent", false;
 %         "fis_param_hist", fis_param_hist, "fis", false;
-%       };
-% 
-%       plot_simulationData( simulation_plots, exp_folder, ...
-%                   axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-%                   t_f, n_x_s, n_y_s, n_a, ct_v, fisArray)
+
+      plot_simulationData( simulation_plots, exp_folder, ...
+                  axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
+                  t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s)
     end
 
     % Export data 
@@ -414,14 +507,14 @@ for iteration = 1:numIterations
       save(exp_file)
     end
   end
-%   % Plot settings
-%   plots_simSet = { 
-%     "obj_hist", "variable", true;
-%     "obj_hist", "relative", true;
-%     "s_obj_hist", "variable", true;
-%     "s_obj_hist", "relative", true;
-%     "fis_param_hist", "fis", true;
-%     };
-%   % Plotting function
-%   plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name, simulation_set_names);
+  % Plot settings
+  plots_simSet = { 
+    "obj_hist", "variable", true;
+    "obj_hist", "relative", true;
+    "s_obj_hist", "variable", true;
+    "s_obj_hist", "relative", true;
+    "fis_param_hist", "fis", false;
+    };
+  % Plotting function
+  plot_simulationComparisons(plots_simSet, exp_dir, simulation_set, simulation_set_name, simulation_set_names);
 end

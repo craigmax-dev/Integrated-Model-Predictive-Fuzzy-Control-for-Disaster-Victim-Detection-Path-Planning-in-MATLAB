@@ -2,120 +2,135 @@
 function [] = plot_simulationComparisons(plots_simSet, exp_dir, ...
   simulation_set, simulation_set_name, simulation_set_names)
 
+% Plotting improvements
+
+% - cell scan times
+% - cell scan time differences between control simulation and current simulation
+% - fire map
+
+% Simulation specific
+% - Simulation 4 - compare results from one output to two output surfaces
+
+% TO DO LIST
+% Not saving properly
+% plotting/marking of prediction horizon length?
+% remove _iter_ naming of export folders when multisim not active
+% x axis - change nomenclature - use variable defining simulation time.
+% re-run simulation set 1 - results not correct for some reason?
+% why is SS01-1 much lower than other simulations? - ss01 rerun and results are
+% the same. May be a problem with the setup of the simulation - not a problem
+% with plotting as other simulation sets are okay.
+% limit number of decimal places for plot end values?
+% Move legend location definitions to argument for plotting function?
+
   % Close any open figures
   close all
-  % Export directory address
-  exp_dir = strcat(exp_dir, "/", simulation_set_name);
-  % Create save directory
-  if(~exist(exp_dir, 'dir'))
-    mkdir(exp_dir)
-  end
-  % Color map
-  [cmap, ~] = func_plot_colormaps('', true);
   % Make sure default formatter is latex
   set(groot, 'defaultLegendInterpreter','latex');
   opengl software
+  % Data point offsets
+  offset_x = 100;
+  offset_y = 0;
+  xAdjust = 0.06;
+  xLabAdjust = [400,0,0];
+  maxsize = 1;
+
   %% Plotting
   % Iterate through each plot in set
   for i = 1:size(plots_simSet,1)
     % Load data information
-    data_name = plots_simSet{i,1};
-    data_type = plots_simSet{i,2};
+    dataName = plots_simSet{i,1};
+    dataType = plots_simSet{i,2};
     flag_plot = plots_simSet{i,3};
     % Labels
     lab_title = '';
     lab_x = '';
     lab_y = '';
+    % Number of simulations
+    numSimulations = size(simulation_set,1);
     % Retrieve desired labels from label function
-    [~, lab_x, lab_y, ~, ~, pos, ylimits] = func_plot_labels(data_name, data_type);
+    [~, lab_x, lab_y, ~, ~, pos, ylimits] = func_plot_labels(dataName, dataType);
+    % Color map
+    [cmap, ~] = func_plot_colormaps('', true, numSimulations);
     if flag_plot
-      % Load data into matrix
-      for sim = 1:size(simulation_set,1)
-        % Get files
+
+      for sim=1:numSimulations
         sim_name = simulation_set{sim, 1};        
         sim_route = strcat(exp_dir, ...
                               "\", sim_name, ...
                               "\", sim_name, ".mat");
-        data_struct = load(sim_route, data_name, "t_hist");
-        % Extract data
-        fields = fieldnames(data_struct);
-        % Data array
-        new_data = getfield(data_struct, fields{1});
-        data_obj{sim} = new_data;
-        % Time array
-        new_axis = getfield(data_struct, fields{2});
-        axis_t_obj{sim} = new_axis;
-        % Legend
-        lab_legend{sim} = sim_name;
+        data_struct = load(sim_route, dataName);
+
+        data_struct = load(sim_route, dataName);
+        data_raw = getfield(data_struct, dataName);
+        dataSize = size(data_raw, 2);
+        if(size(data_raw, 2) > maxsize)
+          t_data_raw = load(sim_route, "t_hist");
+          t_data = getfield(t_data_raw, "t_hist");
+          maxsize = dataSize; 
+        end    
       end
-      % Array for legend
-      lab_legend_arr = string(lab_legend);
-      % Plot
-      if data_type == "variable"
-        % Figure name
-        fig_name = data_name;
-        % Create figure
-        f = figure("name", fig_name);
-        hold on;
-        for sim = 1:size(simulation_set,1) 
-          % Plot each row
-          plot(axis_t_obj{sim}, data_obj{sim}, 'LineWidth', 2);
+
+      data = NaN(maxsize, numSimulations);
+
+      % Load data into matrix
+      for sim = 1:numSimulations
+        sim_name = simulation_set{sim, 1};        
+        sim_route = strcat(exp_dir, ...
+                              "\", sim_name, ...
+                              "\", sim_name, ".mat");
+        data_struct = load(sim_route, dataName);
+        data_raw = getfield(data_struct, dataName);
+        data(1:length(data_raw),sim) = data_raw;
+      end
+      
+      % Mean data and relative data
+      for sim=1:numSimulations
+        data_rel(:,sim) = data(:,sim)./data(:,1);
+      end
+      
+      if dataType == "variable"
+        plotData = data;
+      elseif dataType == "relative"
+        plotData = data_rel;
+      end
+      
+      % Plot figure
+      figName = strcat(dataName, "_", dataType);
+      figure("name", figName); hold on; grid on;
+      
+      for sim = 1:numSimulations
+        if numSimulations == 2
+          lineStyle = "-";
+          colour = sim;
+        elseif sim <= floor(numSimulations/2)+1
+          lineStyle = "-";
+          colour = sim;
+        else
+          lineStyle = "--";
+          colour = sim - (floor(numSimulations/2));
         end
-      elseif data_type == "relative"
-        % Change data name
-        fig_name = strcat(data_name, "_relative");
-        % Create figure
-        f = figure("name", fig_name);
-        hold on;
-        % Change legend position
-        pos = [0.7, 0.75, 0.1, 0.1];
-        for sim = 1:size(simulation_set,1)
-          data(sim, 1:numel(data_obj{sim})) = data_obj{sim};
-          axis_t(sim, 1:numel(axis_t_obj{sim})) = axis_t_obj{sim};
-        end
-        % Relative
-        data = data./data(1, :); 
-        % Remove additional elements added to end of vector and plot each row
-        for sim = 1:size(simulation_set,1)
-          % Temp solution - define line styles for simulations
-          if sim <= 4
-            lineStyle = "-";
-            colour = sim;
-          else
-            lineStyle = "--";
-            colour = sim - 3;
-          end
-            
-          curr_axis = axis_t(sim, :);
-          curr_data = data(sim, :);
-          trim_axis = curr_axis(1:find(curr_axis~=0,1,'last'));
-          trim_data = curr_data(1:length(trim_axis));
-          plot(trim_axis, trim_data, 'LineWidth', 1.5, 'LineStyle', lineStyle);
-%           plot(trim_axis, trim_data, 'LineWidth', 1.5, 'color', cmap(colour), 'LineStyle', lineStyle);
-        end
-      elseif data_type == "fis"
-        % Iterate through each simulation in set
-        for sim = 1:size(simulation_set,1)
-          % Figure name
-          fig_name = strcat(data_name, "_", num2str(sim));
-          % Create figure
-          f = figure("name", fig_name);
-          hold on;
-          data = data_obj{sim};
-          axis_x = 1:size(data,2);
-          for mpc = 1:size(data,1)
-            scatter(axis_x, data(mpc, :), 'LineWidth', 2)
+        % Plot each row
+        plot(t_data, plotData(:,sim), 'LineWidth', 1.5, 'color', cmap(colour), 'LineStyle', lineStyle);
+        if dataType == "relative"
+          % Label last value in plot
+          numNans = sum(isnan(plotData(:, sim)));
+          finalPos = length(plotData(:, sim)) - numNans;
+          finalVal = plotData(finalPos, sim);
+          if ~isinf(finalVal)
+            text(t_data(finalPos)+offset_x, finalVal+offset_y, num2str(finalVal))            
           end
         end
       end
-      grid on;
-      ylim(ylimits);
       % Labels
       title(lab_title);
+      ylim(ylimits);
       xlabel(lab_x, 'Interpreter', 'latex');
       y = ylabel(lab_y, 'Interpreter', 'latex', 'rotation', 0);
-      set(y, 'position', get(y,'position')-[200,0,0]); 
-      legend(simulation_set_names, 'position', pos);
+      set(y, 'position', get(y,'position')-xLabAdjust);
+      ax = gca();
+      ax.OuterPosition(1) = xAdjust;
+      legend(simulation_set_names, 'position', pos, 'Interpreter', 'latex');
       legend('boxoff');
     end
   end
@@ -124,11 +139,17 @@ function [] = plot_simulationComparisons(plots_simSet, exp_dir, ...
   fig_list = findobj(allchild(0), "Type", "figure");
   for iFig = 1:length(fig_list)
     h_fig = fig_list(iFig); 
-    fig_name   = get(h_fig, "Name");
-    exp_fig = strcat(exp_dir, "\", fig_name);
+    figName   = get(h_fig, "Name");
+  %   % Export directory address
+    exp_folder = strcat(exp_dir, "/", simulation_set_name);
+    exp_fig = strcat(exp_folder, "\", figName);
+    % Create save directory
+    if(~exist(exp_folder, 'dir'))
+      mkdir(exp_folder)
+    end
     exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
+    close(h_fig);
   end
-  
 end
 
 %% Initial attempt at plotting fis params at each mpc step 
