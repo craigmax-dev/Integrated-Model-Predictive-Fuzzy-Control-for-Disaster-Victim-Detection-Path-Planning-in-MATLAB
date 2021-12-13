@@ -2,9 +2,10 @@
 
 This is the code for my in-progress thesis project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology.
 
-:exclamation: This is a work in progress! :exclamation:
+<!-- :exclamation: This is a work in progress! :exclamation:
 Please note that the code here is not complete. There currently may be various bugs and improvements that need to be made to the simulation. When the version of the code to be used in my thesis is complete, I will release it as a version in this repo.
-
+ -->
+ 
 This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters. 
 The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents). 
 The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation. 
@@ -44,7 +45,7 @@ This code can be installed in several easy steps.
 
 ## Running the tests
 
-Default tests will be included in the first full release of the project code.
+Default tests will be included in the full release of the project code.
 
 ## Contributing
 
