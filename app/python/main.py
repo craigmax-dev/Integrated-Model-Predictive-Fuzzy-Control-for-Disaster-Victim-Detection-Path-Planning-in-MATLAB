@@ -7,9 +7,14 @@ from functions.models import *
 from functions.initialisation import simulation, plotting, pathPlanning, mpc, environment, agent
 
 # Set up folder paths
-folders = ['data', 'functions', 'functions/models', 'functions/initialisation/simulation', 
-           'functions/initialisation/plotting', 'functions/initialisation/pathPlanning', 
-           'functions/initialisation/mpc', 'functions/initialisation/environment', 
+folders = ['data', 
+           'functions', 
+           'functions/models', 
+           'functions/initialisation/simulation', 
+           'functions/initialisation/plotting', 
+           'functions/initialisation/pathPlanning', 
+           'functions/initialisation/mpc', 
+           'functions/initialisation/environment', 
            'functions/initialisation/agent']
 
 for folder in folders:
