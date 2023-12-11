@@ -1,8 +1,11 @@
+% V2
+
 function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
   flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
   k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
-  obj, s_obj, r_bo, r_fo] = initialise_simulation_200()
+  obj, s_obj, r_bo, r_fo] = initialise_simulation_SIM_1()
+
 %% Simulation Settings
 % Tests 
 test_fis_sensitivity  = false;
@@ -23,7 +26,7 @@ dt_s    = 5;        % Simulation step size
 dk_a    = 1;        % Agent step size
 dk_c    = 2;        % Control step size
 dk_e    = 12;       % Fire step size
-dk_mpc  = 200;      % MPC step size
+dk_mpc  = 50;      % MPC step size
 dk_prog = 120;      % Progress report step size
 dt_a    = dk_a*dt_s;
 dt_c    = dk_c*dt_s;
@@ -38,7 +41,7 @@ k_mpc   = 0;        % MPC counter
 k_prog  = 0;        % Prog report counter
 
 % Simulation end condition - "time" or "scan"
-endCondition  = "scan"; 
+endCondition  = "time"; 
 flag_finish    = false;
 
 % Objective function

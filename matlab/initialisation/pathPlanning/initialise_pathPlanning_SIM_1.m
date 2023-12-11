@@ -1,17 +1,25 @@
 %% Function initialise_pathPlanning
 % Initialise path planning model
 
-function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initialise_pathPlanning_02(m_bo_s, n_a)
-  % Priority map 
+% V2
+% TODO
+% - redefine priority map - instead 
+% - check range of input parameters suitable (restrict to range 0-1)?
+
+function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initialise_pathPlanning_SIM_1(m_bo_s, n_a)
+  
+% Priority map 
   c_prior_building  = 1;    % Priority constant for building
   c_prior_open      = 0.1;  % Priority constant for open space
+  
   % Calculate Priority map
   m_prior = arrayfun(@(bo_search)(c_prior_building*bo_search + c_prior_open*(1-bo_search)), m_bo_s);
+  
   % Generate FIS
   n_in            = 3;
   n_out           = 1;
   n_MF_in         = [3 3 3];
-  n_MF_out        = [2];
+  n_MF_out        = [1];
 
   name_in         = ["t_response", "priority", "t_dw"];
   name_out        = ["attraction"];
@@ -28,39 +36,39 @@ function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initial
                           1/4 2/4 3/4; 
                           2/4 3/4 1.1];
   end
-  MF_range_out    = [-1 1 -1 1; -1 1 -1 1];
+  MF_range_out    = [-1 1 -1 1];
   MF_name_in      = [ "low", "medium", "high";
                       "low", "medium", "high";
                       "low", "medium", "high"];
                     
-  MF_name_out     = ["low", "high"];
+  MF_name_out     = ["output"];
 
-  ruleList        = [ 1 1 1 2 1 1;
+  ruleList        = [ 1 1 1 1 1 1;
                       1 1 2 1 1 1;
                       1 1 3 1 1 1;
-                      1 2 1 2 1 1;
-                      1 2 2 2 1 1;
-                      1 2 3 2 1 1;
-                      1 3 1 2 1 1;
-                      1 3 2 2 1 1;
-                      1 3 3 2 1 1;
+                      1 2 1 1 1 1;
+                      1 2 2 1 1 1;
+                      1 2 3 1 1 1;
+                      1 3 1 1 1 1;
+                      1 3 2 1 1 1;
+                      1 3 3 1 1 1;
                       2 1 1 1 1 1;
                       2 1 2 1 1 1;
                       2 1 3 1 1 1;
-                      2 2 1 2 1 1;
-                      2 2 2 2 1 1;
+                      2 2 1 1 1 1;
+                      2 2 2 1 1 1;
                       2 2 3 1 1 1;
-                      2 3 1 2 1 1;
-                      2 3 2 2 1 1;
-                      2 3 3 2 1 1;
+                      2 3 1 1 1 1;
+                      2 3 2 1 1 1;
+                      2 3 3 1 1 1;
                       3 1 1 1 1 1;
                       3 1 2 1 1 1;
                       3 1 3 1 1 1;
                       3 2 1 1 1 1;
                       3 2 2 1 1 1;
-                      3 2 3 2 1 1;
-                      3 3 1 2 1 1;
-                      3 3 2 2 1 1;
+                      3 2 3 1 1 1;
+                      3 3 1 1 1 1;
+                      3 3 2 1 1 1;
                       3 3 3 1 1 1];
 
   %% Generate FIS

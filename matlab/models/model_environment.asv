@@ -45,11 +45,6 @@
 % Check: are c_fs_1, c_fs_2, c_f_s equivalent to r_w, c_wm_1, c_wm_2?
 % Check: does refactor give performance improvements?
 % Check: where should c_fs_2 be used?
-% Refactor
-% 0. remove extra functions
-% 1. break into functions
-% 2. implement efficiency improvements
-
 
 %% Model of fire spread using cellular automa
 
@@ -84,9 +79,8 @@ function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw_e] = mo
     r_w = 3;
     c_wm_1 = 0.1;
     c_wm_2 = 0.1;
-    c_wm_d  = 0.4;
     
-    W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, c_wm_d, ang_w, v_w);
+    W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, ang_w, v_w);
     
     % Update fire map states and calculate fire spread probabilities
     [m_f, m_bt, F] = updateFireStatesAndProbabilities(m_f, m_bt, F, W, dt_e, t_i, t_b, m_s, m_bo, c_fs_1);

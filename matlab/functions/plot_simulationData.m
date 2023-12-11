@@ -9,7 +9,7 @@
 function [] = plot_simulationData( ...
                 simulation_plots, exp_folder, ...
                 axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s)
+                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s, flag_save)
                       
 	% Close any open figures
   close all
@@ -93,13 +93,16 @@ function [] = plot_simulationData( ...
     end
   end
   %% Save figures as .fig and .jpg files
-  fig_list = findobj(allchild(0), "Type", "figure");
-  for iFig = 1:length(fig_list)
-    h_fig = fig_list(iFig); 
-    fig_name   = get(h_fig, "Name");
-    exp_fig = strcat(exp_folder, "\", fig_name);
-    exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
-  end
+  
+  if flag_save
+    fig_list = findobj(allchild(0), "Type", "figure");
+    for iFig = 1:length(fig_list)
+      h_fig = fig_list(iFig); 
+      fig_name   = get(h_fig, "Name");
+      exp_fig = strcat(exp_folder, "\", fig_name);
+      exportgraphics(h_fig, strcat(exp_fig, ".jpg"));
+    end
+  end  
 end
   
   %% TO ORGANISE

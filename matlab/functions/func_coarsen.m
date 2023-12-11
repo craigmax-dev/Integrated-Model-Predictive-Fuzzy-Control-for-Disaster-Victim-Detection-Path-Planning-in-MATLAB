@@ -11,32 +11,70 @@
 % of matrix.
 
 %% Coarsen raster
+% TEST REFACTOR - V2
 function [m_occ, m_r] = func_coarsen(m_p_in, c_f)
-
+  % Extract coarsening factors for latitude and longitude
   n_lat = c_f(1);
   n_lon = c_f(2);
-  
+
   % Initialise maps
-  g_d     = [floor(size(m_p_in,1)/n_lat), floor(size(m_p_in,2)/n_lon)];
-  m_occ   = zeros(g_d(1), g_d(2));
-  m_r     = zeros(g_d(1), g_d(2));
+  g_d = [floor(size(m_p_in,1)/n_lat), floor(size(m_p_in,2)/n_lon)];
+  m_occ = zeros(g_d(1), g_d(2));
+  m_r = zeros(g_d(1), g_d(2));
 
   % Calculate occupancy map and raster map
   for i = 1:g_d(1)
     for j = 1:g_d(2)
+      % Determine the indices for the current block
       ii = (i-1)*n_lat+1;
-      jj = (j-1)*n_lon+1;        
-      % Extract data from original raster
-      mat = m_p_in(ii:ii+n_lat-1,jj:jj+n_lon-1); 
-      occ = sum(mat, 'all')/(n_lat*n_lon);
+      jj = (j-1)*n_lon+1;
 
-      % occupancy map
-      m_occ(i,j) = occ;
+      % If the block extends beyond the matrix, adjust the size
+      n_lat_eff = min(n_lat, size(m_p_in, 1) - ii + 1);
+      n_lon_eff = min(n_lon, size(m_p_in, 2) - jj + 1);
 
-      % raster map
-      if occ > 0 
-        m_r(i,j) = 1;
+      % Extract data from the original matrix
+      mat = m_p_in(ii:ii+n_lat_eff-1, jj:jj+n_lon_eff-1);
+      occ = sum(mat, 'all') / (n_lat_eff * n_lon_eff);
+
+      % Populate occupancy map
+      m_occ(i, j) = occ;
+
+      % Populate raster map (binary)
+      if occ > 0
+        m_r(i, j) = 1;
       end
     end
   end
 end
+
+
+% function [m_occ, m_r] = func_coarsen(m_p_in, c_f)
+% 
+%   n_lat = c_f(1);
+%   n_lon = c_f(2);
+%   
+%   % Initialise maps
+%   g_d     = [floor(size(m_p_in,1)/n_lat), floor(size(m_p_in,2)/n_lon)];
+%   m_occ   = zeros(g_d(1), g_d(2));
+%   m_r     = zeros(g_d(1), g_d(2));
+% 
+%   % Calculate occupancy map and raster map
+%   for i = 1:g_d(1)
+%     for j = 1:g_d(2)
+%       ii = (i-1)*n_lat+1;
+%       jj = (j-1)*n_lon+1;        
+%       % Extract data from original raster
+%       mat = m_p_in(ii:ii+n_lat-1,jj:jj+n_lon-1); 
+%       occ = sum(mat, 'all')/(n_lat*n_lon);
+% 
+%       % occupancy map
+%       m_occ(i,j) = occ;
+% 
+%       % raster map
+%       if occ > 0 
+%         m_r(i,j) = 1;
+%       end
+%     end
+%   end
+% end

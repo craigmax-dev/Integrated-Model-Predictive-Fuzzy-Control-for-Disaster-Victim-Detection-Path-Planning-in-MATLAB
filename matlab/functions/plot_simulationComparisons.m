@@ -17,9 +17,6 @@ function [] = plot_simulationComparisons(plots_simSet, exp_dir, ...
 % remove _iter_ naming of export folders when multisim not active
 % x axis - change nomenclature - use variable defining simulation time.
 % re-run simulation set 1 - results not correct for some reason?
-% why is SS01-1 much lower than other simulations? - ss01 rerun and results are
-% the same. May be a problem with the setup of the simulation - not a problem
-% with plotting as other simulation sets are okay.
 % limit number of decimal places for plot end values?
 % Move legend location definitions to argument for plotting function?
 

@@ -1,4 +1,7 @@
+% V2
+
 function [finishFlag] = func_endCondition(endCondition, t, t_f, m_scan, n_x_search, n_y_search)
+
   % Time based
   if endCondition == "time"
     if t >= t_f
@@ -6,6 +9,7 @@ function [finishFlag] = func_endCondition(endCondition, t, t_f, m_scan, n_x_sear
     else
       finishFlag = false;
     end
+    
   % Entire map scanned;
   elseif endCondition == "scan"
     if sum(sum(m_scan)) == n_x_search*n_y_search
