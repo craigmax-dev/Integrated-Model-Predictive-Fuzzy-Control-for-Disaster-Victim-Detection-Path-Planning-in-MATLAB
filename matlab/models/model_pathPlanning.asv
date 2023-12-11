@@ -3,9 +3,7 @@
 % Author:   Craig Maxwell
 
 
-% TODO
-% Rename: model_fis
-
+% T
 function  [a_target, fis_data] = model_pathPlanning( ...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...

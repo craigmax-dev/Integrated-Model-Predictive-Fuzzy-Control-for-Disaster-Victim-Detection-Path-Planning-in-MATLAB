@@ -33,6 +33,9 @@
 % For non-representative use cases we can ignore this assumption.
 
 % V2
+% CHANGELOG
+% Refactor: split into smaller functions
+% Refactor: performance improvements
 
 % TODO
 % move flag_mpc & seed into config structure
@@ -42,37 +45,15 @@
 % Environment map refactor
 % Remove use of structures for now
 % Move variables to environment initialization
-% Check: are c_fs_1, c_fs_2, c_f_s equivalent to r_w, c_wm_1, c_wm_2?
 % Check: does refactor give performance improvements?
-% Check: where should c_fs_2 be used?
 % Refactor
 % 0. remove extra functions
 % 1. break into functions
 % 2. implement efficiency improvements
+% Validate 
 
 
 %% Model of fire spread using cellular automa
-
-% % V2.2 refactor
-% function [output] = model_environment(config, input)
-%     % Model of fire spread using cellular automaton
-% 
-%     % Calculate Wind Influence
-%     [W_dir, W_dis] = calculateWindInfluence(config, input);
-% 
-%     % Calculate Fire Spread Probabilities
-%     F = calculateFireSpreadProbabilities(config, input, W_dir, W_dis);
-% 
-%     % Update Fire Map
-%     m_f = updateFireMap(config, input, F);
-% 
-%     % Calculate Downwind Map
-%     m_dw_e = calculateDownwindMap(config, input, m_f);
-% 
-%     % Prepare Output
-%     output.m_f = m_f;
-%     output.m_dw_e = m_dw_e;
-% end
 
 function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw_e] = model_environment(...
   m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, ...
@@ -89,7 +70,7 @@ function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw_e] = mo
     W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, c_wm_d, ang_w, v_w);
     
     % Update fire map states and calculate fire spread probabilities
-    [m_f, m_bt, F] = updateFireStatesAndProbabilities(m_f, m_bt, F, W, dt_e, t_i, t_b, m_s, m_bo, c_fs_1);
+    [m_f, m_bt, F] = updateFireStatesAndProbabilities(m_f, m_bt, F, W, dt_e, t_i, t_b, c_fs_1, c_fs_2, m_s, m_bo, n_x_e, n_y_e, r_w);
 
     % Determine if fire spread occurs
     m_f = applyFireSpread(m_f, F, flag_mpc, k);

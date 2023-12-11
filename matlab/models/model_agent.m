@@ -8,6 +8,16 @@
 % flag_scan_task updated to allow either single scan or repeat
 % flag_scan_task replaced with config structure for all objective func config
 
+% TODO
+% Improvements to management of agent tasks. Ideally everything managed under a
+% single variable.
+
+% a_task
+% 1 = 
+% 2 = 
+% 3 = 
+
+
 function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
             a_t_trav, a_t_scan] ...
             = model_agent( n_a, ...

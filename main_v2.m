@@ -63,6 +63,7 @@
 % - remove use of coarsen ratio in initialization of environment
 % - add tracking of m_dw for plotting again (to agent model)
 % - correct objective function calculation - using agent maps
+% - get list of dependencies and remove unnecessary scripts: https://uk.mathworks.com/help/matlab/matlab_prog/identify-dependencies.html
 
 % EFFICIENCY IMPROVEMENTS
 % - If no active fires can drop fire model
@@ -276,7 +277,6 @@ for simSetup = 1:size(simulationSetups, 1)
           config, m_f, m_bo, m_scan, m_victim_scan, ...
           dt_s, s_obj, n_x_e, n_y_e, c_f_s);
         
-
         %% Store variables
         if ct_v*dk_v <= k
           ct_v = ct_v + 1;
