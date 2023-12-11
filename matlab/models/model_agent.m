@@ -13,10 +13,9 @@
 % single variable.
 
 % a_task
-% 1 = 
-% 2 = 
-% 3 = 
-
+% 1 = travel
+% 2 = scan
+% 3 = idle
 
 function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
             a_t_trav, a_t_scan] ...
