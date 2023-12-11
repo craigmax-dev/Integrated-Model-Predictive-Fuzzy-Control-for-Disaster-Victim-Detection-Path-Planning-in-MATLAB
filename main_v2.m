@@ -113,7 +113,7 @@ h_initialise_agent_SIM_repeat = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SI
 
 % Path planning
 % TODO: rename
-h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning_SIM_1(m_bo_s, n_a);
+h_init_pp_1 = @(m_bo_s, n_a)initialise_fis_SIM_1(m_bo_s, n_a);
 
 % MPC
 % TODO: rename not active
@@ -237,7 +237,7 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter
           k_c = k_c + 1;
           % Path planner
-          [a_target, ~] = model_pathPlanning(...
+          [a_target, ~] = model_fis(...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...
             m_scan, m_t_scan, m_dw, m_prior, ...

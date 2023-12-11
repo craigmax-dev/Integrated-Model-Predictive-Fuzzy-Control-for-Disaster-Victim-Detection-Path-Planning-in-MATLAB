@@ -6,7 +6,7 @@
 % - redefine priority map - instead 
 % - check range of input parameters suitable (restrict to range 0-1)?
 
-function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initialise_pathPlanning_SIM_1(m_bo_s, n_a)
+function [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = initialise_fis_SIM_1(m_bo_s, n_a)
   
 % Priority map 
   c_prior_building  = 1;    % Priority constant for building
