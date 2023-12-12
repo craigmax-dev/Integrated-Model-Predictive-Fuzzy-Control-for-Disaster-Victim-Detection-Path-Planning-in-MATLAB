@@ -1,4 +1,12 @@
-function m_f = applyFireSpread(m_f, F, flag_mpc, k)
+% V2
+
+% CHANGELOG
+% Removed m_f_hist
+
+% TODO
+% Performance improvements
+
+function m_f = applyFireSpread(m_f, F)
 
     n_x_e = size(m_f, 1);
     n_y_e = size(m_f, 2);
@@ -7,9 +15,6 @@ function m_f = applyFireSpread(m_f, F, flag_mpc, k)
         for j = 1:n_y_e
             if m_f(i, j) == 1 && rand <= F(i, j)
                 m_f(i, j) = 2;  % Ignition occurs
-                if ~flag_mpc
-                    m_f_hist(i, j) = k;  % Record fire history if not prediction
-                end
             end
         end
     end

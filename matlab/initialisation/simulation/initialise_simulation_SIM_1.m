@@ -21,18 +21,22 @@ exp_dir     = "simulations";
 
 %% Time steps and counters
 t       = 0;        % Current time
-t_f     = 6000;     % Simulation end time (s) - optional
-dt_s    = 5;        % Simulation step size
+t_f     = 18000;    % Simulation end time (s)
+dt_s    = 30;        % Simulation step size
+
+% Discrete steps
 dk_a    = 1;        % Agent step size
 dk_c    = 2;        % Control step size
-dk_e    = 12;       % Fire step size
-dk_mpc  = 50;      % MPC step size
-dk_prog = 120;      % Progress report step size
+dk_e    = 2;       % Fire step size
+dk_mpc  = 10;       % MPC step size
+dk_prog = 10;      % Progress report step size
+
+% Time steps
 dt_a    = dk_a*dt_s;
 dt_c    = dk_c*dt_s;
 dt_e    = dk_e*dt_s;
 dt_mpc  = dk_mpc*dt_s;
-% dt_prog = dk_prog*dt_s;
+
 k       = 0;        % Discrete time step counter
 k_a     = 0;        % Agent counter
 k_c     = 0;        % Control counter

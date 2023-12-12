@@ -145,7 +145,7 @@ h_init_MPC_SOLV_particleswarm = @(fisArray, n_a)initialise_MPC_ST01_particleswar
 h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearch(fisArray, n_a);
 
 simulationSetups = {
-  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_init_MPC_1;
+  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_init_MPC_1;
 %   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
   };
 
@@ -280,7 +280,7 @@ for simSetup = 1:size(simulationSetups, 1)
           k_e = k_e + 1;
           % Environment map
           [m_f, m_bt, m_dw] = model_environment(...
-            m_f, m_s, m_bo, m_bt, dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, flag_mpc);
+            m_f, m_s, m_bo, m_bt, dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
         end
 
         %% Objective function evaluation

@@ -50,7 +50,6 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   a_target        = nan(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;
   
-%   TODO: check if this can be simplified
   a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
   for a = 1:n_a
       a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
@@ -63,10 +62,10 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   
   % Define agent objectives
   config = struct();
-  config.weight_bo = 0;
-  config.weight_fo = 0;
-  config.weight_victims = 0;
-  config.weight_first_scan = 0;  % Weight for the first-time scan
-  config.weight_repeat_scan = 1; % Weight for repeat scans  
+  config.weight_bo = 0;           % Weight for building occupancy map
+  config.weight_fo = 0;           % Weight for active fires
+  config.weight_victims = 0;      % Weight for victims
+  config.weight_first_scan = 0;   % Weight for the first-time scan
+  config.weight_repeat_scan = 0.1;  % Weight for repeat scans  
 
 end

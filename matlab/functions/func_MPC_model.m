@@ -5,6 +5,7 @@
 % V2
 
 % CHANGELOG
+% Removed flag_mpc
 
 % TODO
 % Update function inputs & calls: remove r_bo, r_fo
@@ -22,8 +23,7 @@ function [s_obj_pred] ...
           l_x_s, l_y_s, c_f_s, ...
           c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
           r_bo, r_fo, fis_data, config)
-  flag_mpc = true;
-    
+      
   %% Variables
   % Counters
   k_pred  = 0;
@@ -85,7 +85,7 @@ function [s_obj_pred] ...
       % Update firemap and downwind map
       [m_f, m_bt, m_t_dw] = model_environment(...
         m_f, m_s, m_bo, m_bt, dt_e, k, seed, n_x_e, n_y_e, ...
-        v_w, ang_w, c_fs_1, c_fs_2, c_f_s, flag_mpc);
+        v_w, ang_w, c_fs_1, c_fs_2, c_f_s);
       k_e = k_e + 1;
     end
     

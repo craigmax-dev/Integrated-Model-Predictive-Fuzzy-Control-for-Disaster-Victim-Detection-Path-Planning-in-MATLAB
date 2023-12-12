@@ -36,7 +36,6 @@
 % CHANGELOG
 % Refactor: split into smaller functions
 % Refactor: performance improvements
-% Refactor: will only run environment model with fire states =2 or =3 present
 
 % TODO
 % move flag_mpc & seed into config structure
@@ -50,9 +49,7 @@ function [m_f, m_bt, m_dw_e] = model_environment(...
   m_f, m_s, m_bo, m_bt, ...
   dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2)
 
-  m_dw_e = zeros(n_x_e, n_y_e);  % Fire spread probability map
-
-  if any(m_f(:) == 2) || any(m_f(:) == 3)
+  if any(m_f(:) == 2 @@:@~>?<
     
     t_i = 120;  % Ignition time
     t_b = 600;  % Burnout time
@@ -72,8 +69,6 @@ function [m_f, m_bt, m_dw_e] = model_environment(...
     
     % Calculate downwind map
     m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w, v_w);
-    
-  end
 
 end
 

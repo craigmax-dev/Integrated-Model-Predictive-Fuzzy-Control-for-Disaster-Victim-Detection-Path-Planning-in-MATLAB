@@ -17,7 +17,7 @@ function [l_x_e, l_y_e, n_x_e, n_y_e, ...
   n_x_e       = 40;
   n_y_e       = 40;
 
-  % Create a 100 by 100 matrix of ones to represent an even distribution of buildings
+  % Create a matrix of ones to represent an even distribution of buildings
   m_bo = ones(n_x_e, n_y_e);
   m_s = ones(n_x_e, n_y_e);
   m_p_ref = ones(n_x_e, n_y_e);
@@ -41,10 +41,8 @@ function [l_x_e, l_y_e, n_x_e, n_y_e, ...
   c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
   
   %  Initialise fire maps
-  [m_f, ~, ~, ~, ...
-  m_bt, m_dw] = model_environment(...
-  m_f, [], [], [], m_s, m_bo, m_bt, ...
-  dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, false);
+  [m_f, m_bt, m_dw] = model_environment(m_f, m_s, m_bo, m_bt, dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
+
 end
 
 % V1 
