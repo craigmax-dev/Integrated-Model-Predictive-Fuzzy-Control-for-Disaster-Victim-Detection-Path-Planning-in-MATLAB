@@ -55,8 +55,8 @@
 
 %% Model of fire spread using cellular automa
 
-function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw_e] = model_environment(...
-  m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, ...
+function [m_f, m_bt, m_dw_e] = model_environment(...
+  m_f, m_s, m_bo, m_bt, ...
   dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, flag_mpc)
     
     t_i = 120;  % Ignition time
@@ -74,9 +74,6 @@ function [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_bt, m_dw_e] = mo
 
     % Determine if fire spread occurs
     m_f = applyFireSpread(m_f, F, flag_mpc, k);
-
-    % Update m_f_hist_animate for animation
-    m_f_hist_animate = cat(3, m_f_hist_animate, m_f);
     
     % Calculate downwind map
     m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w, v_w);

@@ -23,6 +23,10 @@
 % calc_obj - efficiency improvements
 % - feature: fixed implementation of environment and agent maps. m_dw_e and m_dw
 % now handled correctly
+% - performance: removed environment history parameters for animation
+% - update handling of maps: environment defined in environment, agent defined
+% in agent. All parameters use respective size maps
+% - feature: functions for statistical analysis
 
 % TODO 
 % - customisation of all inputs/initializations
@@ -58,18 +62,32 @@
 % - see if Initialise plotting data can be removed
 % - add m_victim to objective function & uav tasks
 % - modify agent functions to use radius if defined
-% - update handling of maps: environment defined in environment, agent defined
-% in agent. All parameters use respective size maps
 % - remove use of coarsen ratio in initialization of environment
 % - add tracking of m_dw for plotting again (to agent model)
 % - correct objective function calculation - using agent maps
 % - get list of dependencies and remove unnecessary scripts: https://uk.mathworks.com/help/matlab/matlab_prog/identify-dependencies.html
+% - EFFICIENCY IMPROVEMENTS: If no active fires can drop fire model
+% - move files in main folder to functions folder (using github)
+% - improvements: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
+% - review timesteps method - especially for recording objective function
+% values - possibly better to update each time cell is scanned with new
+% value or save every  time step
+% - update plotting function initialization and plotting function
+% - improvement: write data to file after each simulation
 
-% EFFICIENCY IMPROVEMENTS
-% - If no active fires can drop fire model
+% - correct objective function calculation - using agent maps
 
-% IMPROVEMENTS
-% Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
+
+% BUGS
+% - appears animate parameters not managed correctly - only one time step
+% recorded
+% - management of animation parameters slows simulation due to growing size - 1
+% million data points in small use case. Rework to only plot for agent and
+% record
+% - simulations slow down a large amount towards end of simulation due to
+% growing size of animation parameters. Refactor animations - separate function
+% to record these
+
 
 % SIMULATION
 % - demonstrate confidence intervals
@@ -113,7 +131,7 @@ h_initialise_agent_SIM_repeat = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SI
 
 % Path planning
 % TODO: rename
-h_init_pp_1 = @(m_bo_s, n_a)initialise_pathPlanning_SIM_1(m_bo_s, n_a);
+h_init_pp_1 = @(m_bo_s, n_a)initialise_fis_SIM_1(m_bo_s, n_a);
 
 % MPC
 % TODO: rename not active
@@ -139,9 +157,6 @@ seeds = randi(10000, numIterations, 1);
 
 % Initialize a structure to store results from all setups
 allResults = struct();
-
-% Initialize arrays to store results and seeds for statistical analysis
-results = struct('t_hist', [], 's_obj_hist', [], 'obj_hist', []);
 
 % Iterate over each simulation setup
 for simSetup = 1:size(simulationSetups, 1)
@@ -207,16 +222,15 @@ for simSetup = 1:size(simulationSetups, 1)
 
       %% Simulation Loop
       while flag_finish == false
-          % Include your simulation logic here...
 
-          % Start timer
+        % Start timer
         t_sim = tic;
 
         %% MPC
         if flag_mpc 
           if k_mpc*dk_mpc <= k
             [fisArray, ini_params, fis_param_hist] = ...
-              model_MPC_module(fisArray, ini_params, fis_param_hist, ...
+              model_mpc(fisArray, ini_params, fis_param_hist, ...
               solver, options, n_a, n_MF_out, ...
               nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
               test_fis_sensitivity, ...
@@ -237,7 +251,7 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter
           k_c = k_c + 1;
           % Path planner
-          [a_target, ~] = model_pathPlanning(...
+          [a_target, ~] = model_fis(...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...
             m_scan, m_t_scan, m_dw, m_prior, ...
@@ -265,10 +279,8 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter 
           k_e = k_e + 1;
           % Environment map
-          [m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, ...
-            m_bt, m_dw] = model_environment(...
-            m_f, m_f_hist, m_f_hist_animate, m_dw_hist_animate, m_s, m_bo, m_bt, ...
-            dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, flag_mpc);
+          [m_f, m_bt, m_dw] = model_environment(...
+            m_f, m_s, m_bo, m_bt, dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2, flag_mpc);
         end
 
         %% Objective function evaluation
@@ -305,145 +317,29 @@ for simSetup = 1:size(simulationSetups, 1)
       results(iteration).s_obj_hist = s_obj_hist;
       results(iteration).obj_hist = obj_hist;
 
-      % Postprocessing (if any)
-      % ...
   end
 
     % Store results from this setup for later comparison
     allResults.(simulationName) = results;
-    
-    % TEST: plot fire map
-    simulation_plots = {
-      "m_f_hist", m_f_hist, "environment_map", true;
-    };
-
-    plot_simulationData( simulation_plots, "", ...
-                axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-                t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s, false)
-
 
 end
 
 %% Perform statistical analysis and plotting
-% TODO: plot CI for s_obj_hist
 
-close all
+alpha = 0.05;  % Confidence interval level
 
-% Define the confidence level (e.g., 0.05 for 95% confidence)
-alpha = 0.05;
+% Calculate stats for s_obj_hist
+[means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj] = calculateStats(allResults, simulationSetups, 's_obj_hist', dt_s, alpha);
 
-% Initialize figures for plotting
-figureObjValues = figure;
-title('Objective Values and Confidence Intervals Across Simulation Setups');
-xlabel('Time (s)');
-ylabel('Objective Value');
-hold on;
+% Calculate stats for obj_hist
+[means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetups, 'obj_hist', dt_s, alpha);
 
-figureSObjHist = figure;
-title('Sum of Objective History Across Simulation Setups');
-xlabel('Time (s)');
-ylabel('Sum of Objective Value');
-hold on;
+% Plot stats for s_obj_hist
+plotStats(means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj, simulationSetups, 'Sum of Objective History Across Simulation Setups', 'Sum of Objective Value');
 
-% Iterate over each simulation setup
-for simSetup = 1:size(simulationSetups, 1)
-    simulationName = simulationSetups{simSetup, 1};
+% Plot stats for obj_hist
+plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetups, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value');
 
-    % Extract the objective history and s_obj_hist from allResults for the current setup
-    obj_hist_data = allResults.(simulationName).obj_hist;
-    s_obj_hist_data = allResults.(simulationName).s_obj_hist;
 
-    % Calculate mean, standard deviation, and confidence intervals for obj_hist
-    mean_obj_hist = mean(obj_hist_data, 3);
-    std_obj_hist = std(obj_hist_data, 0, 3);
-    ci_half_width = tinv(1 - alpha/2, numIterations - 1) * std_obj_hist / sqrt(numIterations);
-    ci_lower = mean_obj_hist - ci_half_width;
-    ci_upper = mean_obj_hist + ci_half_width;
 
-    % Time vector for plotting
-    time_vector = (1:size(mean_obj_hist, 2)) * dt_s;  % Assuming equal time steps (dt_s)
 
-    % Plot Mean Objective Values and Confidence Intervals
-    figure(figureObjValues);
-    plot(time_vector, mean_obj_hist, 'DisplayName', strcat(simulationName, ' Mean'));
-    plot(time_vector, ci_lower, 'DisplayName', strcat(simulationName, ' Lower CI'), 'LineStyle', '--');
-    plot(time_vector, ci_upper, 'DisplayName', strcat(simulationName, ' Upper CI'), 'LineStyle', '--');
-    
-    % Plot Sum of Objective History
-    figure(figureSObjHist);
-    plot(time_vector, s_obj_hist_data, 'DisplayName', strcat(simulationName, ' Sum of Obj'));
-end
-
-% Add legend and grid to the Objective Values plot
-figure(figureObjValues);
-legend('show');
-grid on;
-% saveas(gcf, 'Objective_Values_and_Confidence_Intervals.png');
-
-% Add legend and grid to the Sum of Objective History plot
-figure(figureSObjHist);
-legend('show');
-grid on;
-% saveas(gcf, 'Sum_of_Objective_History.png');
-
-%% Additional plots
-
-simulation_plots = {
-  "m_f_hist", m_f_hist, "environment_map", true;
-};
-
-plot_simulationData( simulation_plots, "", ...
-            axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-            t_f, n_x_s, n_y_s, n_a, ct_v, fisArray, dt_s, false)
-
-%% Statistical Analysis
-% % Include the full scripts for statistical analysis after this comment
-% % Example:
-% mean_s_obj_hist = mean(cat(1, results.s_obj_hist), 1);
-% std_s_obj_hist = std(cat(1, results.s_obj_hist), 0, 1);
-% 
-% % Calculating Confidence Intervals
-% % Assuming a 95% confidence interval and normal distribution
-% alpha = 0.05;
-% ci_half_width = tinv(1-alpha/2, numIterations-1) * std_s_obj_hist / sqrt(numIterations);
-% ci_lower = mean_s_obj_hist - ci_half_width;
-% ci_upper = mean_s_obj_hist + ci_half_width;
-% 
-% %% Plot results
-% % Assuming you have already calculated mean_s_obj_hist, ci_lower, and ci_upper
-% % as shown in the previous script
-% 
-% % Example: Plotting mean_s_obj_hist with confidence intervals
-% 
-% % Generate time vector if not already present
-% % (Assuming each entry in mean_s_obj_hist corresponds to a regular time interval)
-% time_vector = (1:length(mean_s_obj_hist)) * dt_s;  % dt_s is your timestep
-% 
-% % Create a figure for the plot
-% figure;
-% 
-% % Plot mean values
-% plot(time_vector, mean_s_obj_hist, 'LineWidth', 2);
-% hold on;
-% 
-% % Add confidence interval as a shaded area
-% fill([time_vector, fliplr(time_vector)], ...
-%      [ci_lower, fliplr(ci_upper)], ...
-%      'b', 'FaceAlpha', 0.1, 'EdgeAlpha', 0);  % Adjust color and transparency as needed
-% 
-% % Add labels and title
-% xlabel('Time (s)');
-% ylabel('Mean Objective Value');
-% title('Mean Objective Value with 95% Confidence Interval');
-% legend('Mean Objective Value', '95% Confidence Interval');
-% 
-% % Optionally, add grid for better readability
-% grid on;
-% 
-% % Adjust other plot settings as needed
-% set(gca, 'FontSize', 12);  % Adjust font size
-% 
-% % Save the plot if needed
-% % saveas(gcf, 'path/to/save/plot.png');
-% 
-% % TODO: Create separate functions for the statistical analysis and plotting.
