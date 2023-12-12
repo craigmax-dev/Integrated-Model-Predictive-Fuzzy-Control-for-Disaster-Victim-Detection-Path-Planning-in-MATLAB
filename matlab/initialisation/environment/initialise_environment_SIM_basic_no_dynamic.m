@@ -14,8 +14,8 @@ function [l_x_e, l_y_e, n_x_e, n_y_e, ...
   seed = 0;
   
   % Environment map dimensions
-  n_x_e       = 100;
-  n_y_e       = 100;
+  n_x_e       = 40;
+  n_y_e       = 40;
 
   % Create a 100 by 100 matrix of ones to represent an even distribution of buildings
   m_bo = ones(n_x_e, n_y_e);

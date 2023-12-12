@@ -50,25 +50,23 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   a_target        = nan(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;
   
-  % Search map cell scan time
-  t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
-  m_scan      = zeros(n_x_s, n_y_s);        % Scan map
-  
-  % Define agent objectives
-  config = struct();
-  config.use_fire = true;
-  config.use_victims = true;
-  config.weight_bo = 1.0;
-  config.weight_fo = 1.0;
-  config.weight_victims = 2.0;
-  config.scan_task = 'repeat';  % 'single' or 'repeat'
-  
-  % Unsorted
-  m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
+%   TODO: check if this can be simplified
   a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
-  
   for a = 1:n_a
       a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
   end
+  
+  % Search map cell scan time
+  t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
+  m_scan      = zeros(n_x_s, n_y_s);        % Scan map
+  m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
+  
+  % Define agent objectives
+  config = struct();
+  config.weight_bo = 0;
+  config.weight_fo = 0;
+  config.weight_victims = 0;
+  config.weight_first_scan = 0;  % Weight for the first-time scan
+  config.weight_repeat_scan = 1; % Weight for repeat scans  
 
 end

@@ -8,7 +8,7 @@
 % Rename: to model_fis 
 
 % TODO
-% Update the function with an additional agent task. This is for a case in which the agent is deactivated. This will happen when the agent battery level reaches zero. When in this state the agent is stuck in an 'idle' state and can not perform any tasks and can not be removed from this state.
+% Update the following function with an additional agent task. This is for a case in which the agent is deactivated. This will happen when the agent battery level reaches zero. When in this state the agent is stuck in an 'idle' state and can not perform any tasks and can not be removed from this state.
 
 
 % V2 - refactor: modularization and performance improvements

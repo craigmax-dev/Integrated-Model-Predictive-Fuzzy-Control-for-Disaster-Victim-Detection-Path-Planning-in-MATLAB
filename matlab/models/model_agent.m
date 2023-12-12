@@ -1,5 +1,5 @@
 % Simulate agent system
-% Date:     02/06/2020
+% Date:     01/12/2023
 % Author:   Craig Maxwell
 
 % V2
@@ -7,6 +7,9 @@
 % CHANGELOG
 % flag_scan_task updated to allow either single scan or repeat
 % flag_scan_task replaced with config structure for all objective func config
+% m_scan replaced with time last scanned
+% repeat scan logic moved to objective function
+% removed m_scan_hist and flag_mpc
 
 % TODO
 % Improvements to management of agent tasks. Ideally everything managed under a
@@ -17,17 +20,9 @@
 % 2 = scan
 % 3 = idle
 
-function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-            a_t_trav, a_t_scan] ...
-            = model_agent( n_a, ...
-                m_t_scan, m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-                a_t_trav, a_t_scan, ...
-                l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, flag_mpc, config)
-              
-
-  if config.scan_task == "repeat"    
-    m_scan = m_scan + dt_a;
-  end
+function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, a_t_trav, a_t_scan] = model_agent( ...
+  n_a, m_t_scan, m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
+  a_t_trav, a_t_scan, l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, dt_s)
               
   for a = 1:n_a
     
@@ -67,22 +62,7 @@ function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
         j = a_loc(a, 2);
         
         % Scan cell
-        if config.scan_task == "single"
-
-          m_scan(i, j) = 1;
-
-        elseif config.scan_task == "repeat"    
-
-          m_scan(i, j) = 0;
-
-        end
-
-        % Update scan history
-        if ~flag_mpc        
-
-          m_scan_hist(i,j) = k;
-        
-        end
+        m_scan(i, j) = k * dt_s;
         
         % Shift target list
         a_target(a, 1, :)   = circshift(a_target(a, 1, :), -1);

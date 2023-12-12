@@ -75,7 +75,8 @@
 % value or save every  time step
 % - update plotting function initialization and plotting function
 % - improvement: write data to file after each simulation
-
+% - remove concept of task queue for agents? 
+% - update objective function with new m_scan model
 % - correct objective function calculation - using agent maps
 
 
@@ -130,12 +131,10 @@ h_initialise_environment_SIM_basic_dynamic= @(dt_e, k)initialise_environment_SIM
 h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_single(m_bo, m_dw_e, l_x_e, l_y_e);
 h_initialise_agent_SIM_repeat = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e);
 
-% Path planning
-% TODO: rename
+% FIS
 h_init_pp_1 = @(m_bo_s, n_a)initialise_fis_SIM_1(m_bo_s, n_a);
 
 % MPC
-% TODO: rename not active
 h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
 h_initialise_MPC_maxfunceval_50 = @(fisArray, n_a)initialise_MPC_maxfunceval_50(fisArray, n_a);
 
@@ -146,12 +145,12 @@ h_init_MPC_SOLV_particleswarm = @(fisArray, n_a)initialise_MPC_ST01_particleswar
 h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearch(fisArray, n_a);
 
 simulationSetups = {
-  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_pp_1, h_init_MPC_1;
+  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_init_MPC_1;
 %   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
   };
 
 % Define the number of iterations for each simulation setup
-numIterations = 2; 
+numIterations = 1;
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -272,7 +271,7 @@ for simSetup = 1:size(simulationSetups, 1)
               m_t_scan, m_scan, m_scan_hist, ...
               a_loc, a_loc_hist, a_task, a_target, ...
               a_t_trav, a_t_scan, ...
-              l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, false, config);
+              l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, dt_s);
         end  
 
         %% Environment model
@@ -288,7 +287,7 @@ for simSetup = 1:size(simulationSetups, 1)
         
         [s_obj, obj] = calc_obj(...
           config, m_f, m_bo, m_scan, m_victim_scan, ...
-          dt_s, s_obj, n_x_e, n_y_e, c_f_s);
+          dt_s, s_obj, c_f_s, t);
         
         %% Store variables
         if ct_v*dk_v <= k
@@ -296,6 +295,7 @@ for simSetup = 1:size(simulationSetups, 1)
           t_hist(ct_v) = ct_v*dk_v*dt_s;
           s_obj_hist(ct_v)    = s_obj;
           obj_hist(ct_v)      = obj;
+%           fis_hist(ct_v)      = ;
         end
 
         %% Advance timestep
