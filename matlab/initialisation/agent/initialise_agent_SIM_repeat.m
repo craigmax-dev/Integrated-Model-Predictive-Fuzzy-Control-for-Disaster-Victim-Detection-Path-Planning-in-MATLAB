@@ -13,6 +13,7 @@
 % replace m_t_scan with single value t_scan (same for all cells)
 % check n_x_s etc handled correctly
 % c_f_s as function output
+% remove m_dw - should be unnecessary
 
 function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...

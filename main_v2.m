@@ -5,6 +5,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% REFACTOR PROGRESS
 
+% CURRENT TOPICS
+% Inputs may need to be normalized for FIS
+% 
+
 % TROUBLESHOOTING
 % - check coarsen ratios managed correctly - has been removed for now (set to 1)
 
@@ -78,6 +82,7 @@
 % - remove concept of task queue for agents? 
 % - update objective function with new m_scan model
 % - correct objective function calculation - using agent maps
+% TODO: change how simulations are defined
 
 
 % BUGS
@@ -117,10 +122,8 @@ addpath('data', ...
 %% Define function handles
 % Function handles are used to refer to the diffe rent scripts used in the
 % simulations
-% TODO: change how simulations are defined
 
 % Simulation variables
-% TODO: rename
 h_init_SIM_1 = @()initialise_simulation_SIM_1();
 
 % Environment
@@ -147,6 +150,7 @@ h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearc
 simulationSetups = {
   "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_init_MPC_1;
 %   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
+%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
   };
 
 % Define the number of iterations for each simulation setup
@@ -240,7 +244,8 @@ for simSetup = 1:size(simulationSetups, 1)
               a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
               l_x_s, l_y_s, c_f_s, ...
               c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
-              r_bo, r_fo, fis_data, config);
+              r_bo, r_fo, fis_data, config, t);     
+            
             % Counter 
             k_mpc = k_mpc + 1;
           end
@@ -254,10 +259,10 @@ for simSetup = 1:size(simulationSetups, 1)
           [a_target, ~] = model_fis(...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...
-            m_scan, m_t_scan, m_dw, m_prior, ...
+            m_scan, m_t_scan, m_dw_e, m_prior, ...
             fisArray, ...
             a_t_trav, a_t_scan, ...
-            ang_w, v_as, v_w, test_fis_sensitivity, []);   
+            ang_w, v_as, v_w, test_fis_sensitivity, [], c_f_s);   
         end
 
         %% Agent actions
@@ -279,7 +284,7 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter 
           k_e = k_e + 1;
           % Environment map
-          [m_f, m_bt, m_dw] = model_environment(...
+          [m_f, m_bt, m_dw_e] = model_environment(...
             m_f, m_s, m_bo, m_bt, dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
         end
 

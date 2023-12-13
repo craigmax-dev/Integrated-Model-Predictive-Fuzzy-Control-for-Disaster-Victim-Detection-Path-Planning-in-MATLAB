@@ -6,6 +6,7 @@
 
 % CHANGELOG
 % Rename: to model_fis 
+% Bugfix: Coarsen downwind map
 
 % TODO
 % Update the following function with an additional agent task. This is for a case in which the agent is deactivated. This will happen when the agent battery level reaches zero. When in this state the agent is stuck in an 'idle' state and can not perform any tasks and can not be removed from this state.
@@ -15,11 +16,14 @@
 function [a_target, fis_data] = model_fis( ...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...
-            m_scan, m_t_scan, m_dw, m_prior, ...
+            m_scan, m_t_scan, m_dw_e, m_prior, ...
             fisArray, ...
             a_t_trav, a_t_scan, ...
-            ang_w, v_as, v_w, test_fis_sensitivity, fis_data)
-  
+            ang_w, v_as, v_w, test_fis_sensitivity, fis_data, c_f_s)
+            
+    % Coarsen downwind map
+    m_dw = func_coarsen(m_dw_e, c_f_s); 
+          
     % Initialize schedule map
     m_schedule = zeros(n_x_s, n_y_s);
     occupied_indices = ~isnan(a_target(:, 1, 1));

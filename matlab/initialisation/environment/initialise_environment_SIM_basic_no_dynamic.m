@@ -8,7 +8,7 @@
 % check difference between m_bo, m_s, m_p_ref
 
 function [l_x_e, l_y_e, n_x_e, n_y_e, ...
-  m_bo, m_s, m_f, m_bt, m_dw, m_p_ref, ...
+  m_bo, m_s, m_f, m_bt, m_dw_e, m_p_ref, ...
   c_fs_1, c_fs_2, v_w, ang_w] = initialise_environment_SIM_basic_no_dynamic(dt_e, k)
 
   seed = 0;
@@ -41,7 +41,7 @@ function [l_x_e, l_y_e, n_x_e, n_y_e, ...
   c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
   
   %  Initialise fire maps
-  [m_f, m_bt, m_dw] = model_environment(m_f, m_s, m_bo, m_bt, dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
+  [m_f, m_bt, m_dw_e] = model_environment(m_f, m_s, m_bo, m_bt, dt_e, k, seed, n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
 
 end
 
