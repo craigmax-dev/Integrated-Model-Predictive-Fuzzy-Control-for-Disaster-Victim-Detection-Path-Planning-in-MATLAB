@@ -1,5 +1,3 @@
-# Previous simulation result directories 
-simulations/previous
 # Simulation figures
 # m_bo*
 # m_f_hist*
@@ -8,3 +6,39 @@ simulations/previous
 # File types
 **/*.fig
 **/*.jpg
+
+# LaTeX generated files
+*.aux
+*.log
+*.synctex.gz
+*.out
+*.fls
+*.fdb_latexmk
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.idx
+*.ind
+*.ilg
+*.maf
+*.mtc
+*.mtc0
+*.nav
+*.snm
+*.vrb
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.flg
+*.dvi
+*.thm
+
+# Other files
+*.pdf
+

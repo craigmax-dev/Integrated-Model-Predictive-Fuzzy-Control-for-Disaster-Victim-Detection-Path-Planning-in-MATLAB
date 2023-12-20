@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+
+\section*{Objective Function version 1}
+
+Given the following parameters and matrices:
+\begin{itemize}
+    \item Fire occupancy matrix $m_f \in \mathbb{R}^{n \times m}$.
+    \item Building occupancy matrix $m_{bo} \in \mathbb{R}^{n \times m}$.
+    \item Scan map matrix $m_{scan} \in \mathbb{R}^{n \times m}$.
+    \item Coefficients for building and fire occupancy priorities $r_{bo}, r_{fo} \in \mathbb{R}$.
+    \item Time step $dt_s \in \mathbb{R}$.
+    \item Sum of the objective function over time $s_{obj} \in \mathbb{R}$.
+    \item Environment and scan maps dimensions $n_{x_e}, n_{y_e}, n_{x_s}, n_{y_s} \in \mathbb{Z}^+$.
+    \item Conversion factor for map resolutions $c_{f_s} \in \mathbb{Z}^+$.
+\end{itemize}
+
+The objective function is calculated as follows:
+
+\begin{enumerate}
+    \item Generate the active fire map $m_{fo}$ from $m_f$:
+    \[ m_{fo}(i,j) = 
+    \begin{cases} 
+        0 & \text{if } m_f(i,j) \in \{1, 2, 4\}, \\
+        1 & \text{if } m_f(i,j) = 3.
+    \end{cases} \]
+
+    \item Upscale the scan map $m_{scan}$ to the environment map resolution, creating $m_{scan\_env}$:
+    \[ m_{scan\_env}(x_{min}:x_{max}, y_{min}:y_{max}) = 1 \text{ for each }(i, j) \text{ where } m_{scan}(i, j) = 1, \]
+    with $x_{min} = c_{f_s}(i-1) + 1$, $x_{max} = x_{min} + c_{f_s} - 1$, $y_{min} = c_{f_s}(j-1) + 1$, and $y_{max} = y_{min} + c_{f_s} - 1$.
+
+    \item Calculate the inverse scan map:
+    \[ m_{scan\_env\_inv} = \mathbf{1} - m_{scan\_env}. \]
+
+    \item Compute the priority map $m_P$ by considering building and fire occupancy:
+    \[ m_P = r_{bo} \cdot m_{bo} + r_{fo} \cdot m_{fo}, \]
+    and then apply the inverse scan map:
+    \[ m_P = m_P \odot m_{scan\_env\_inv}. \]
+
+    \item Calculate the objective function for the current timestep:
+    \[ \text{obj} = \sum_{i,j} m_P(i,j) \cdot dt_s. \]
+
+    \item Update the sum of the objective function over time:
+    \[ s_{obj} = s_{obj} + \text{obj}. \]
+\end{enumerate}
+
+\section*{Objective Function version 2}
+
+
+
+\end{document}

@@ -82,19 +82,13 @@
 % - remove concept of task queue for agents? 
 % - update objective function with new m_scan model
 % - correct objective function calculation - using agent maps
-% TODO: change how simulations are defined
-
+% - victim model: cell rescan only if victim present
+% - Performance improvements: Single prediction of environment states model before MPC optimization
 
 % BUGS
-% - appears animate parameters not managed correctly - only one time step
-% recorded
-% - management of animation parameters slows simulation due to growing size - 1
-% million data points in small use case. Rework to only plot for agent and
-% record
 % - simulations slow down a large amount towards end of simulation due to
 % growing size of animation parameters. Refactor animations - separate function
 % to record these
-
 
 % SIMULATION
 % - demonstrate confidence intervals
