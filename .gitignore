@@ -1,9 +1,7 @@
+# Other files
+*.asv
+
 # Simulation figures
-# m_bo*
-# m_f_hist*
-# m_prior*
-# m_scan_hist*
-# File types
 **/*.fig
 **/*.jpg
 

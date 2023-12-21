@@ -28,7 +28,7 @@ function m_att = calc_att(fis, m_t_response, m_prior, m_dw, m_scan, m_schedule)
     end
 
     % Prepare the inputs for FIS for valid cells
-    fisInputs = [m_t_response(valid_cells), m_prior(valid_cells), m_dw(valid_cells)];
+    fisInputs = [m_t_response(valid_cells), m_prior(valid_cells)];
 
     % Ensure inputs are of correct type
     fisInputs = double(fisInputs);

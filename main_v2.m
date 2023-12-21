@@ -3,15 +3,6 @@
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% REFACTOR PROGRESS
-
-% CURRENT TOPICS
-% Inputs may need to be normalized for FIS
-% 
-
-% TROUBLESHOOTING
-% - check coarsen ratios managed correctly - has been removed for now (set to 1)
-
 % CHANGELOG
 % - add flag_scan_task to initialization
 % - flag_scan_task needs to be increased at each time step
@@ -21,8 +12,8 @@
 % - function: generateMatrixFromPDFs
 % - function: compareFunctionOutputs
 % - function: runSimulationsAndComputeCI
-% - m_victim_scan initialisation changed from environment to agent
-% - m_victim_scan added to function inputs: MPC, obj
+% - m_victim_s initialisation changed from environment to agent
+% - m_victim_s added to function inputs: MPC, obj
 % - replaced m_t_dw with m_dw
 % calc_obj - efficiency improvements
 % - feature: fixed implementation of environment and agent maps. m_dw_e and m_dw
@@ -34,68 +25,17 @@
 % intervals
 
 % TODO 
-% - customisation of all inputs/initializations
-% - cleanup main script
-% - update victim model
-% -- needs real victims in locations based on probability density & needs
-% multiple - probability based as well - second probability variable
-% -- update objective function - allow addition of 
-% - update victim prediction
-% - update fire prediction. Keep exact prediction as well
-% - add localised predictions
-% - add multiple prediction function
-% - add other MPC steps from Mirko ()
-% - check all functions correct
-% - cell rescan
-% -- track time since last scan
-% -- update objective
-% - configure simulation objectives: i.e. 
-% - improve simulation progress reports
-% - plotting improvements
-% - scan progress - use percent of environment or max time? also check how long should it take to
-% scan a cell
-% - remove hard coded flags
-% - add time limit constraint to simulation
-% - test ability to return to original task (scan all cells only)
-% - implement efficiency improvements (vectorization etc & testing)
-% - remove refactor code - will be done properly soon
-% - remove test_obj_sensitivity from input file
-% - update victim model
-% - update UAV objectives  & objective function
-% - build multiple simulation & confidence interval
-% - better management of seeds for repeatability 
-% - see if Initialise plotting data can be removed
-% - add m_victim to objective function & uav tasks
-% - modify agent functions to use radius if defined
-% - remove use of coarsen ratio in initialization of environment
-% - add tracking of m_dw for plotting again (to agent model)
-% - correct objective function calculation - using agent maps
-% - get list of dependencies and remove unnecessary scripts: https://uk.mathworks.com/help/matlab/matlab_prog/identify-dependencies.html
-% - EFFICIENCY IMPROVEMENTS: If no active fires can drop fire model
+% - probability-based predictions in MPC
+% - add localised predictions for given radius around an agent
+% - add battery model and loss of agents
+% - Mirko model implementation: FIS, MPC, MPC steps, 
+% - remove test_fis_sensitivity, etc flags from input file
+% - refactor: initialise plotting data can be removed
 % - move files in main folder to functions folder (using github)
 % - improvements: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
-% - review timesteps method - especially for recording objective function
-% values - possibly better to update each time cell is scanned with new
-% value or save every  time step
-% - update plotting function initialization and plotting function
 % - improvement: write data to file after each simulation
-% - remove concept of task queue for agents? 
-% - update objective function with new m_scan model
-% - correct objective function calculation - using agent maps
-% - victim model: cell rescan only if victim present
+% - remove concept of task queue for agents
 % - Performance improvements: Single prediction of environment states model before MPC optimization
-
-% BUGS
-% - simulations slow down a large amount towards end of simulation due to
-% growing size of animation parameters. Refactor animations - separate function
-% to record these
-
-% SIMULATION
-% - demonstrate confidence intervals
-% - demonstrate sensitivity analysis (to initial settings: victim locations,
-% fire locations, agent locations)
-% - stable solution (no dynamic variable, design with 2/3 agent ideal solution in mind, small disaster environment)
-% - stable solution & loss of agent mid-way
 
 % Clear workspace
 clear all
@@ -129,7 +69,7 @@ h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SI
 h_initialise_agent_SIM_repeat = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e);
 
 % FIS
-h_init_pp_1 = @(m_bo_s, n_a)initialise_fis_SIM_1(m_bo_s, n_a);
+h_init_fis_1 = @(n_a)initialise_fis_SIM_1(n_a);
 
 % MPC
 h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
@@ -142,9 +82,9 @@ h_init_MPC_SOLV_particleswarm = @(fisArray, n_a)initialise_MPC_ST01_particleswar
 h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearch(fisArray, n_a);
 
 simulationSetups = {
-  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_init_MPC_1;
-%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
-%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_pp_1, h_initialise_MPC_maxfunceval_50;
+  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_fis_1, h_init_MPC_1;
+%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_fis_1, h_initialise_MPC_maxfunceval_50;
+%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_fis_1, h_initialise_MPC_maxfunceval_50;
   };
 
 % Define the number of iterations for each simulation setup
@@ -164,25 +104,26 @@ for simSetup = 1:size(simulationSetups, 1)
   f_init_sim = simulationSetups{simSetup, 2};
   f_init_env = simulationSetups{simSetup, 3};
   f_init_agent = simulationSetups{simSetup, 4};
-  f_init_path = simulationSetups{simSetup, 5};
+  f_init_fis = simulationSetups{simSetup, 5};
   f_init_mpc = simulationSetups{simSetup, 6};
 
   % Initialize an array to store results for this simulation setup
   results = struct('t_hist', [], 's_obj_hist', [], 'obj_hist', []);
 
   for iteration = 1:numIterations
+
+      %% Initialise models, plotting data, and timestep for saving variables
+
       % Generate and record a unique seed for each iteration
       seeds(iteration) = randi(10000); % or another method to generate a random seed
       rng(seeds(iteration)); % Set the seed for RNG
 
-      %% Initialise simulation data
-      [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
+      % Simulation data
+      [test_fis_sensitivity, test_solvers, fis_data, ...
       flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
       t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
       k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
       obj, s_obj, r_bo, r_fo] = f_init_sim();
-
-      %% Initialise models, plotting data, and timestep for saving variables
 
       % Environment 
       [l_x_e, l_y_e, n_x_e, n_y_e, ...
@@ -192,16 +133,16 @@ for simSetup = 1:size(simulationSetups, 1)
       % Agent
       [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
       t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
-      m_scan, m_t_scan, m_bo_s, m_dw, m_victim_scan, config, c_f_s] = f_init_agent(m_bo, m_dw_e, l_x_e, l_y_e);
+      m_prior_s, m_scan, m_t_scan, m_bo_s, m_dw_s, m_victim_s, config, c_f_s] = f_init_agent(m_bo, m_dw_e, l_x_e, l_y_e);
 
-      % Path planning
-      [c_prior_building, c_prior_open, m_prior, fisArray, n_MF_out] = f_init_path(m_bo_s, n_a);
+      % FIS
+      [fisArray] = f_init_fis(n_a);
 
       % MPC
       [flag_mpc, solver, options, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, nvars] = ...
         f_init_mpc(fisArray, n_a);
       
-      % Plotting data
+      % Plots
       [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
       m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
       m_scan_hist, a_loc_hist, t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
@@ -232,7 +173,7 @@ for simSetup = 1:size(simulationSetups, 1)
               solver, options, n_a, n_MF_out, ...
               nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
               test_fis_sensitivity, ...
-              m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_scan, ...
+              m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_s, ...
               dk_a, dk_c, dk_e, dk_mpc, dt_s, k, seeds(iteration), ...
               n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
               a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
@@ -253,7 +194,7 @@ for simSetup = 1:size(simulationSetups, 1)
           [a_target, ~] = model_fis(...
             n_a, a_target, n_q, ...
             n_x_s, n_y_s, l_x_s, l_y_s, ...
-            m_scan, m_t_scan, m_dw_e, m_prior, ...
+            m_scan, m_t_scan, m_dw_e, m_prior_s, ...
             fisArray, ...
             a_t_trav, a_t_scan, ...
             ang_w, v_as, v_w, test_fis_sensitivity, [], c_f_s);   
@@ -285,7 +226,7 @@ for simSetup = 1:size(simulationSetups, 1)
         %% Objective function evaluation
         
         [s_obj, obj] = calc_obj(...
-          config, m_f, m_bo, m_scan, m_victim_scan, ...
+          config, m_f, m_bo_s, m_scan, m_victim_s, ...
           dt_s, s_obj, c_f_s, t);
         
         %% Store variables
@@ -294,7 +235,6 @@ for simSetup = 1:size(simulationSetups, 1)
           t_hist(ct_v) = ct_v*dk_v*dt_s;
           s_obj_hist(ct_v)    = s_obj;
           obj_hist(ct_v)      = obj;
-%           fis_hist(ct_v)      = ;
         end
 
         %% Advance timestep

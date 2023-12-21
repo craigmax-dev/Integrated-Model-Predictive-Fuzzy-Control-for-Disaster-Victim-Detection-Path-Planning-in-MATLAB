@@ -4,7 +4,7 @@
 % - remove test_fis_sensitivity flags
 % - check where r_bo, r_fo are used
 
-function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ...
+function [test_fis_sensitivity, test_solvers, fis_data, ...
   flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
   t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
   k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
@@ -13,7 +13,6 @@ function [test_fis_sensitivity, test_obj_sensitivity, test_solvers, fis_data, ..
 %% Simulation Settings
 % Tests 
 test_fis_sensitivity  = false;
-test_obj_sensitivity  = false;
 test_solvers          = false;
 
 % Test variables
@@ -27,15 +26,15 @@ exp_dir     = "simulations";
 
 %% Time steps and counters
 t       = 0;        % Current time
-t_f     = 18000;    % Simulation end time (s)
-dt_s    = 30;        % Simulation step size
+t_f     = 180000;    % Simulation end time (s)
+dt_s    = 15;        % Simulation step size
 
 % Discrete steps
 dk_a    = 1;        % Agent step size
 dk_c    = 2;        % Control step size
-dk_e    = 2;       % Fire step size NOTE: environment model assumes 60s
+dk_e    = 4;       % Fire step size NOTE: environment model assumes 60s
 dk_mpc  = 10;       % MPC step size
-dk_prog = 10;      % Progress report step size
+dk_prog = 100;      % Progress report step size
 
 % Time steps
 dt_a    = dk_a*dt_s;
