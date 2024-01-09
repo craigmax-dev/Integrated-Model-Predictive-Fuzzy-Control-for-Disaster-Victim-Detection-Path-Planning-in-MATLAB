@@ -8,13 +8,13 @@
 % cell scanned
 % flag_scan_task added
 % added m_victim_s
+% Refactored function to use agent_model structure
+% Added parameters for battery model
 
 % TODO
-% replace m_t_scan with single value t_scan (same for all cells)
+% Better way to structure a_loc_hist?
 
-function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
-  t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
-  m_prior_s, m_scan, m_t_scan, m_bo_s, m_dw_s, m_victim_s, config, c_f_s] = initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e)
+function agent_model = initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -44,6 +44,11 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   a_task        = 2.*ones(n_a, 1);% Current task for UAVs
   a_loc         = [ 1, 1;
                     1, 2];          % Current locations of UAVs
+  a_loc_hist    = [];
+  for a = 1:n_a
+    a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; % Note: format is x-axis, y-axis, agent number, timestep number
+  end  
+
   % Agent targets
   a_target        = nan(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;
@@ -52,10 +57,16 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   for a = 1:n_a
       a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
   end
+
+  % Battery parameters
+  m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
+  a_battery_level_i = 1e6.*ones(n_a, 1); % Fully charged battery level (s)
+  a_battery_level = a_battery_level_i; % Current battery level (s)
   
   % Search map cell scan time
   t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
   m_scan      = zeros(n_x_s, n_y_s);        % Scan map
+  m_scan_hist = zeros(n_x_s, n_y_s);  
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
   
   % Define agent objectives
@@ -66,6 +77,14 @@ function [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
   config.weight_repeat_scan = 0.1;  % Weight for repeat scans
 
   % Initialise priority map
-  m_prior_s = calc_prior(m_bo_s, m_dw_s, m_scan, 0, config, m_victim_s);
+  m_prior = calc_prior(m_bo_s, m_dw_s, m_scan, 0, config, m_victim_s);
 
+  % Create agent structure with all parameters
+  agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
+                       'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, ...
+                       't_scan_m', t_scan_m, 't_scan_c', t_scan_c, 'a_battery_level_i', a_battery_level_i, 'a_battery_level', a_battery_level, 'a_task', a_task, ... 
+                       'a_loc', a_loc, 'a_loc_hist', a_loc_hist, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
+                       'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, ...
+                       'm_bo_s', m_bo_s, 'm_dw_s', m_dw_s, 'm_victim_s', m_victim_s, ...
+                       'config', config, 'c_f_s', c_f_s);
 end

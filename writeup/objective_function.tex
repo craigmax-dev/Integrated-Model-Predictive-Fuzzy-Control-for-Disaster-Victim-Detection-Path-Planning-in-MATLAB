@@ -99,134 +99,134 @@ The objective function is calculated as follows:
     \[ s_{obj} = s_{obj} + \text{obj}. \]
 \end{enumerate}
 
-\section*{Generalized Mathematical Formulation of Objective Function}
+% \section*{Generalized Mathematical Formulation of Objective Function}
 
-Given:
-\begin{itemize}
-    \item Fire occupancy matrix $m_f \in \mathbb{R}^{n \times m}$.
-    \item Building occupancy matrix $m_{bo} \in \mathbb{R}^{n \times m}$.
-    \item Scan map matrix $m_{scan} \in \mathbb{R}^{n \times m}$.
-    \item Victim scan map matrix $m_{victim\_scan} \in \mathbb{R}^{n \times m}$.
-    \item Time step $dt_s \in \mathbb{R}$.
-    \item Sum of the objective function over time $s_{obj} \in \mathbb{R}$.
-    \item Conversion factor for map resolutions $c_{f_s} \in \mathbb{Z}^+$.
-    \item Current time $t \in \mathbb{R}$.
-    \item Configuration parameters in $config$.
-\end{itemize}
+% Given:
+% \begin{itemize}
+%     \item Fire occupancy matrix $m_f \in \mathbb{R}^{n \times m}$.
+%     \item Building occupancy matrix $m_{bo} \in \mathbb{R}^{n \times m}$.
+%     \item Scan map matrix $m_{scan} \in \mathbb{R}^{n \times m}$.
+%     \item Victim scan map matrix $m_{victim\_scan} \in \mathbb{R}^{n \times m}$.
+%     \item Time step $dt_s \in \mathbb{R}$.
+%     \item Sum of the objective function over time $s_{obj} \in \mathbb{R}$.
+%     \item Conversion factor for map resolutions $c_{f_s} \in \mathbb{Z}^+$.
+%     \item Current time $t \in \mathbb{R}$.
+%     \item Configuration parameters in $config$.
+% \end{itemize}
 
-The objective function is calculated as follows:
+% The objective function is calculated as follows:
 
-\begin{enumerate}
-    \item \textbf{Active Fire Map:} 
-    \[ m_{fo} = (m_f == 3). \]
+% \begin{enumerate}
+%     \item \textbf{Active Fire Map:} 
+%     \[ m_{fo} = (m_f == 3). \]
 
-    \item \textbf{Victim Parameter Map:} 
-    \[ m_{P\_victim} = \begin{cases} 
-    m_{victim\_scan} & \text{if } m_{victim\_scan} \text{ is available}, \\
-    m_{bo} & \text{otherwise}.
-    \end{cases} \]
+%     \item \textbf{Victim Parameter Map:} 
+%     \[ m_{P\_victim} = \begin{cases} 
+%     m_{victim\_scan} & \text{if } m_{victim\_scan} \text{ is available}, \\
+%     m_{bo} & \text{otherwise}.
+%     \end{cases} \]
 
-    \item \textbf{Coarsened Maps:} 
-    \[ m_{fo\_s} = \text{func\_coarsen}(m_{fo}, c_{f_s}), \]
-    \[ m_{victim\_s} = \text{func\_coarsen}(m_{P\_victim}, c_{f_s}). \]
+%     \item \textbf{Coarsened Maps:} 
+%     \[ m_{fo\_s} = \text{func\_coarsen}(m_{fo}, c_{f_s}), \]
+%     \[ m_{victim\_s} = \text{func\_coarsen}(m_{P\_victim}, c_{f_s}). \]
 
-    \item \textbf{Active Fire Weight:} 
-    \[ m_{P\_fire\_weight} = m_{fo\_s} \times config.\text{weight\_fire}. \]
+%     \item \textbf{Active Fire Weight:} 
+%     \[ m_{P\_fire\_weight} = m_{fo\_s} \times config.\text{weight\_fire}. \]
 
-    \item \textbf{First-time and Repeat Scan Priorities:} 
-    \begin{align*}
-    m_{P\_first\_scan} &= \mathbf{1}_{(m_{scan} == 0)} \odot m_{victim\_s} \odot (1 + m_{P\_fire\_weight}) \times config.\text{weight\_first\_scan}, \\
-    \text{time\_since\_last\_scan} &= \max(t - m_{scan}, 0), \\
-    m_{P\_repeat\_scan} &= \mathbf{1}_{(m_{scan} \neq 0)} \odot \text{time\_since\_last\_scan} \odot m_{victim\_s} \odot (1 + m_{P\_fire\_weight}) \times config.\text{weight\_repeat\_scan}.
-    \end{align*}
+%     \item \textbf{First-time and Repeat Scan Priorities:} 
+%     \begin{align*}
+%     m_{P\_first\_scan} &= \mathbf{1}_{(m_{scan} == 0)} \odot m_{victim\_s} \odot (1 + m_{P\_fire\_weight}) \times config.\text{weight\_first\_scan}, \\
+%     \text{time\_since\_last\_scan} &= \max(t - m_{scan}, 0), \\
+%     m_{P\_repeat\_scan} &= \mathbf{1}_{(m_{scan} \neq 0)} \odot \text{time\_since\_last\_scan} \odot m_{victim\_s} \odot (1 + m_{P\_fire\_weight}) \times config.\text{weight\_repeat\_scan}.
+%     \end{align*}
 
-    \item \textbf{Total Priority Map:} 
-    \[ m_{P} = m_{P\_first\_scan} + m_{P\_repeat\_scan}. \]
+%     \item \textbf{Total Priority Map:} 
+%     \[ m_{P} = m_{P\_first\_scan} + m_{P\_repeat\_scan}. \]
 
-    \item \textbf{Objective Function Calculation:} 
-    \[ \text{obj} = \max(\sum(m_{P}) \times dt_s, 0). \]
+%     \item \textbf{Objective Function Calculation:} 
+%     \[ \text{obj} = \max(\sum(m_{P}) \times dt_s, 0). \]
 
-    \item \textbf{Update Sum of Objective Function:} 
-    \[ s_{obj} = s_{obj} + \text{obj}. \]
-\end{enumerate}
+%     \item \textbf{Update Sum of Objective Function:} 
+%     \[ s_{obj} = s_{obj} + \text{obj}. \]
+% \end{enumerate}
 
-\section*{Generalized Objective Function Formulation}
+% \section*{Generalized Objective Function Formulation}
 
-Consider a general objective function $F$ defined over a set of variables $X$:
-\[ F(X) = \sum_{i \in I} f(x_i), \]
-where $I$ is the index set, $x_i$ are elements of $X$, and $f$ is a function that assigns a real number to each $x_i$.
+% Consider a general objective function $F$ defined over a set of variables $X$:
+% \[ F(X) = \sum_{i \in I} f(x_i), \]
+% where $I$ is the index set, $x_i$ are elements of $X$, and $f$ is a function that assigns a real number to each $x_i$.
 
-\subsection*{Specialization to the Given Context}
+% \subsection*{Specialization to the Given Context}
 
-\subsubsection*{Step 1: Defining the Variables}
-Assume $X$ is composed of several matrices representing different aspects of an environment, such as fire occupancy ($m_f$), building occupancy ($m_{bo}$), and scan maps ($m_{scan}$). Additionally, there's a time component $t$ and a configuration parameter set $config$.
+% \subsubsection*{Step 1: Defining the Variables}
+% Assume $X$ is composed of several matrices representing different aspects of an environment, such as fire occupancy ($m_f$), building occupancy ($m_{bo}$), and scan maps ($m_{scan}$). Additionally, there's a time component $t$ and a configuration parameter set $config$.
 
-\subsubsection*{Step 2: Decomposing the Objective Function}
-The objective function can be decomposed based on different aspects of the environment:
-\[ F(X) = \sum_{i,j} \Big( w_1 \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + w_2 \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big), \]
-where $w_1, w_2$ are weights and $g_1, g_2$ are functions representing different aspects of the environmental impact on the objective.
+% \subsubsection*{Step 2: Decomposing the Objective Function}
+% The objective function can be decomposed based on different aspects of the environment:
+% \[ F(X) = \sum_{i,j} \Big( w_1 \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + w_2 \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big), \]
+% where $w_1, w_2$ are weights and $g_1, g_2$ are functions representing different aspects of the environmental impact on the objective.
 
-\subsubsection*{Step 3: Incorporating Specific Functions}
-In the specific context of the provided MATLAB function:
-\begin{itemize}
-    \item $g_1$ corresponds to the impact of first-time scans.
-    \item $g_2$ corresponds to the impact of repeat scans.
-    \item The weights $w_1, w_2$ are derived from $config$ parameters.
-\end{itemize}
+% \subsubsection*{Step 3: Incorporating Specific Functions}
+% In the specific context of the provided MATLAB function:
+% \begin{itemize}
+%     \item $g_1$ corresponds to the impact of first-time scans.
+%     \item $g_2$ corresponds to the impact of repeat scans.
+%     \item The weights $w_1, w_2$ are derived from $config$ parameters.
+% \end{itemize}
 
-\subsubsection*{Step 4: Defining $g_1$ and $g_2$}
-Define $g_1$ and $g_2$ to reflect first-time and repeat scan impacts, respectively:
-\begin{align*}
-g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_first\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config), \\
-g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_repeat\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config).
-\end{align*}
+% \subsubsection*{Step 4: Defining $g_1$ and $g_2$}
+% Define $g_1$ and $g_2$ to reflect first-time and repeat scan impacts, respectively:
+% \begin{align*}
+% g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_first\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config), \\
+% g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_repeat\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config).
+% \end{align*}
 
-\subsubsection*{Step 5: Applying the Objective Function}
-The final objective function in the specific context of the MATLAB code is:
-\[ F(X) = \sum_{i,j} \Big( config.weight\_first\_scan \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + config.weight\_repeat\_scan \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big). \]
+% \subsubsection*{Step 5: Applying the Objective Function}
+% The final objective function in the specific context of the MATLAB code is:
+% \[ F(X) = \sum_{i,j} \Big( config.weight\_first\_scan \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + config.weight\_repeat\_scan \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big). \]
 
-\subsubsection*{Step 6: Time Integration}
-Integrate the objective function over the time step $dt_s$ and accumulate over time:
-\[ s_{obj} = s_{obj} + \int F(X) \, dt_s. \]
+% \subsubsection*{Step 6: Time Integration}
+% Integrate the objective function over the time step $dt_s$ and accumulate over time:
+% \[ s_{obj} = s_{obj} + \int F(X) \, dt_s. \]
 
-\section*{Generalized Objective Function Formulation}
+% \section*{Generalized Objective Function Formulation}
 
-Consider a general objective function $F$ defined over a set of variables $X$:
-\[ F(X) = \sum_{i \in I} f(x_i), \]
-where $I$ is the index set, $x_i$ are elements of $X$, and $f$ is a function that assigns a real number to each $x_i$.
+% Consider a general objective function $F$ defined over a set of variables $X$:
+% \[ F(X) = \sum_{i \in I} f(x_i), \]
+% where $I$ is the index set, $x_i$ are elements of $X$, and $f$ is a function that assigns a real number to each $x_i$.
 
-\subsection*{Specialization to the Given Context}
+% \subsection*{Specialization to the Given Context}
 
-\subsubsection*{Step 1: Defining the Variables}
-Assume $X$ is composed of several matrices representing different aspects of an environment, such as fire occupancy ($m_f$), building occupancy ($m_{bo}$), and scan maps ($m_{scan}$). Additionally, there's a time component $t$ and a configuration parameter set $config$.
+% \subsubsection*{Step 1: Defining the Variables}
+% Assume $X$ is composed of several matrices representing different aspects of an environment, such as fire occupancy ($m_f$), building occupancy ($m_{bo}$), and scan maps ($m_{scan}$). Additionally, there's a time component $t$ and a configuration parameter set $config$.
 
-\subsubsection*{Step 2: Decomposing the Objective Function}
-The objective function can be decomposed based on different aspects of the environment:
-\[ F(X) = \sum_{i,j} \Big( w_1 \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + w_2 \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big), \]
-where $w_1, w_2$ are weights and $g_1, g_2$ are functions representing different aspects of the environmental impact on the objective.
+% \subsubsection*{Step 2: Decomposing the Objective Function}
+% The objective function can be decomposed based on different aspects of the environment:
+% \[ F(X) = \sum_{i,j} \Big( w_1 \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + w_2 \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big), \]
+% where $w_1, w_2$ are weights and $g_1, g_2$ are functions representing different aspects of the environmental impact on the objective.
 
-\subsubsection*{Step 3: Incorporating Specific Functions}
-In the specific context of the provided MATLAB function:
-\begin{itemize}
-    \item $g_1$ corresponds to the impact of first-time scans.
-    \item $g_2$ corresponds to the impact of repeat scans.
-    \item The weights $w_1, w_2$ are derived from $config$ parameters.
-\end{itemize}
+% \subsubsection*{Step 3: Incorporating Specific Functions}
+% In the specific context of the provided MATLAB function:
+% \begin{itemize}
+%     \item $g_1$ corresponds to the impact of first-time scans.
+%     \item $g_2$ corresponds to the impact of repeat scans.
+%     \item The weights $w_1, w_2$ are derived from $config$ parameters.
+% \end{itemize}
 
-\subsubsection*{Step 4: Defining $g_1$ and $g_2$}
-Define $g_1$ and $g_2$ to reflect first-time and repeat scan impacts, respectively:
-\begin{align*}
-g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_first\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config), \\
-g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_repeat\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config).
-\end{align*}
+% \subsubsection*{Step 4: Defining $g_1$ and $g_2$}
+% Define $g_1$ and $g_2$ to reflect first-time and repeat scan impacts, respectively:
+% \begin{align*}
+% g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_first\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config), \\
+% g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) &= \text{func\_repeat\_scan}(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t, config).
+% \end{align*}
 
-\subsubsection*{Step 5: Applying the Objective Function}
-The final objective function in the specific context of the MATLAB code is:
-\[ F(X) = \sum_{i,j} \Big( config.weight\_first\_scan \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + config.weight\_repeat\_scan \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big). \]
+% \subsubsection*{Step 5: Applying the Objective Function}
+% The final objective function in the specific context of the MATLAB code is:
+% \[ F(X) = \sum_{i,j} \Big( config.weight\_first\_scan \cdot g_1(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) + config.weight\_repeat\_scan \cdot g_2(m_{f_{ij}}, m_{bo_{ij}}, m_{scan_{ij}}, t) \Big). \]
 
-\subsubsection*{Step 6: Time Integration}
-Integrate the objective function over the time step $dt_s$ and accumulate over time:
-\[ s_{obj} = s_{obj} + \int F(X) \, dt_s. \]
+% \subsubsection*{Step 6: Time Integration}
+% Integrate the objective function over the time step $dt_s$ and accumulate over time:
+% \[ s_{obj} = s_{obj} + \int F(X) \, dt_s. \]
 
 \section*{Priority Map Calculation}
 

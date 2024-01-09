@@ -23,19 +23,23 @@
 % in agent. All parameters use respective size maps
 % - feature: functions for statistical analysis and plotting confidence
 % intervals
+% - removed test_fis_sensitivity, etc flags from input file
 
 % TODO 
 % - probability-based predictions in MPC
 % - add localised predictions for given radius around an agent
 % - add battery model and loss of agents
 % - Mirko model implementation: FIS, MPC, MPC steps, 
-% - remove test_fis_sensitivity, etc flags from input file
 % - refactor: initialise plotting data can be removed
 % - move files in main folder to functions folder (using github)
 % - improvements: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
 % - improvement: write data to file after each simulation
 % - remove concept of task queue for agents
 % - Performance improvements: Single prediction of environment states model before MPC optimization
+% - clean up unused files
+% - move functions at top level to functions folder
+% - implement proper use of m_prior - should this be an agent or mpc parameter?
+% NOTE: change implements m_prior as an agent parameter
 
 % Clear workspace
 clear all
@@ -131,30 +135,28 @@ for simSetup = 1:size(simulationSetups, 1)
         c_fs_1, c_fs_2, v_w, ang_w] = f_init_env(dt_e, k);
       
       % Agent
-      [n_x_s, n_y_s, l_x_s, l_y_s, n_a, n_q, v_as, a_t_trav, ...
-      t_scan_m, t_scan_c, a_task, a_loc, a_target, a_t_scan, ...
-      m_prior_s, m_scan, m_t_scan, m_bo_s, m_dw_s, m_victim_s, config, c_f_s] = f_init_agent(m_bo, m_dw_e, l_x_e, l_y_e);
+      agent_model = f_init_agent(m_bo, m_dw_e, l_x_e, l_y_e);
 
       % FIS
-      [fisArray] = f_init_fis(n_a);
+      [fisArray] = f_init_fis(agent_model.n_a);
 
       % MPC
       [flag_mpc, solver, options, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, nvars] = ...
-        f_init_mpc(fisArray, n_a);
+        f_init_mpc(fisArray, agent_model.n_a);
       
       % Plots
       [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
       m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
-      m_scan_hist, a_loc_hist, t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
-      = initialise_plotting(m_p_ref, n_x_e, n_y_e, n_x_s, n_y_s, m_f, m_bt, n_a, a_loc, k, fis_params);
+      t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
+      = initialise_plotting(n_x_e, n_y_e, agent_model.n_x_s, agent_model.n_y_s, m_f, m_bt, fis_params);
       
       %% Define timestep for saving variables
       % Number of desired data points
       n_prog_data = 500;
       % Estimated avg travel time
-      k_trav_avg = (t_scan_c + l_x_s/v_as)/dt_s;
+      k_trav_avg = (agent_model.t_scan_c + agent_model.l_x_s/agent_model.v_as)/dt_s;
       % Estimated sim time
-      k_sim_est = k_trav_avg * n_x_s * n_y_s / n_a;
+      k_sim_est = k_trav_avg * agent_model.n_x_s * agent_model.n_y_s / agent_model.n_a;
       % Save data time
       dk_v = k_sim_est / n_prog_data;
       ct_v = 0;
@@ -172,7 +174,6 @@ for simSetup = 1:size(simulationSetups, 1)
               model_mpc(fisArray, ini_params, fis_param_hist, ...
               solver, options, n_a, n_MF_out, ...
               nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
-              test_fis_sensitivity, ...
               m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_s, ...
               dk_a, dk_c, dk_e, dk_mpc, dt_s, k, seeds(iteration), ...
               n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
@@ -180,6 +181,7 @@ for simSetup = 1:size(simulationSetups, 1)
               l_x_s, l_y_s, c_f_s, ...
               c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
               r_bo, r_fo, fis_data, config, t);     
+
             
             % Counter 
             k_mpc = k_mpc + 1;
@@ -191,13 +193,8 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter
           k_c = k_c + 1;
           % Path planner
-          [a_target, ~] = model_fis(...
-            n_a, a_target, n_q, ...
-            n_x_s, n_y_s, l_x_s, l_y_s, ...
-            m_scan, m_t_scan, m_dw_e, m_prior_s, ...
-            fisArray, ...
-            a_t_trav, a_t_scan, ...
-            ang_w, v_as, v_w, test_fis_sensitivity, [], c_f_s);   
+          [agent_model] = model_fis(agent_model, m_dw_e, fisArray, ang_w, v_w);
+          
         end
 
         %% Agent actions
@@ -205,13 +202,8 @@ for simSetup = 1:size(simulationSetups, 1)
           % Counter 
           k_a = k_a + 1;
           % Agent model
-          [ m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-            a_t_trav, a_t_scan] ...
-              = model_agent( n_a, ...
-              m_t_scan, m_scan, m_scan_hist, ...
-              a_loc, a_loc_hist, a_task, a_target, ...
-              a_t_trav, a_t_scan, ...
-              l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, dt_s);
+          agent_model = model_agent(agent_model, v_w, ang_w, dt_a, k, dt_s);
+
         end  
 
         %% Environment model
@@ -226,8 +218,8 @@ for simSetup = 1:size(simulationSetups, 1)
         %% Objective function evaluation
         
         [s_obj, obj] = calc_obj(...
-          config, m_f, m_bo_s, m_scan, m_victim_s, ...
-          dt_s, s_obj, c_f_s, t);
+          agent_model.config, m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          dt_s, s_obj, agent_model.c_f_s, t);
         
         %% Store variables
         if ct_v*dk_v <= k
@@ -243,12 +235,12 @@ for simSetup = 1:size(simulationSetups, 1)
 
         %% Progress report
         if k_prog * dk_prog <= t
-          report_progress(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
+          report_progress(endCondition, t, t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
           k_prog = k_prog + 1;
         end
 
         %% Check end condition
-        [flag_finish] = func_endCondition(endCondition, t, t_f, m_scan, n_x_s, n_y_s);
+        [flag_finish] = func_endCondition(endCondition, t, t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
 
       end
 

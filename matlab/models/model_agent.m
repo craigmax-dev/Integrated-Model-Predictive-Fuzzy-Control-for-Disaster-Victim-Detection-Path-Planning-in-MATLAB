@@ -7,88 +7,94 @@
 % CHANGELOG
 % flag_scan_task updated to allow either single scan or repeat
 % flag_scan_task replaced with config structure for all objective func config
-% m_scan replaced with time last scanned
+% agent_model.m_scan replaced with time last scanned
 % repeat scan logic moved to objective function
-% removed m_scan_hist and flag_mpc
+% removed agent_model.m_scan_hist and flag_mpc
+% Refactored function to use agent_model structure
+% Added agent battery model and battery level check
 
 % TODO
-% Improvements to management of agent tasks. Ideally everything managed under a
-% single variable.
+% Update idle task?
 
-% a_task
+% agent_model.a_task
 % 1 = travel
 % 2 = scan
 % 3 = idle
 
-function [  m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, a_t_trav, a_t_scan] = model_agent( ...
-  n_a, m_t_scan, m_scan, m_scan_hist, a_loc, a_loc_hist, a_task, a_target, ...
-  a_t_trav, a_t_scan, l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, dt_s)
+function agent_model = model_agent(agent_model, v_w, ang_w, dt_a, k, dt_s)
               
-  for a = 1:n_a
-    
-    if a_task(a) == 1
+  for a = 1:agent_model.n_a
+
+    % Skip task if battery level is 0 or less
+    if agent_model.a_battery_level(a) < dt_a
+        continue; % Skip to the next agent
+    else
+      agent_model.a_battery_level(a) = agent_model.a_battery_level(a) - dt_a; % Reduce battery level
+    end
+        
+    if agent_model.a_task(a) == 1
       
       % Travel
-      a_t_trav(a) = a_t_trav(a) - dt_a;
+      agent_model.a_t_trav(a) = agent_model.a_t_trav(a) - dt_a;
       
-      if a_t_trav(a) <= 0
+      if agent_model.a_t_trav(a) <= 0
         
         % Set task to scan
-        a_task(a)   = 2;                            
+        agent_model.a_task(a)   = 2;                            
         
         % Update agent location
-        a_loc(a, :) = a_target(a, :, 1);
+        agent_model.a_loc(a, :) = agent_model.a_target(a, :, 1);
         
         % Update agent location history
-        a_loc_hist    = [a_loc_hist; a_loc(a, :), a, k];        
+        agent_model.a_loc_hist    = [agent_model.a_loc_hist; agent_model.a_loc(a, :), a, k];        
         
         % Initialise remaining scantime, using additional time from the travel
-        a_t_scan(a) = m_t_scan(a_loc(a, 1), a_loc(a, 2)) + a_t_trav(a);
+        agent_model.a_t_scan(a) = agent_model.m_t_scan(agent_model.a_loc(a, 1), agent_model.a_loc(a, 2)) + agent_model.a_t_trav(a);
       
       end
       
-    elseif a_task(a) == 2
+    elseif agent_model.a_task(a) == 2
       
       % Scan
-      a_t_scan(a) = a_t_scan(a) - dt_a;
+      agent_model.a_t_scan(a) = agent_model.a_t_scan(a) - dt_a;
       
-      if a_t_scan(a) <= 0
+      if agent_model.a_t_scan(a) <= 0
         
         % Set task to travel
-        a_task(a) = 1;
+        agent_model.a_task(a) = 1;
         
         % Get cell coordinates
-        i = a_loc(a, 1);
-        j = a_loc(a, 2);
+        i = agent_model.a_loc(a, 1);
+        j = agent_model.a_loc(a, 2);
         
         % Scan cell
-        m_scan(i, j) = k * dt_s;
+        agent_model.m_scan(i, j) = k * dt_s;
         
         % Shift target list
-        a_target(a, 1, :)   = circshift(a_target(a, 1, :), -1);
-        a_target(a, 2, :)   = circshift(a_target(a, 2, :), -1);        
-        a_target(a, :, end) = [NaN, NaN];
+        agent_model.a_target(a, 1, :)   = circshift(agent_model.a_target(a, 1, :), -1);
+        agent_model.a_target(a, 2, :)   = circshift(agent_model.a_target(a, 2, :), -1);        
+        agent_model.a_target(a, :, end) = [NaN, NaN];
         
         % Set task to idle if no target, otherwise calculate travel time
-        if(isnan(a_target(a, :, 1)))
+        if(isnan(agent_model.a_target(a, :, 1)))
           
-          a_task(a) = 3;
+          agent_model.a_task(a) = 3;
         
         else
           
-          a_t_trav(a) = calc_t_trav(a_loc(a, :), a_target(a, :, 1), ...
-            l_x_s, l_y_s, ang_w, v_w, v_as);
+          agent_model.a_t_trav(a) = calc_t_trav(agent_model.a_loc(a, :), agent_model.a_target(a, :, 1), ...
+            agent_model.l_x_s, agent_model.l_y_s, ang_w, v_w, agent_model.v_as);
         
         end
         
       end
       
-    elseif (a_task == 3)
+    elseif (agent_model.a_task == 3)
       
       return
     
     end
-    
+
   end
   
 end
