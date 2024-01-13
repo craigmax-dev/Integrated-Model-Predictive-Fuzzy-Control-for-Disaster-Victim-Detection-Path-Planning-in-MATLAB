@@ -12,16 +12,16 @@
 % Added parameters for battery model
 
 % TODO
-% Better way to structure a_loc_hist?
+% Better way to structure a_loc_hist
 
-function agent_model = initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e)
+function agent_model = initialise_agent_SIM_repeat(environment_model)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
 
   % Search map building occupancy
-  m_bo_s = func_coarsen(m_bo, c_f_s); 
-  m_dw_s = func_coarsen(m_dw_e, c_f_s); 
+  m_bo_s = func_coarsen(environment_model.m_bo, c_f_s); 
+  m_dw_s = func_coarsen(environment_model.m_dw_e, c_f_s); 
   
   % Calculate victim map
   n_victim_max = 5;
@@ -32,8 +32,8 @@ function agent_model = initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e)
   n_y_s  = size(m_bo_s, 2);
   
   % Search map cell lengths
-  l_x_s     = c_f_s(1)*l_x_e;
-  l_y_s     = c_f_s(2)*l_y_e;
+  l_x_s     = c_f_s(1)*environment_model.l_x_e;
+  l_y_s     = c_f_s(2)*environment_model.l_y_e;
   
   % Agent parameters
   n_a           = 2;                % Number of UAVs in simulation

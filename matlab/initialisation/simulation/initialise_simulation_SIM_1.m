@@ -1,14 +1,16 @@
 % V2
 
+
+% CHANGELOG
+% Refactor: config struct
+
 % TODO: 
 % - remove test_fis_sensitivity flags
 % - check where r_bo, r_fo are used
+% Remove: exp_dir, flag_fig_simSet, flag_fig_sim, flag_data_exp, test_solvers,
+% test_fis_sensitivity, dt_c, dt_mpc, 
 
-function [test_fis_sensitivity, test_solvers, fis_data, ...
-  flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
-  t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
-  k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
-  obj, s_obj, r_bo, r_fo] = initialise_simulation_SIM_1()
+function config = initialise_simulation_SIM_1()
 
 %% Simulation Settings
 % Tests 
@@ -60,5 +62,11 @@ s_obj         = 0;
 % Risk model
 r_bo  = 0.5;      % Risk weighting due to building occupancy
 r_fo  = 0.5;      % Risk weighting due to environmental fire
+
+config = struct('test_fis_sensitivity', test_fis_sensitivity, 'test_solvers', test_solvers, 'fis_data', fis_data, ...
+  'flag_data_exp', flag_data_exp, 'flag_fig_sim', flag_fig_sim, 'flag_fig_simSet', flag_fig_simSet, 'exp_dir', exp_dir, ...
+  't', t, 't_f', t_f, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
+  'k', k, 'k_a', k_a, 'k_c', k_c, 'k_e', k_e, 'k_mpc', k_mpc, 'k_prog', k_prog, 'endCondition', endCondition, 'flag_finish', flag_finish, ...
+  'obj', obj, 's_obj', s_obj, 'r_bo', r_bo, 'r_fo', r_fo);
 
 end

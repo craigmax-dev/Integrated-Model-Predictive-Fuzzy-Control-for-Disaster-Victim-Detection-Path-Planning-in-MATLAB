@@ -23,7 +23,7 @@
 % in agent. All parameters use respective size maps
 % - feature: functions for statistical analysis and plotting confidence
 % intervals
-% - removed test_fis_sensitivity, etc flags from input file
+% - removed config.test_fis_sensitivity, etc flags from input file
 
 % TODO 
 % - probability-based predictions in MPC
@@ -40,6 +40,7 @@
 % - move functions at top level to functions folder
 % - implement proper use of m_prior - should this be an agent or mpc parameter?
 % NOTE: change implements m_prior as an agent parameter
+% Move simulation config to config file
 
 % Clear workspace
 clear all
@@ -69,8 +70,8 @@ h_initialise_environment_SIM_basic_no_dynamic= @(dt_e, k)initialise_environment_
 h_initialise_environment_SIM_basic_dynamic= @(dt_e, k)initialise_environment_SIM_basic_dynamic(dt_e, k);
 
 % Agent
-h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_single(m_bo, m_dw_e, l_x_e, l_y_e);
-h_initialise_agent_SIM_repeat = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_repeat(m_bo, m_dw_e, l_x_e, l_y_e);
+% h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_single(m_bo, m_dw_e, l_x_e, l_y_e);
+h_initialise_agent_SIM_repeat = @(environment_model)initialise_agent_SIM_repeat(environment_model);
 
 % FIS
 h_init_fis_1 = @(n_a)initialise_fis_SIM_1(n_a);
@@ -123,19 +124,14 @@ for simSetup = 1:size(simulationSetups, 1)
       rng(seeds(iteration)); % Set the seed for RNG
 
       % Simulation data
-      [test_fis_sensitivity, test_solvers, fis_data, ...
-      flag_data_exp, flag_fig_sim, flag_fig_simSet, exp_dir, ...
-      t, t_f, dt_s, dk_a, dk_c, dk_e, dk_mpc, dk_prog, dt_a, dt_c, dt_e, dt_mpc, ...
-      k, k_a, k_c, k_e, k_mpc, k_prog, endCondition, flag_finish, ...
-      obj, s_obj, r_bo, r_fo] = f_init_sim();
+      config = f_init_sim();
+      
 
       % Environment 
-      [l_x_e, l_y_e, n_x_e, n_y_e, ...
-        m_bo, m_s, m_f, m_bt, m_dw_e, m_p_ref, ...
-        c_fs_1, c_fs_2, v_w, ang_w] = f_init_env(dt_e, k);
+      environment_model = f_init_env(config.dt_e, config.k);
       
       % Agent
-      agent_model = f_init_agent(m_bo, m_dw_e, l_x_e, l_y_e);
+      agent_model = f_init_agent(environment_model);
 
       % FIS
       [fisArray] = f_init_fis(agent_model.n_a);
@@ -148,13 +144,13 @@ for simSetup = 1:size(simulationSetups, 1)
       [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
       m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
       t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
-      = initialise_plotting(n_x_e, n_y_e, agent_model.n_x_s, agent_model.n_y_s, m_f, m_bt, fis_params);
+      = initialise_plotting(environment_model.n_x_e, environment_model.n_y_e, agent_model.n_x_s, agent_model.n_y_s, environment_model.m_f, environment_model.m_bt, fis_params);
       
       %% Define timestep for saving variables
       % Number of desired data points
       n_prog_data = 500;
       % Estimated avg travel time
-      k_trav_avg = (agent_model.t_scan_c + agent_model.l_x_s/agent_model.v_as)/dt_s;
+      k_trav_avg = (agent_model.t_scan_c + agent_model.l_x_s/agent_model.v_as)/config.dt_s;
       % Estimated sim time
       k_sim_est = k_trav_avg * agent_model.n_x_s * agent_model.n_y_s / agent_model.n_a;
       % Save data time
@@ -162,85 +158,75 @@ for simSetup = 1:size(simulationSetups, 1)
       ct_v = 0;
 
       %% Simulation Loop
-      while flag_finish == false
+      while config.flag_finish == false
 
         % Start timer
         t_sim = tic;
 
         %% MPC
         if flag_mpc 
-          if k_mpc*dk_mpc <= k
+          if config.k_mpc*config.dk_mpc <= config.k
             [fisArray, ini_params, fis_param_hist] = ...
               model_mpc(fisArray, ini_params, fis_param_hist, ...
               solver, options, n_a, n_MF_out, ...
               nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
               m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_s, ...
-              dk_a, dk_c, dk_e, dk_mpc, dt_s, k, seeds(iteration), ...
+              config.dk_a, config.dk_c, config.dk_e, config.dk_mpc, config.dt_s, config.k, seeds(iteration), ...
               n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
               a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
               l_x_s, l_y_s, c_f_s, ...
               c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
-              r_bo, r_fo, fis_data, config, t);     
-
+              config.r_bo, config.r_fo, config.fis_data, config, t);     
+            % TODO: update for environment_model and agent_model structures
             
             % Counter 
-            k_mpc = k_mpc + 1;
+            config.k_mpc = config.k_mpc + 1;
           end
         end
 
         %% Path planning
-        if k_c*dk_c <= k
-          % Counter
-          k_c = k_c + 1;
-          % Path planner
-          [agent_model] = model_fis(agent_model, m_dw_e, fisArray, ang_w, v_w);
-          
+        if config.k_c*config.dk_c <= config.k
+          [agent_model] = model_fis(agent_model, environment_model, fisArray);
+          config.k_c = config.k_c + 1;
         end
 
-        %% Agent actions
-        if k_a*dk_a <= k
-          % Counter 
-          k_a = k_a + 1;
-          % Agent model
-          agent_model = model_agent(agent_model, v_w, ang_w, dt_a, k, dt_s);
-
+        %% Agent model
+        if config.k_a*config.dk_a <= config.k
+          agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
+          config.k_a = config.k_a + 1;
         end  
 
         %% Environment model
-        if k_e*dk_e <= k
-          % Counter 
-          k_e = k_e + 1;
-          % Environment map
-          [m_f, m_bt, m_dw_e] = model_environment(...
-            m_f, m_s, m_bo, m_bt, dt_e, k, seeds(iteration), n_x_e, n_y_e, v_w, ang_w, c_fs_1, c_fs_2);
+        if config.k_e*config.dk_e <= config.k
+          environment_model = model_environment(environment_model);          
+          config.k_e = config.k_e + 1;
         end
 
         %% Objective function evaluation
-        
-        [s_obj, obj] = calc_obj(...
-          agent_model.config, m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
-          dt_s, s_obj, agent_model.c_f_s, t);
+        [config.s_obj, config.obj] = calc_obj(...
+          agent_model.config, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
         
         %% Store variables
-        if ct_v*dk_v <= k
+        if ct_v*dk_v <= config.k
           ct_v = ct_v + 1;
-          t_hist(ct_v) = ct_v*dk_v*dt_s;
-          s_obj_hist(ct_v)    = s_obj;
-          obj_hist(ct_v)      = obj;
+          t_hist(ct_v) = ct_v*dk_v*config.dt_s;
+          s_obj_hist(ct_v)    = config.s_obj;
+          obj_hist(ct_v)      = config.obj;
         end
 
         %% Advance timestep
-        t = t + dt_s;
-        k = k + 1;
+        config.t = config.t + config.dt_s;
+        config.k = config.k + 1;
 
         %% Progress report
-        if k_prog * dk_prog <= t
-          report_progress(endCondition, t, t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
-          k_prog = k_prog + 1;
+        if config.k_prog * config.dk_prog <= config.t
+          report_progress(config.endCondition, config.t, config.t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
+          config.k_prog = config.k_prog + 1;
         end
 
         %% Check end condition
-        [flag_finish] = func_endCondition(endCondition, t, t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
+        [config.flag_finish] = func_endCondition(config.endCondition, config.t, config.t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
 
       end
 
@@ -258,13 +244,14 @@ end
 
 %% Perform statistical analysis and plotting
 
-alpha = 0.05;  % Confidence interval level
+% Confidence interval level
+alpha = 0.05;
 
 % Calculate stats for s_obj_hist
-[means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj] = calculateStats(allResults, simulationSetups, 's_obj_hist', dt_s, alpha);
+[means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj] = calculateStats(allResults, simulationSetups, 's_obj_hist', config.dt_s, alpha);
 
 % Calculate stats for obj_hist
-[means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetups, 'obj_hist', dt_s, alpha);
+[means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetups, 'obj_hist', config.dt_s, alpha);
 
 % Plot stats for s_obj_hist
 plotStats(means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj, simulationSetups, 'Sum of Objective History Across Simulation Setups', 'Sum of Objective Value');
