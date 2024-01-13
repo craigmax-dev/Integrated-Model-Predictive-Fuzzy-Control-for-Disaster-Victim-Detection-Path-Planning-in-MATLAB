@@ -25,6 +25,7 @@
 % intervals
 % - removed config.test_fis_sensitivity, etc flags from input file
 % - removed fis_param_hist
+% - Restructure: move files in main folder to functions folder (using githmpc_model.ub)
 
 % TODO 
 % - Feature: probability-based predictions in MPC
@@ -32,7 +33,6 @@
 % - Feature: add battery model and loss of agents
 % - Feature: Mirko model implementation: FIS, MPC, MPC steps, 
 % - Refactor: initialise plotting data can be removed
-% - Restructure: move files in main folder to functions folder (using githmpc_model.ub)
 % - Feature: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
 % - Performance: write data to file after each simulation
 % - Feature: remove concept of task queue for agents
