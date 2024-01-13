@@ -26,13 +26,13 @@ function [fisArray] = initialise_fis_SIM_1(n_a)
             end
         end
 
-        outputName = "attraction";
-        fis = addOutput(fis, [0 1], 'Name', outputName);
+        outputs = "attraction";
+        fis = addOutput(fis, [0 1], 'Name', outputs);
 
         % Output MFs for low, medium, high
-        fis = addMF(fis, outputName, 'linear', [0 0 0], 'Name', 'low');    % Low output
-        fis = addMF(fis, outputName, 'linear', [0 0 0.5], 'Name', 'medium');  % Medium output
-        fis = addMF(fis, outputName, 'linear', [0 0 1], 'Name', 'high');   % High output
+        fis = addMF(fis, outputs, 'linear', [0 0 0], 'Name', 'low');    % Low output
+        fis = addMF(fis, outputs, 'linear', [0 0 0.5], 'Name', 'medium');  % Medium output
+        fis = addMF(fis, outputs, 'linear', [0 0 1], 'Name', 'high');   % High output
 
     ruleList = [
       % Low t_response, Low Priority -> Medium Attraction

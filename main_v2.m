@@ -24,23 +24,24 @@
 % - feature: functions for statistical analysis and plotting confidence
 % intervals
 % - removed config.test_fis_sensitivity, etc flags from input file
+% - removed fis_param_hist
 
 % TODO 
-% - probability-based predictions in MPC
-% - add localised predictions for given radius around an agent
-% - add battery model and loss of agents
-% - Mirko model implementation: FIS, MPC, MPC steps, 
-% - refactor: initialise plotting data can be removed
-% - move files in main folder to functions folder (using github)
-% - improvements: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
-% - improvement: write data to file after each simulation
-% - remove concept of task queue for agents
-% - Performance improvements: Single prediction of environment states model before MPC optimization
-% - clean up unused files
-% - move functions at top level to functions folder
-% - implement proper use of m_prior - should this be an agent or mpc parameter?
-% NOTE: change implements m_prior as an agent parameter
-% Move simulation config to config file
+% - Feature: probability-based predictions in MPC
+% - Feature/performance: add localised predictions for given radius around an agent
+% - Feature: add battery model and loss of agents
+% - Feature: Mirko model implementation: FIS, MPC, MPC steps, 
+% - Refactor: initialise plotting data can be removed
+% - Restructure: move files in main folder to functions folder (using githmpc_model.ub)
+% - Feature: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
+% - Performance: write data to file after each simulation
+% - Feature: remove concept of task queue for agents
+% - Performance: Single prediction of environment states model before MPC optimization
+% - Restructure: clean up unused files
+% - Bugfix: implement proper use of m_prior - should this be an agent or mpc parameter?
+% - Restructure: Move to config file: mpc_model.flag_mpc, simulation config
+% - Rename: config under agent_model (to avoid confusion)
+
 
 % Clear workspace
 clear all
@@ -126,7 +127,6 @@ for simSetup = 1:size(simulationSetups, 1)
       % Simulation data
       config = f_init_sim();
       
-
       % Environment 
       environment_model = f_init_env(config.dt_e, config.k);
       
@@ -137,14 +137,13 @@ for simSetup = 1:size(simulationSetups, 1)
       [fisArray] = f_init_fis(agent_model.n_a);
 
       % MPC
-      [flag_mpc, solver, options, n_p, fis_params, ini_params, A, b, Aeq, beq, lb, ub, nonlcon, nvars] = ...
-        f_init_mpc(fisArray, agent_model.n_a);
+      mpc_model = f_init_mpc(fisArray, agent_model.n_a);
       
       % Plots
       [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
       m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
-      t_hist, fis_param_hist, obj_hist, s_obj_hist] ... 
-      = initialise_plotting(environment_model.n_x_e, environment_model.n_y_e, agent_model.n_x_s, agent_model.n_y_s, environment_model.m_f, environment_model.m_bt, fis_params);
+      t_hist, obj_hist, s_obj_hist] ... 
+      = initialise_plotting(environment_model.n_x_e, environment_model.n_y_e, agent_model.n_x_s, agent_model.n_y_s, environment_model.m_f, environment_model.m_bt, mpc_model.fis_params);
       
       %% Define timestep for saving variables
       % Number of desired data points
@@ -164,22 +163,10 @@ for simSetup = 1:size(simulationSetups, 1)
         t_sim = tic;
 
         %% MPC
-        if flag_mpc 
+        % TODO: update for environment_model, config, mpc, agent_model structures
+        if mpc_model.flag_mpc 
           if config.k_mpc*config.dk_mpc <= config.k
-            [fisArray, ini_params, fis_param_hist] = ...
-              model_mpc(fisArray, ini_params, fis_param_hist, ...
-              solver, options, n_a, n_MF_out, ...
-              nvars, A, b, Aeq, beq, lb, ub, nonlcon, ...
-              m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_s, ...
-              config.dk_a, config.dk_c, config.dk_e, config.dk_mpc, config.dt_s, config.k, seeds(iteration), ...
-              n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
-              a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
-              l_x_s, l_y_s, c_f_s, ...
-              c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
-              config.r_bo, config.r_fo, config.fis_data, config, t);     
-            % TODO: update for environment_model and agent_model structures
-            
-            % Counter 
+            [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model, seeds(iteration)); 
             config.k_mpc = config.k_mpc + 1;
           end
         end

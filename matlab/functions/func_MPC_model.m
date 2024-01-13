@@ -6,23 +6,14 @@
 
 % CHANGELOG
 % Removed flag_mpc
+% Structures refactor
 
 % TODO
-% Update function inputs & calls: remove r_bo, r_fo
-% Update function inputs & calls: add m_victim_scan
-% Check repeating variable names in MPC function and not returning them does not
-% change original variables
+% Check that models are only updated during function and not returned to main
+% function. Also check correct data is accessed in MPC prediction. E.g. do we
+% initialise m_dw_e as 0 for the prediction? Other parameters of concern: k
 
-function [s_obj_pred] ...
-          = func_MPC_model(params, ...
-          fisArray, ...
-          m_f, m_bo, m_bt, m_prior, m_s, m_scan, m_t_scan, m_victim_scan, ...
-          dk_a, dk_c, dk_e, dk_mpc, dt_s, k, seed, ...
-          n_a, n_MF_out, n_p, n_x_s, n_y_s, n_x_e, n_y_e, n_q, ...
-          a_loc, a_target, a_task, a_t_trav, a_t_scan, ...
-          l_x_s, l_y_s, c_f_s, ...
-          c_fs_1, c_fs_2, v_as, v_w, ang_w, ...
-          r_bo, r_fo, fis_data, config, t)
+function s_obj_pred = func_MPC_model(params, agent_model, config, environment_model, fisArray, mpc_model)
       
   %% Variables
   % Counters
@@ -33,71 +24,60 @@ function [s_obj_pred] ...
   k_mpc   = 0;
   s_obj_pred   = 0;
   
-  dt_a    = dk_a*dt_s;
-  dt_e    = dk_e*dt_s;
+  % dt_a    = config.dk_a*config.dt_s;
+  % dt_e    = config.dk_e*config.dt_s;
   
   % Maps
   % Downwind map
-  m_dw_e   = zeros(n_x_e, n_x_e);
+  % m_dw_e   = zeros(environment_model.n_x_e, environment_model.n_x_e);
   
   % Range
   range = 1;
   
   %% Prediction
-  while k_pred < dk_mpc*n_p
+  while k_pred < config.dk_mpc*mpc_model.n_p
     
     %% Update FIS parameters
-    if k_mpc*dk_mpc <= k_pred
-      for a = 1:n_a
-        for mf = 1:n_MF_out
-          newParams = params(range:range+3);
-          fisArray(a).Outputs.MembershipFunctions(mf).Parameters = newParams;
-          range = range + 4;
+    if k_mpc*config.dk_mpc <= k_pred
+      for a = 1:agent_model.n_a
+        numInputs = numel(fisArray(a).Inputs);  % Get the number of inputs
+        numOutputs = numel(fisArray(a).Outputs);
+        for mf = 1:numOutputs
+          numParams = numInputs + 1;  % Number of parameters for a linear MF
+          newParams = params(range:range+numParams-1);  % Adjusted range
+          fisArray(a).Outputs(1).MembershipFunctions(mf).Parameters = newParams;
+          range = range + numParams;
         end
       end
       k_mpc = k_mpc + 1;
     end
+
     
     %% Path planning
-    if k_c*dk_c <= k_pred
-      [a_target, fis_data] = model_fis( ...
-            n_a, a_target, n_q, ...
-            n_x_s, n_y_s, l_x_s, l_y_s, ...
-            m_scan, m_t_scan, m_dw_e, m_prior, ...
-            fisArray, ...
-            a_t_trav, a_t_scan, ...
-            ang_w, v_as, v_w, fis_data, c_f_s);
+    if k_c*config.dk_c <= k_pred
+      [agent_model] = model_fis(agent_model, environment_model, fisArray);
       k_c = k_c + 1;
     end
     
-    %% Agent actions
-    if k_a*dk_a <= k_pred
-      [  m_scan, ~, a_loc, ~, a_task, a_target, ...
-            a_t_trav, a_t_scan] ...
-            = model_agent( n_a, ...
-                m_t_scan, m_scan, [], a_loc, [], a_task, a_target, ...
-                a_t_trav, a_t_scan, ...
-                l_x_s, l_y_s, v_as, v_w, ang_w, dt_a, k, dt_s);
+    %% Agent model
+    if k_a*config.dk_a <= k_pred
+      agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
       k_a = k_a + 1;
     end
     
     %% Environment model
-    if k_e*dk_e <= k_pred
-      % Update firemap and downwind map
-      [m_f, m_bt, m_dw_e] = model_environment(...
-        m_f, m_s, m_bo, m_bt, dt_e, k, seed, n_x_e, n_y_e, ...
-        v_w, ang_w, c_fs_1, c_fs_2);
+    if k_e*config.dk_e <= k_pred
+      environment_model = model_environment(environment_model);          
       k_e = k_e + 1;
-      
     end
     
     %% Objective function evaluation
     [s_obj_pred, ~] = calc_obj(...
-            config, m_f, m_bo, m_scan, m_victim_scan, ...
-            dt_s, s_obj_pred, c_f_s, t);      
+      agent_model.config, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+      config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
           
     %% Advance timestep
     k_pred = k_pred + 1;
-    k      = k + 1;
+    config.k      = config.k + 1;
   end
 end
