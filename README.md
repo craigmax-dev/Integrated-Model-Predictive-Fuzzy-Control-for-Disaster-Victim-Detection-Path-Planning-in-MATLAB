@@ -1,5 +1,7 @@
 # Integrated Model Predictive Fuzzy Control for Disaster Victim Detection Path Planning in MATLAB
 
+**Please note currently the README file is out of date**
+
 This is the code for my in-progress thesis project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology.
 
 <!-- :exclamation: This is a work in progress! :exclamation:
