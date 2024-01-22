@@ -29,12 +29,6 @@ function [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, enviro
   end
   
   % Update FIS Parameters
-  % range = 1;
-  % for a=1:agent_model.n_a
-  %   fis_params  = mpc_params(range:range+3);
-  %   fisArray(a).Outputs.MembershipFunctions.Parameters = fis_params;
-  %   range       = range + 4;
-  % end
   range = 1;
   for a = 1:agent_model.n_a
       % Number of inputs in the FIS for agent 'a'

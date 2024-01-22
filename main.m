@@ -26,7 +26,7 @@
 % - removed config.test_fis_sensitivity, etc flags from input file
 % - removed fis_param_hist
 % - Restructure: move files in main folder to functions folder (using githmpc_model.ub)
-
+ 
 % TODO 
 % - Feature: probability-based predictions in MPC
 % - Feature/performance: add localised predictions for given radius around an agent
@@ -41,10 +41,40 @@
 % - Bugfix: implement proper use of m_prior - should this be an agent or mpc parameter?
 % - Restructure: Move to config file: mpc_model.flag_mpc, simulation config
 % - Rename: config under agent_model (to avoid confusion)
+% - Data points to record: battery level, ...
+% - Agents seem to take too long to scan cells currently - on scale of days to
+% come to stable solution with 8x8 search environment
+% Troubleshooting: 
+% % check correct/logical cells scanned by agents (validated by reaching stable state)
+% % check timestep functionality - what happens when agent completes task early
+% etc?
+% Remove constraint from multiple agents entering same cell
+% Fix bug: agents stop scanning
+% Data mapping: clear separation of agent and mpc data. E.g. agents should not
+% have knowledge of data states of other agents. e.g. m_prior
+% Add recalculation of m_prior
+% What other variables can be implemented in model? Variable scan times? 
+% Test version with agents communicating cell locations.
+% NOTE: normalization using maxTravelTime >1 in some cases
+% Fix agents not acting at beginning of simulation: could be tuning issue.
+% Fix issue with agent actions calculation.
+% Track average max priority - can use this to normalize
+% Add agent check: maximum control timestep etc
+
+% RESEARCH
+% Resarch normalization functions for FIS inputs
+% Solutions to synchronised agents:
+% - constraint on proximity to nearest agent
+% - communicate planned cells to scan
+% - 
+
+% Plots
+% Histogram of cells scanned over time
+% 
 
 
-% Clear workspace
-clear all
+% Clear workspace 
+clear all  
 close all
  
 % Set up folder paths
@@ -59,7 +89,7 @@ addpath('data', ...
   'matlab/initialisation/environment', ...
   'matlab/initialisation/agent');
   
-%% Define function handles
+%% Define function handles 
 % Function handles are used to refer to the diffe rent scripts used in the
 % simulations
 
@@ -67,8 +97,8 @@ addpath('data', ...
 h_init_SIM_1 = @()initialise_simulation_SIM_1();
 
 % Environment
-h_initialise_environment_SIM_basic_no_dynamic= @(dt_e, k)initialise_environment_SIM_basic_no_dynamic(dt_e, k);
-h_initialise_environment_SIM_basic_dynamic= @(dt_e, k)initialise_environment_SIM_basic_dynamic(dt_e, k);
+h_initialise_environment_SIM_basic_no_dynamic= @()initialise_environment_SIM_basic_no_dynamic();
+h_initialise_environment_SIM_basic_dynamic= @()initialise_environment_SIM_basic_dynamic();
 
 % Agent
 % h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_single(m_bo, m_dw_e, l_x_e, l_y_e);
@@ -124,22 +154,22 @@ for simSetup = 1:size(simulationSetups, 1)
       seeds(iteration) = randi(10000); % or another method to generate a random seed
       rng(seeds(iteration)); % Set the seed for RNG
 
-      % Simulation data
+      % Simulation parameters
       config = f_init_sim();
       
-      % Environment 
-      environment_model = f_init_env(config.dt_e, config.k);
+      % Initialise Environment 
+      environment_model = f_init_env();
       
-      % Agent
+      % Initialise Agent
       agent_model = f_init_agent(environment_model);
 
-      % FIS
+      % Initialise FIS
       [fisArray] = f_init_fis(agent_model.n_a);
 
-      % MPC
+      % Initialise MPC
       mpc_model = f_init_mpc(fisArray, agent_model.n_a);
-      
-      % Plots
+       
+      % Initialise Plots
       [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
       m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
       t_hist, obj_hist, s_obj_hist] ... 
@@ -154,53 +184,53 @@ for simSetup = 1:size(simulationSetups, 1)
       k_sim_est = k_trav_avg * agent_model.n_x_s * agent_model.n_y_s / agent_model.n_a;
       % Save data time
       dk_v = k_sim_est / n_prog_data;
-      ct_v = 0;
-
+      ct_v = 0; 
+ 
       %% Simulation Loop
       while config.flag_finish == false
 
         % Start timer
         t_sim = tic;
-
+  
         %% MPC
         % TODO: update for environment_model, config, mpc, agent_model structures
         if mpc_model.flag_mpc 
           if config.k_mpc*config.dk_mpc <= config.k
             [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model, seeds(iteration)); 
             config.k_mpc = config.k_mpc + 1;
-          end
-        end
-
+          end 
+        end  
+ 
         %% Path planning
         if config.k_c*config.dk_c <= config.k
-          [agent_model] = model_fis(agent_model, environment_model, fisArray);
+          [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
           config.k_c = config.k_c + 1;
-        end
+        end     
 
         %% Agent model
-        if config.k_a*config.dk_a <= config.k
+        if config.k_a*config.dk_a <= config.k 
           agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
-          config.k_a = config.k_a + 1;
-        end  
-
-        %% Environment model
+          config.k_a = config.k_a + 1; 
+        end    
+   
+        %% Environment model  
         if config.k_e*config.dk_e <= config.k
           environment_model = model_environment(environment_model);          
-          config.k_e = config.k_e + 1;
-        end
+          config.k_e = config.k_e + 1; 
+        end 
 
         %% Objective function evaluation
         [config.s_obj, config.obj] = calc_obj(...
-          agent_model.config, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
           config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
         
-        %% Store variables
+        %% Store variables 
         if ct_v*dk_v <= config.k
           ct_v = ct_v + 1;
           t_hist(ct_v) = ct_v*dk_v*config.dt_s;
           s_obj_hist(ct_v)    = config.s_obj;
-          obj_hist(ct_v)      = config.obj;
-        end
+          obj_hist(ct_v)      = config.obj; 
+        end 
 
         %% Advance timestep
         config.t = config.t + config.dt_s;

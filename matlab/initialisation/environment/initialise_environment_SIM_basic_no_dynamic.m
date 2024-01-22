@@ -9,9 +9,7 @@
 % - replace c_f_s with single unit variable
 % check difference between m_bo, m_s, m_p_ref
 
-function environment_model = initialise_environment_SIM_basic_no_dynamic(dt_e, k)
-
-  seed = 0;
+function environment_model = initialise_environment_SIM_basic_no_dynamic()
   
   % Environment map dimensions
   n_x_e       = 40;
@@ -27,7 +25,7 @@ function environment_model = initialise_environment_SIM_basic_no_dynamic(dt_e, k
   l_y_e = 10;
   
   % Wind model
-  v_w         = 2;        % Wind speed (m/s)
+  v_w         = 0;        % Wind speed (m/s)
   ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
   
   % Initialise fire map
