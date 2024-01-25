@@ -5,9 +5,9 @@
 % CHANGELOG
 % Refactor: mpc_model structure
 
-function mpc_model = initialise_MPC_01(fisArray, n_a)
+function mpc_model = i_mpc_enabled(fisArray, n_a)
 
-  flag_mpc = false;
+  flag_mpc = true;
   n_p = 1;                  % Prediction horizon
   solver = "patternsearch"; % Solver options: fmincon, ga, particleswarm, patternsearch
   
@@ -32,8 +32,8 @@ function mpc_model = initialise_MPC_01(fisArray, n_a)
   nvars = size(ini_params, 2);
 
   % Solver options
-  optTermCond       = 'MaxTime';
-  optTermCond_value = 60;
+  optTermCond       = 'MaxIterations';
+  optTermCond_value = 100;
   options        = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Structure

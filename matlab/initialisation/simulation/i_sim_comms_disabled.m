@@ -10,7 +10,7 @@
 % Remove: exp_dir, flag_fig_simSet, flag_fig_sim, flag_data_exp, test_solvers,
 % test_fis_sensitivity, dt_c, dt_mpc, 
 
-function config = initialise_simulation_SIM_1()
+function config = i_sim_comms_disabled()
 
 %% Simulation Settings
 % Tests 

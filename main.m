@@ -60,6 +60,8 @@
 % Fix issue with agent actions calculation.
 % Track average max priority - can use this to normalize
 % Add agent check: maximum control timestep etc
+% Comms-coordination modelling: double-check during assignment (for same spot in
+% queue), etc...
 
 % RESEARCH
 % Resarch normalization functions for FIS inputs
@@ -75,7 +77,7 @@
 
 % Clear workspace 
 clear all  
-close all
+% close all
  
 % Set up folder paths
 addpath('data', ...
@@ -94,22 +96,26 @@ addpath('data', ...
 % simulations
 
 % Simulation variables
-h_init_SIM_1 = @()initialise_simulation_SIM_1();
+h_s_comms_disabled = @()i_sim_comms_disabled();
+h_s_comms_enabled = @()i_sim_comms_enabled();
 
 % Environment
-h_initialise_environment_SIM_basic_no_dynamic= @()initialise_environment_SIM_basic_no_dynamic();
-h_initialise_environment_SIM_basic_dynamic= @()initialise_environment_SIM_basic_dynamic();
+h_e_static = @()initialise_environment_SIM_basic_no_dynamic();
+h_e_dynamic = @()initialise_environment_SIM_basic_dynamic();
 
 % Agent
-% h_initialise_agent_SIM_single = @(m_bo, m_dw_e, l_x_e, l_y_e)initialise_agent_SIM_single(m_bo, m_dw_e, l_x_e, l_y_e);
-h_initialise_agent_SIM_repeat = @(environment_model)initialise_agent_SIM_repeat(environment_model);
+h_a_repeat_1 = @(environment_model)i_a_repeat_1(environment_model);
+h_a_repeat_2 = @(environment_model)i_a_repeat_2(environment_model);
+h_a_repeat_2_battery_loss = @(environment_model)i_a_repeat_2_battery_loss(environment_model);
+
+
 
 % FIS
 h_init_fis_1 = @(n_a)initialise_fis_SIM_1(n_a);
 
 % MPC
-h_init_MPC_1 = @(fisArray, n_a)initialise_MPC_01(fisArray, n_a);
-h_initialise_MPC_maxfunceval_50 = @(fisArray, n_a)initialise_MPC_maxfunceval_50(fisArray, n_a);
+h_mpc_disabled = @(fisArray, n_a)i_mpc_disabled(fisArray, n_a);
+h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 
 % Handles for solver test
 h_init_MPC_SOLV_fminsearch = @(fisArray, n_a)initialise_MPC_ST01_fminsearch(fisArray, n_a);
@@ -117,14 +123,32 @@ h_init_MPC_SOLV_ga = @(fisArray, n_a)initialise_MPC_ST01_ga(fisArray, n_a);
 h_init_MPC_SOLV_particleswarm = @(fisArray, n_a)initialise_MPC_ST01_particleswarm(fisArray, n_a);
 h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearch(fisArray, n_a);
 
+% simulationSetups = {
+%   "Comms_Disabled", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   "Comms_Enabled", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   };
+
+% comparison n_a
+% simulationSetups = {
+%   "sim_na_1", h_s_comms_disabled, h_e_static, h_a_repeat_1, h_init_fis_1, h_mpc_disabled;
+%   "sim_na_2", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   };
+
+% % comparison n_a
+% simulationSetups = {
+%   "sim_no_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_1, h_mpc_disabled;
+%   };
+
+% MPC basic
 simulationSetups = {
-  "SIM01_sensitivity_FIS", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_fis_1, h_init_MPC_1;
-%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_dynamic, h_initialise_agent_SIM_single, h_init_fis_1, h_initialise_MPC_maxfunceval_50;
-%   "SIM01_sensitivity_MPC", h_init_SIM_1, h_initialise_environment_SIM_basic_no_dynamic, h_initialise_agent_SIM_repeat, h_init_fis_1, h_initialise_MPC_maxfunceval_50;
+  "sim_no_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+  "sim_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_enabled;
   };
 
+
 % Define the number of iterations for each simulation setup
-numIterations = 1;
+numIterations = 1; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -185,11 +209,11 @@ for simSetup = 1:size(simulationSetups, 1)
       % Save data time
       dk_v = k_sim_est / n_prog_data;
       ct_v = 0; 
- 
+  
       %% Simulation Loop
       while config.flag_finish == false
 
-        % Start timer
+        % Start timer 
         t_sim = tic;
   
         %% MPC
@@ -213,7 +237,7 @@ for simSetup = 1:size(simulationSetups, 1)
           config.k_a = config.k_a + 1; 
         end    
    
-        %% Environment model  
+        %% Environment model
         if config.k_e*config.dk_e <= config.k
           environment_model = model_environment(environment_model);          
           config.k_e = config.k_e + 1; 
@@ -226,7 +250,7 @@ for simSetup = 1:size(simulationSetups, 1)
         
         %% Store variables 
         if ct_v*dk_v <= config.k
-          ct_v = ct_v + 1;
+          ct_v = ct_v + 1; 
           t_hist(ct_v) = ct_v*dk_v*config.dt_s;
           s_obj_hist(ct_v)    = config.s_obj;
           obj_hist(ct_v)      = config.obj; 
@@ -259,7 +283,9 @@ for simSetup = 1:size(simulationSetups, 1)
 
 end
 
-%% Perform statistical analysis and plotting
+
+
+%% Statistical analysis
 
 % Confidence interval level
 alpha = 0.05;
@@ -270,11 +296,22 @@ alpha = 0.05;
 % Calculate stats for obj_hist
 [means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetups, 'obj_hist', config.dt_s, alpha);
 
+
+%% Plotting
+
+% Let's say we want to plot vertical lines when battery level falls below a threshold
+% Assuming you have a function or a way to find the time when battery level falls below a threshold
+% battery_threshold_events = findBatteryLevelEvents(agent_model.a_battery_level_i, threshold);
+
+
 % Plot stats for s_obj_hist
-plotStats(means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj, simulationSetups, 'Sum of Objective History Across Simulation Setups', 'Sum of Objective Value');
+% plotStats(means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj, simulationSetups, 'Sum of Objective History Across Simulation Setups', 'Sum of Objective Value');
 
 % Plot stats for obj_hist
 plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetups, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value');
+% plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetups, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value', agent_model.a_battery_level_i);
+
+% plotStats(means, ci_lower, ci_upper, time_vector, simulationSetups, titleStr, yLabel, battery_threshold_events);
 
 
 

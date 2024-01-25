@@ -16,7 +16,7 @@
 % Review which parameters need to be part of model and which don't
 % Max travel time calc: use (v_as - v_w)
 
-function agent_model = initialise_agent_SIM_repeat(environment_model)
+function agent_model = i_a_repeat_2_battery_loss(environment_model)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -81,7 +81,7 @@ function agent_model = initialise_agent_SIM_repeat(environment_model)
   diagonalDistance = sqrt(totalLength^2 + totalWidth^2);
 
   % Calculate maximum response time
-  maxResponseTime = 1.5*(diagonalDistance / v_as + t_scan_c*2);
+  maxResponseTime = 2*(diagonalDistance / v_as + t_scan_c);
   
   % Create agent structure with all parameters
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
