@@ -62,17 +62,33 @@
 % Add agent check: maximum control timestep etc
 % Comms-coordination modelling: double-check during assignment (for same spot in
 % queue), etc...
+% Test & decision on comms model
+% Finish events plotting function
+% Add new FIS input: proximity to agent (r)
+% Basic optimization method without FIS
 
 % RESEARCH
-% Resarch normalization functions for FIS inputs
-% Solutions to synchronised agents:
-% - constraint on proximity to nearest agent
-% - communicate planned cells to scan
-% - 
+% Normalization functions for FIS inputs
+% Communications models for agents
+% How can the FIS be simplified for more efficient optimization? Ideally we can define a linear relationship between the input and output parameters of the FIS and tune the slope/weight of each input.
+% Implement method with linear relationship between input/output parameters
+% Writeup of disadvantages of fuzzy logic approach vs others
+
 
 % Plots
 % Histogram of cells scanned over time
 % 
+
+%% SIMULATIONS
+% 1.1. Pre-tuned FIS stable agent behaviour
+% 1.1. Pre-tuned FIS stable loss of agent
+% 1.1. Pre-tuned FIS vs. MPC (basic constraints)
+% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters not re-initialized)
+% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters re-initialized)
+% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters re-initialized, Monte-Carlo 10x)
+% 1.1. 
+
+
 
 
 % Clear workspace 
@@ -117,12 +133,6 @@ h_init_fis_1 = @(n_a)initialise_fis_SIM_1(n_a);
 h_mpc_disabled = @(fisArray, n_a)i_mpc_disabled(fisArray, n_a);
 h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 
-% Handles for solver test
-h_init_MPC_SOLV_fminsearch = @(fisArray, n_a)initialise_MPC_ST01_fminsearch(fisArray, n_a);
-h_init_MPC_SOLV_ga = @(fisArray, n_a)initialise_MPC_ST01_ga(fisArray, n_a);
-h_init_MPC_SOLV_particleswarm = @(fisArray, n_a)initialise_MPC_ST01_particleswarm(fisArray, n_a);
-h_init_MPC_SOLV_patternsearch = @(fisArray, n_a)initialise_MPC_ST01_patternsearch(fisArray, n_a);
-
 % simulationSetups = {
 %   "Comms_Disabled", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
 %   "Comms_Enabled", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
@@ -148,7 +158,7 @@ simulationSetups = {
 
 
 % Define the number of iterations for each simulation setup
-numIterations = 1; 
+numIterations = 10; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -209,7 +219,7 @@ for simSetup = 1:size(simulationSetups, 1)
       % Save data time
       dk_v = k_sim_est / n_prog_data;
       ct_v = 0; 
-  
+   
       %% Simulation Loop
       while config.flag_finish == false
 
@@ -220,7 +230,7 @@ for simSetup = 1:size(simulationSetups, 1)
         % TODO: update for environment_model, config, mpc, agent_model structures
         if mpc_model.flag_mpc 
           if config.k_mpc*config.dk_mpc <= config.k
-            [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model, seeds(iteration)); 
+            [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model); 
             config.k_mpc = config.k_mpc + 1;
           end 
         end  
@@ -261,7 +271,7 @@ for simSetup = 1:size(simulationSetups, 1)
         config.k = config.k + 1;
 
         %% Progress report
-        if config.k_prog * config.dk_prog <= config.t
+        if config.k_prog * config.dk_prog <= config.k
           report_progress(config.endCondition, config.t, config.t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
           config.k_prog = config.k_prog + 1;
         end

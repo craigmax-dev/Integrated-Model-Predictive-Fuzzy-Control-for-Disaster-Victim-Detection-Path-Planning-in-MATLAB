@@ -13,7 +13,7 @@
 % function. Also check correct data is accessed in MPC prediction. E.g. do we
 % initialise m_dw_e as 0 for the prediction? Other parameters of concern: k
 
-function s_obj_pred = func_MPC_model(params, agent_model, config, environment_model, fisArray, mpc_model)
+function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
       
   %% Variables
   % Counters
@@ -79,5 +79,6 @@ function s_obj_pred = func_MPC_model(params, agent_model, config, environment_mo
     %% Advance timestep
     k_pred = k_pred + 1;
     config.k      = config.k + 1;
+
   end
 end

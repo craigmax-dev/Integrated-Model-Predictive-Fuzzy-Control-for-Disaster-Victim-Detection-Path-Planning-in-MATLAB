@@ -28,15 +28,15 @@ exp_dir     = "simulations";
 
 %% Time steps and counters
 t       = 0;        % Current time
-t_f     = 40000;    % Simulation end time (s)
+t_f     = 10000;    % Simulation end time (s)
 dt_s    = 15;        % Simulation step size
 
 % Discrete steps
 dk_a    = 1;        % Agent step size
 dk_c    = 1;        % Control step size
 dk_e    = 4;        % Fire step size NOTE: environment model assumes 60s
-dk_mpc  = 10;       % MPC step size
-dk_prog = 1000;      % Progress report step size
+dk_mpc  = 50;     % MPC step size
+dk_prog = 50;     % Progress report step size
 
 % Time steps
 dt_a    = dk_a*dt_s;
@@ -51,7 +51,7 @@ k_e     = 0;        % Fire counter
 k_mpc   = 0;        % MPC counter
 k_prog  = 0;        % Prog report counter
 
-% Simulation end condition - "time" or "scan"
+% Simulation end condition - "time" or "s can"
 endCondition  = "time"; 
 flag_finish    = false;
 

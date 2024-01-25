@@ -12,20 +12,20 @@
 % Implement three different MPC architectures: centralised, distributed,
 % clustering
 
-function [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model, seed)
+function [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model)
 
   % Function handle
-  h_MPC = @(params)func_MPC_model(params, agent_model, config, environment_model, fisArray, mpc_model);
+  h_mpc = @(params)mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model);
 
   % Optimisation
   if mpc_model.solver == "fminsearch"
-    [mpc_params, ~] = fminsearch(h_MPC, mpc_model.ini_params, mpc_model.options);
+    [mpc_params, ~] = fminsearch(h_mpc, mpc_model.ini_params, mpc_model.options);
   elseif mpc_model.solver == "ga"
-    [mpc_params,~] = ga(h_MPC, mpc_model.nvars, mpc_model.A, mpc_model.b, mpc_model.Aeq, mpc_model.beq, mpc_model.lb, mpc_model.ub, mpc_model.nonlcon, mpc_model.options);   
+    [mpc_params,~] = ga(h_mpc, mpc_model.nvars, mpc_model.A, mpc_model.b, mpc_model.Aeq, mpc_model.beq, mpc_model.lb, mpc_model.ub, mpc_model.nonlcon, mpc_model.options);   
   elseif mpc_model.solver == "patternsearch"
-    [mpc_params,~] = patternsearch(h_MPC, mpc_model.ini_params, mpc_model.A, mpc_model.b, mpc_model.Aeq, mpc_model.beq, mpc_model.lb, mpc_model.ub, mpc_model.nonlcon, mpc_model.options);   
+    [mpc_params,~] = patternsearch(h_mpc, mpc_model.ini_params, mpc_model.A, mpc_model.b, mpc_model.Aeq, mpc_model.beq, mpc_model.lb, mpc_model.ub, mpc_model.nonlcon, mpc_model.options);   
   elseif mpc_model.solver == "particleswarm"
-    [mpc_params,~] = particleswarm(h_MPC, mpc_model.nvars, mpc_model.lb, mpc_model.ub, mpc_model.options);   
+    [mpc_params,~] = particleswarm(h_mpc, mpc_model.nvars, mpc_model.lb, mpc_model.ub, mpc_model.options);   
   end
   
   % Update FIS Parameters
