@@ -6,33 +6,51 @@
 % - refactor: correct rules, add linear output functions
 % - refactor: removed t_dw as this is considered in priority calculation instead
 
+% TODO
+% Check range of priority
+% Research possible functions to apply to inputs to normalise within given range
+% - e.g. S-shape
+
 %% V2 refactor
 function [fisArray] = initialise_fis_SIM_1(n_a)
 
-    inputs = ["t_response", "priority"];
-    mfTypes = ["trimf", "trimf"];  % Using triangular MFs for simplicity
-    mfNames = ["low", "medium", "high"];
-    mfParams = [-0.1 0.5 1.1; -0.1 0.5 1.1; -0.1 0.5 1.1];  % Example parameters
+  inputs = ["t_response", "priority"];
+  inputRanges = [0 1; 0 1000];  % [0, 1] for t_response, [0, 1000] for priority
 
-    %% Generate FIS
-    for a = 1:n_a
+  % Define Membership Function (MF) types and evenly distributed parameters
+  mfTypes = ["trimf", "trimf"];  % Triangular MFs for both inputs
+  mfNames = ["low", "medium", "high"];  % Names for MFs
 
-        fis = sugfis;
+  %% Generate FIS
+  for a = 1:n_a
 
-        for i = 1:numel(inputs)
-            fis = addInput(fis, [0 1], 'Name', inputs(i));
-            for j = 1:numel(mfNames)
-                fis = addMF(fis, inputs(i), mfTypes(i), mfParams(j, :), 'Name', mfNames(j));
-            end
+    fis = sugfis;
+
+    % Evenly distribute MF parameters for each input
+    for i = 1:numel(inputs)
+        fis = addInput(fis, inputRanges(i, :), 'Name', inputs(i));
+        range = inputRanges(i, :);
+        step = (range(2) - range(1)) / 2;
+        
+        % Create parameters for 'low', 'medium', 'high' MFs
+        lowParams = [range(1) - step, range(1), range(1) + step];
+        mediumParams = [range(1), (range(1) + range(2)) / 2, range(2)];
+        highParams = [range(2) - step, range(2), range(2) + step];
+        
+        mfParams = [lowParams; mediumParams; highParams];
+        
+        for j = 1:numel(mfNames)
+            fis = addMF(fis, inputs(i), mfTypes(i), mfParams(j, :), 'Name', mfNames(j));
         end
+    end
 
-        outputs = "attraction";
-        fis = addOutput(fis, [0 1], 'Name', outputs);
+    outputs = "attraction";
+    fis = addOutput(fis, [0 1], 'Name', outputs);
 
-        % Output MFs for low, medium, high
-        fis = addMF(fis, outputs, 'linear', [0 0 0], 'Name', 'low');    % Low output
-        fis = addMF(fis, outputs, 'linear', [0 0 0.5], 'Name', 'medium');  % Medium output
-        fis = addMF(fis, outputs, 'linear', [0 0 1], 'Name', 'high');   % High output
+    % Output MFs for low, medium, high
+    fis = addMF(fis, outputs, 'linear', [0 0 0], 'Name', 'low');    % Low output
+    fis = addMF(fis, outputs, 'linear', [0 0 0.5], 'Name', 'medium');  % Medium output
+    fis = addMF(fis, outputs, 'linear', [0 0 1], 'Name', 'high');   % High output
 
     ruleList = [
       % Low t_response, Low Priority -> Medium Attraction
@@ -58,9 +76,9 @@ function [fisArray] = initialise_fis_SIM_1(n_a)
     ];
 
 
-        fis = addRule(fis, ruleList);
+    fis = addRule(fis, ruleList);
 
-        %% Add to FIS array
-        fisArray(a) = fis;
-    end
+    %% Add to FIS array
+    fisArray(a) = fis;
+  end
 end

@@ -13,8 +13,10 @@
 
 % TODO
 % Better way to structure a_loc_hist
+% Review which parameters need to be part of model and which don't
+% Max travel time calc: use (v_as - v_w)
 
-function agent_model = initialise_agent_SIM_repeat(environment_model)
+function agent_model = i_a_repeat_2_battery_loss(environment_model)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -38,11 +40,11 @@ function agent_model = initialise_agent_SIM_repeat(environment_model)
   % Agent parameters
   n_a           = 2;                % Number of UAVs in simulation
   n_q           = 2;                % Queue length for UAV tasks
-  v_as          = 5;                % UAV airspeed (m/s)
+  v_as          = 1;               % UAV airspeed (m/s)
   a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
-  t_scan_m      = 0.1;              % Scan time per square metre
-  a_task        = 2.*ones(n_a, 1);% Current task for UAVs
-  a_loc         = [ 1, 1;
+  t_scan_m      = 0.01;             % Scan time per square metre
+  a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
+  a_loc         = [ 1, 1;   
                     1, 2];          % Current locations of UAVs
   a_loc_hist    = [];
   for a = 1:n_a
@@ -60,31 +62,32 @@ function agent_model = initialise_agent_SIM_repeat(environment_model)
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  a_battery_level_i = 1e6.*ones(n_a, 1); % Fully charged battery level (s)
+  a_battery_level_i = [2e4; 4e4]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   
   % Search map cell scan time
   t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
   m_scan      = zeros(n_x_s, n_y_s);        % Scan map
+  m_prior      = zeros(n_x_s, n_y_s);        % Priority map
   m_scan_hist = zeros(n_x_s, n_y_s);  
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
   
-  % Define agent objectives
-  config = struct();
-  config.weight_dw = 0;      % Weight for victims
-  config.weight_fire = 0;      % Weight for victims
-  config.weight_first_scan = 0;   % Weight for the first-time scan
-  config.weight_repeat_scan = 0.1;  % Weight for repeat scans
+  % Max travel time calculation
+  % Total length and width of the search area
+  totalLength = (n_x_s-1) * l_x_s;
+  totalWidth = (n_y_s-1) * l_y_s;
 
-  % Initialise priority map
-  m_prior = calc_prior(m_bo_s, m_dw_s, m_scan, 0, config, m_victim_s);
+  % Calculate the diagonal distance of the search area
+  diagonalDistance = sqrt(totalLength^2 + totalWidth^2);
 
+  % Calculate maximum response time
+  maxResponseTime = 2*(diagonalDistance / v_as + t_scan_c);
+  
   % Create agent structure with all parameters
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
                        'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, ...
                        't_scan_m', t_scan_m, 't_scan_c', t_scan_c, 'a_battery_level_i', a_battery_level_i, 'a_battery_level', a_battery_level, 'a_task', a_task, ... 
                        'a_loc', a_loc, 'a_loc_hist', a_loc_hist, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
                        'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, ...
-                       'm_bo_s', m_bo_s, 'm_dw_s', m_dw_s, 'm_victim_s', m_victim_s, ...
-                       'config', config, 'c_f_s', c_f_s);
+                       'm_bo_s', m_bo_s, 'm_dw_s', m_dw_s, 'm_victim_s', m_victim_s, 'c_f_s', c_f_s, 'maxResponseTime', maxResponseTime);
 end

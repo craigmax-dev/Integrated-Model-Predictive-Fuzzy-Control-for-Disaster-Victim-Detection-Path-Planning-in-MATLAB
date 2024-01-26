@@ -13,7 +13,7 @@
 % function. Also check correct data is accessed in MPC prediction. E.g. do we
 % initialise m_dw_e as 0 for the prediction? Other parameters of concern: k
 
-function s_obj_pred = func_MPC_model(params, agent_model, config, environment_model, fisArray, mpc_model)
+function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
       
   %% Variables
   % Counters
@@ -55,13 +55,13 @@ function s_obj_pred = func_MPC_model(params, agent_model, config, environment_mo
     
     %% Path planning
     if k_c*config.dk_c <= k_pred
-      [agent_model] = model_fis(agent_model, environment_model, fisArray);
+      [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
       k_c = k_c + 1;
     end
     
     %% Agent model
     if k_a*config.dk_a <= k_pred
-      agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
+          agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
       k_a = k_a + 1;
     end
     
@@ -73,11 +73,12 @@ function s_obj_pred = func_MPC_model(params, agent_model, config, environment_mo
     
     %% Objective function evaluation
     [s_obj_pred, ~] = calc_obj(...
-      agent_model.config, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+      config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
       config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
           
     %% Advance timestep
     k_pred = k_pred + 1;
     config.k      = config.k + 1;
+
   end
 end

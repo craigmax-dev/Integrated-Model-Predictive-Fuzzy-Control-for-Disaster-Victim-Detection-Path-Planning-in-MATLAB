@@ -1,14 +1,13 @@
 %% Function initialise_MPC
 % Initialise MPC model
-% MPC not active
 
 % V2
 % CHANGELOG
 % Refactor: mpc_model structure
 
-function mpc_model = initialise_MPC_01(fisArray, n_a)
+function mpc_model = i_mpc_disabled(fisArray, n_a)
 
-  flag_mpc = true;
+  flag_mpc = false;
   n_p = 1;                  % Prediction horizon
   solver = "patternsearch"; % Solver options: fmincon, ga, particleswarm, patternsearch
   
