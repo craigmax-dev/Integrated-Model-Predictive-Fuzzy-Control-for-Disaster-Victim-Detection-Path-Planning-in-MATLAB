@@ -8,6 +8,8 @@
 % TODO
 % Review constraints
 % Implement constraints on low-med-high
+% Review lb/ub constraints (needs to be within range of MFs?)
+% Review advanced constriants: constrain to cover entire input range?
 
 function mpc_model = i_mpc_enabled(fisArray, n_a)
 

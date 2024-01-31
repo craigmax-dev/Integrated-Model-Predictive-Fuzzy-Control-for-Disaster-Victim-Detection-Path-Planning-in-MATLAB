@@ -60,30 +60,24 @@
 
 %% Model of fire spread using cellular automa
 
-function environment_model = model_environment(environment_model)  
+function environment_model = model_environment(environment_model, dt_e)  
 
   environment_model.m_dw_e = zeros(environment_model.n_x_e, environment_model.n_y_e);  % Fire spread probability map
 
   if any(environment_model.m_f(:) == 2) || any(environment_model.m_f(:) == 3)
     
-    t_i = 120;  % Ignition time
-    t_b = 600;  % Burnout time
     F = zeros(environment_model.n_x_e, environment_model.n_y_e);  % Fire spread probability map
-    r_w = 3;
-    c_wm_1 = 0.1;
-    c_wm_2 = 0.1;
-    c_wm_d  = 0.4;
     
-    W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, c_wm_d, environment_model.ang_w, environment_model.v_w);
+    W = calculateWindSpreadMatrix(environment_model.r_w, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.c_wm_d, environment_model.ang_w, environment_model.v_w);
     
     % Update fire map states and calculate fire spread probabilities
-    [environment_model.m_f, environment_model.m_bt, F] = updateFireStatesAndProbabilities(environment_model.m_f, environment_model.m_bt, F, W, environment_model.dt_e, t_i, t_b, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, r_w);
+    [environment_model.m_f, environment_model.m_bt, F] = updateFireStatesAndProbabilities(environment_model.m_f, environment_model.m_bt, F, W, dt_e, environment_model.t_i, environment_model.t_b, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
 
     % Determine if fire spread occurs
     environment_model.m_f = applyFireSpread(environment_model.m_f, F);
     
     % Calculate downwind map
-    environment_model.m_dw_e = calculateDownwindMap(environment_model.m_f, environment_model.n_x_e, environment_model.n_y_e, c_wm_1, c_wm_2, environment_model.ang_w, environment_model.v_w);
+    environment_model.m_dw_e = calculateDownwindMap(environment_model.m_f, environment_model.n_x_e, environment_model.n_y_e, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.ang_w, environment_model.v_w);
     
   end
 

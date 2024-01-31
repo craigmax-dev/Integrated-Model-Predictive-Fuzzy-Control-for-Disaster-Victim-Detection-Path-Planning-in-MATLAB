@@ -2,94 +2,44 @@
 % Author: Craig Maxwell
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
-
-% CHANGELOG
-% - add flag_scan_task to initialization
-% - flag_scan_task needs to be increased at each time step
-% - time since last scanned
-% - function: generateVictimsMap
-% - function: generateBrownNoiseMatrix
-% - function: generateMatrixFromPDFs
-% - function: compareFunctionOutputs
-% - function: runSimulationsAndComputeCI
-% - m_victim_s initialisation changed from environment to agent
-% - m_victim_s added to function inputs: MPC, obj
-% - replaced m_t_dw with m_dw
-% calc_obj - efficiency improvements
-% - feature: fixed implementation of environment and agent maps. m_dw_e and m_dw
-% now handled correctly
-% - performance: removed environment history parameters for animation
-% - update handling of maps: environment defined in environment, agent defined
-% in agent. All parameters use respective size maps
-% - feature: functions for statistical analysis and plotting confidence
-% intervals
-% - removed config.test_fis_sensitivity, etc flags from input file
-% - removed fis_param_hist
-% - Restructure: move files in main folder to functions folder (using githmpc_model.ub)
  
+% CHANGELOG
+% - Feature: FIS input parameter: distance to other agent
+
 % TODO 
+% - Refactor: initialise plotting data can be removed
+% - Performance: Single prediction of environment states model before MPC optimization
+% - Performance: write data to file after each simulation
+% - Restructure: clean up unused files
+% - Restructure: Move to config file: mpc_model.flag_mpc, simulation config
 % - Feature: probability-based predictions in MPC
 % - Feature/performance: add localised predictions for given radius around an agent
 % - Feature: add battery model and loss of agents
 % - Feature: Mirko model implementation: FIS, MPC, MPC steps, 
-% - Refactor: initialise plotting data can be removed
-% - Feature: Write a function to convert raster data to a matrix, and save any other relevant variables as a separate variable. This will allow us to convert raster data first and then use the matrix as an input to the  calc_coarsenRatio function.
-% - Performance: write data to file after each simulation
-% - Feature: remove concept of task queue for agents
-% - Performance: Single prediction of environment states model before MPC optimization
-% - Restructure: clean up unused files
-% - Bugfix: implement proper use of m_prior - should this be an agent or mpc parameter?
-% - Restructure: Move to config file: mpc_model.flag_mpc, simulation config
-% - Rename: config under agent_model (to avoid confusion)
-% - Data points to record: battery level, ...
-% - Agents seem to take too long to scan cells currently - on scale of days to
-% come to stable solution with 8x8 search environment
-% Troubleshooting: 
-% % check correct/logical cells scanned by agents (validated by reaching stable state)
-% % check timestep functionality - what happens when agent completes task early
-% etc?
-% Remove constraint from multiple agents entering same cell
-% Fix bug: agents stop scanning
-% Data mapping: clear separation of agent and mpc data. E.g. agents should not
-% have knowledge of data states of other agents. e.g. m_prior
-% Add recalculation of m_prior
-% What other variables can be implemented in model? Variable scan times? 
-% Test version with agents communicating cell locations.
-% NOTE: normalization using maxTravelTime >1 in some cases
-% Fix agents not acting at beginning of simulation: could be tuning issue.
-% Fix issue with agent actions calculation.
-% Track average max priority - can use this to normalize
-% Add agent check: maximum control timestep etc
-% Comms-coordination modelling: double-check during assignment (for same spot in
-% queue), etc...
-% Test & decision on comms model
-% Finish events plotting function
-% Add new FIS input: proximity to agent (r)
-% Basic optimization method without FIS
+% - Feature: Data points to record: battery level, ...
+% - Feature: Finish events plotting function
+% - Feature: Add new environment model: flooding (slow-dynamics additional
+% danger to victims) - allow agents to respond in kind. Suggest parameters for
+% model: water depth, water velocity? Keep simplified. Could add additional danger to
+% individual buildings.
+% - Feature: Implement calculateAgentDistances in agent controller (if active)
+% - Feature: Mirko model implementation
+% - Validation: comms model
+% - Validation: Does fist scan consider victim likelihood & repeat scan consider
+% victims?
 
-% RESEARCH
-% Normalization functions for FIS inputs
-% Communications models for agents
-% How can the FIS be simplified for more efficient optimization? Ideally we can define a linear relationship between the input and output parameters of the FIS and tune the slope/weight of each input.
-% Implement method with linear relationship between input/output parameters
-% Writeup of disadvantages of fuzzy logic approach vs others
-
-
-% Plots
-% Histogram of cells scanned over time
+%% Next changes
+% Probability based prediction of fire model
+% Finish battery recharge station model
 % 
 
-%% SIMULATIONS
-% 1.1. Pre-tuned FIS stable agent behaviour
-% 1.1. Pre-tuned FIS stable loss of agent
-% 1.1. Pre-tuned FIS vs. MPC (basic constraints)
-% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters not re-initialized)
-% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters re-initialized)
-% 1.1. Pre-tuned FIS vs. MPC (advanced constraints, FIS parameters re-initialized, Monte-Carlo 10x)
-% 1.1. 
 
+%% NEXT SIMULATIONS
+% - 1. Victim locations modeled
+% - 2. Dynamic environment variables: fire and flooding
+% - 3. Probability based predictions 
 
-
+% Run monte carlo with comms enabled vs disabled
 
 % Clear workspace 
 clear all  
@@ -116,8 +66,8 @@ h_s_comms_disabled = @()i_sim_comms_disabled();
 h_s_comms_enabled = @()i_sim_comms_enabled();
 
 % Environment
-h_e_static = @()initialise_environment_SIM_basic_no_dynamic();
-h_e_dynamic = @()initialise_environment_SIM_basic_dynamic();
+h_e_static = @(dt_e)i_env_basic_no_dynamics(dt_e);
+h_e_dynamic = @(dt_e)i_env_basic_dynamics(dt_e);
 
 % Agent
 h_a_repeat_1 = @(environment_model)i_a_repeat_1(environment_model);
@@ -125,9 +75,10 @@ h_a_repeat_2 = @(environment_model)i_a_repeat_2(environment_model);
 h_a_repeat_2_battery_loss = @(environment_model)i_a_repeat_2_battery_loss(environment_model);
 
 
-
 % FIS
-h_init_fis_1 = @(n_a)initialise_fis_SIM_1(n_a);
+h_init_fis_2 = @(n_a)initialise_fis_t_response_priority(n_a);
+h_init_fis_3 = @(n_a)initialise_fis_t_response_priority_r_nextagent(n_a);
+
 
 % MPC
 h_mpc_disabled = @(fisArray, n_a)i_mpc_disabled(fisArray, n_a);
@@ -149,11 +100,16 @@ h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 %   "sim_no_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
 %   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_1, h_mpc_disabled;
 %   };
+ 
+% % MPC basic
+% simulationSetups = {
+%   "sim_no_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "sim_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
+%   };
 
-% MPC basic
+% Dynamic environment test
 simulationSetups = {
-  "sim_no_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
-  "sim_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_enabled;
+  "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
   };
 
 
@@ -192,7 +148,7 @@ for simSetup = 1:size(simulationSetups, 1)
       config = f_init_sim();
       
       % Initialise Environment 
-      environment_model = f_init_env();
+      environment_model = f_init_env(config.dt_e);
       
       % Initialise Agent
       agent_model = f_init_agent(environment_model);
