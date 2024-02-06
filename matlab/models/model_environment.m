@@ -52,12 +52,6 @@
 % Refactor: will only run environment model with fire states =2 or =3 present
 % Refactor: environment_model structures
 
-% TODO
-% move flag_mpc & seed into config structure. Flag needs to be added back - we
-% will use to perform different environment estimation.
-% update function calls with c_f_s
-% Move variables to environment initialization
-
 %% Model of fire spread using cellular automa
 
 function environment_model = model_environment(environment_model, dt_e)  
@@ -71,7 +65,7 @@ function environment_model = model_environment(environment_model, dt_e)
     W = calculateWindSpreadMatrix(environment_model.r_w, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.c_wm_d, environment_model.ang_w, environment_model.v_w);
     
     % Update fire map states and calculate fire spread probabilities
-    [environment_model.m_f, environment_model.m_bt, F] = updateFireStatesAndProbabilities(environment_model.m_f, environment_model.m_bt, F, W, dt_e, environment_model.t_i, environment_model.t_b, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+    [environment_model, F] = updateFireStatesAndProbabilities(environment_model, F, W, dt_e);
 
     % Determine if fire spread occurs
     environment_model.m_f = applyFireSpread(environment_model.m_f, F);

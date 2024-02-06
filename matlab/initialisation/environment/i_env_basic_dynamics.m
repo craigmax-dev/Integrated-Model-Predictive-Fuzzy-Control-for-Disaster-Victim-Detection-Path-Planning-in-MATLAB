@@ -24,13 +24,23 @@ function environment_model = i_env_basic_dynamics(dt_e)
   l_x_e = 10; % Environment cell length x-axis (m)
   l_y_e = 10; % Environment cell length z-axis (m)
   
-  % Wind model
-  v_w         = 0;        % Wind speed (m/s)
-  ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+  % Wind speed (m/s)
+  v_w         = 0.5;        
+
+  % Wind direction angles (in radians) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+  % North (N): 0 or 2*pi
+  % Northeast (NE): pi/4
+  % East (E): pi/2
+  % Southeast (SE): 3*pi/4
+  % South (S): pi or -pi
+  % Southwest (SW): -3*pi/4
+  % West (W): -pi/2
+  % Northwest (NW): -pi/4 or 7*pi/4
+  ang_w       = -pi/4;
   
-  % Initialise fire map
+  % Initialise fire map in SW corner
   m_f       = m_s;
-  m_f(1:2,1:2) = 3 * m_s(1:2,1:2);  
+  m_f(1:2,1:2) = 3 * m_s(39:40,39:40);  
 
   % Initialise burntime map
   m_bt        = zeros(n_x_e,n_y_e);

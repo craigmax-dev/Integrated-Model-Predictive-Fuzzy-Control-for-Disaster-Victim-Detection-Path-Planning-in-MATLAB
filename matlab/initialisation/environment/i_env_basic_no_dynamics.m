@@ -24,10 +24,20 @@ function environment_model = i_env_basic_no_dynamics(dt_e)
   l_x_e = 10;
   l_y_e = 10;
   
-  % Wind model
-  v_w         = 0;        % Wind speed (m/s)
-  ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
-  
+  % Wind speed (m/s)
+  v_w         = 0;        
+
+  % Wind direction angles (in radians) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+  % North (N): 0 or 2*pi
+  % Northeast (NE): pi/4
+  % East (E): pi/2
+  % Southeast (SE): 3*pi/4
+  % South (S): pi or -pi
+  % Southwest (SW): -3*pi/4
+  % West (W): -pi/2
+  % Northwest (NW): -pi/4 or 7*pi/4
+  ang_w       = -pi/4;
+
   % Initialise fire map
   m_f       = m_s;
   

@@ -92,7 +92,7 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
     
     %% Environment model
     if k_e*config.dk_e <= k_pred
-      environment_model = model_environment(environment_model);          
+      environment_model = model_environment(environment_model, config.dt_e);          
       k_e = k_e + 1;
     end
     

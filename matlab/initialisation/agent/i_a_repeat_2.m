@@ -72,16 +72,8 @@ function agent_model = i_a_repeat_2(environment_model)
   m_scan_hist = zeros(n_x_s, n_y_s);  
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
   
-  % Max travel time calculation
-  % Total length and width of the search area
-  totalLength = (n_x_s-1) * l_x_s;
-  totalWidth = (n_y_s-1) * l_y_s;
-
-  % Calculate the diagonal distance of the search area
-  diagonalDistance = sqrt(totalLength^2 + totalWidth^2);
-
-  % Calculate maximum response time
-  maxResponseTime = 2*(diagonalDistance / v_as + t_scan_c);
+  % Max response time calculation
+  maxResponseTime = calc_maxResponseTime(l_x_s, l_y_s, n_q, n_x_s, n_y_s, t_scan_c, v_as);
   
   % Create agent structure with all parameters
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
