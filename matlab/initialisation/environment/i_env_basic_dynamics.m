@@ -9,8 +9,8 @@
 % - replace c_f_s with single unit variable
 % check difference between m_bo, m_s, m_p_ref
 
-function environment_model = initialise_environment_SIM_basic_no_dynamic()
-  
+function environment_model = i_env_basic_dynamics(dt_e)
+
   % Environment map dimensions
   n_x_e       = 40;
   n_y_e       = 40;
@@ -20,17 +20,28 @@ function environment_model = initialise_environment_SIM_basic_no_dynamic()
   m_s = ones(n_x_e, n_y_e);
   m_p_ref = ones(n_x_e, n_y_e);
 
-  % V2 define cell sizes
-  l_x_e = 10;
-  l_y_e = 10;
+  % Define cell sizes
+  l_x_e = 10; % Environment cell length x-axis (m)
+  l_y_e = 10; % Environment cell length z-axis (m)
   
-  % Wind model
-  v_w         = 0;        % Wind speed (m/s)
-  ang_w       = pi/2;     % Wind direction (rad) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+  % Wind speed (m/s)
+  v_w         = 0.5;        
+
+  % Wind direction angles (in radians) - [-pi/2 pi/2] - w_d = 0 in +ve y axis
+  % North (N): 0 or 2*pi
+  % Northeast (NE): pi/4
+  % East (E): pi/2
+  % Southeast (SE): 3*pi/4
+  % South (S): pi or -pi
+  % Southwest (SW): -3*pi/4
+  % West (W): -pi/2
+  % Northwest (NW): -pi/4 or 7*pi/4
+  ang_w       = -pi/4;
   
-  % Initialise fire map
+  % Initialise fire map in SW corner
   m_f       = m_s;
-  
+  m_f(1:2,1:2) = 3 * m_s(39:40,39:40);  
+
   % Initialise burntime map
   m_bt        = zeros(n_x_e,n_y_e);
   m_dw_e      = zeros(n_x_e,n_y_e);
@@ -39,13 +50,21 @@ function environment_model = initialise_environment_SIM_basic_no_dynamic()
   c_fs_1        = 0.2;    % Wind constant 1 (for fire model)
   c_fs_2        = 0.2;    % Wind constant 2 (for fire model)
   
+  t_i = 120;  % Ignition time
+  t_b = 600;  % Burnout time
+  r_w = 3;
+  c_wm_1 = 0.1;
+  c_wm_2 = 0.1;
+  c_wm_d  = 0.4;
+  
   % Create environment structure with all parameters
   environment_model = struct('l_x_e', l_x_e, 'l_y_e', l_y_e, 'n_x_e', n_x_e, 'n_y_e', n_y_e, ...
   'm_bo', m_bo, 'm_s', m_s, 'm_f', m_f, 'm_bt', m_bt, 'm_dw_e', m_dw_e, 'm_p_ref', m_p_ref, ...
-  'c_fs_1', c_fs_1, 'c_fs_2', c_fs_2, 'v_w', v_w, 'ang_w', ang_w);
+  'c_fs_1', c_fs_1, 'c_fs_2', c_fs_2, 'v_w', v_w, 'ang_w', ang_w, 't_i', t_i, 't_b', t_b, 'r_w', r_w, ...
+  'c_wm_1', c_wm_1, 'c_wm_2', c_wm_2, 'c_wm_d', c_wm_d);
 
   %  Initialise fire maps
-  environment_model = model_environment(environment_model);          
+  environment_model = model_environment(environment_model, dt_e);          
 
 end
 

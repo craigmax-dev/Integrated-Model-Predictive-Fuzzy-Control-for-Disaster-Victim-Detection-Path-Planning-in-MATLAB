@@ -23,21 +23,36 @@
 % Refactor:
 % Valid cells different for each agent
 
+% TODO
+% Refactor function - does not seem to work correctly. scheduled_cells is not the correct size 
 
-% V2.2
+% V2.4
 function m_att = calc_att(fis, m_t_response, m_prior, a_target, communication_enabled)
     % Initialize the attraction map
     m_att = NaN(size(m_t_response));
 
     % Create a logical matrix indicating which cells are scheduled
+    scheduled_cells = false(size(m_t_response)); % Initialize with all false
     if communication_enabled
         % If communication is enabled, consider all scheduled cells by all agents
-        scheduled_cells = ismember([1:size(m_t_response, 1)]', reshape(a_target(:, 1, :), [], 1)) & ...
-                          ismember([1:size(m_t_response, 2)]', reshape(a_target(:, 2, :), [], 1));
+        for agentIdx = 1:size(a_target, 3)
+            for targetIdx = 1:size(a_target, 1)
+                x = a_target(targetIdx, 1, agentIdx);
+                y = a_target(targetIdx, 2, agentIdx);
+                if x > 0 && y > 0
+                    scheduled_cells(x, y) = true;
+                end
+            end
+        end
     else
         % If communication is disabled, consider only the agent's own scheduled cells
-        scheduled_cells = ismember([1:size(m_t_response, 1)]', a_target(:, 1, :)) & ...
-                          ismember([1:size(m_t_response, 2)]', a_target(:, 2, :));
+        for targetIdx = 1:size(a_target, 1)
+            x = a_target(targetIdx, 1);
+            y = a_target(targetIdx, 2);
+            if x > 0 && y > 0
+                scheduled_cells(x, y) = true;
+            end
+        end
     end
 
     % Identify cells that are not scheduled and do not contain NaN in inputs
@@ -58,34 +73,3 @@ function m_att = calc_att(fis, m_t_response, m_prior, a_target, communication_en
     % Vectorized FIS evaluation for valid cells
     m_att(valid_cells) = evalfis(fis, fisInputs);
 end
-
-
-% % V2.1
-% function m_att = calc_att(fis, m_t_response, m_prior, a_target)
-% 
-%     % Initialize the attraction map
-%     m_att = NaN(size(m_t_response));
-% 
-%     % Create a logical matrix indicating which cells are scheduled
-%     scheduled_cells = ismember([1:size(m_t_response, 1)]', a_target(:, 1, :)) & ...
-%                       ismember([1:size(m_t_response, 2)]', a_target(:, 2, :));
-% 
-%     % Identify cells that are not scheduled and do not contain NaN in inputs
-%     valid_cells = ~scheduled_cells & ~isnan(m_t_response) & ~isnan(m_prior);
-% 
-%     % Check if there are any valid cells to process
-%     if ~any(valid_cells, 'all')
-%         fprintf("No valid cells in calc_att\n")
-%         return;  % Exit if no valid cells
-%     end
-% 
-%     % Prepare the inputs for FIS for valid cells
-%     fisInputs = [m_t_response(valid_cells), m_prior(valid_cells)];
-% 
-%     % Ensure inputs are of correct type
-%     fisInputs = double(fisInputs);
-% 
-%     % Vectorized FIS evaluation for valid cells
-%     m_att(valid_cells) = evalfis(fis, fisInputs);
-% 
-% end

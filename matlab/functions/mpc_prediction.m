@@ -39,16 +39,41 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
     
     %% Update FIS parameters
     if k_mpc*config.dk_mpc <= k_pred
+      
+      % V2
       for a = 1:agent_model.n_a
-        numInputs = numel(fisArray(a).Inputs);  % Get the number of inputs
-        numOutputs = numel(fisArray(a).Outputs);
-        for mf = 1:numOutputs
-          numParams = numInputs + 1;  % Number of parameters for a linear MF
-          newParams = params(range:range+numParams-1);  % Adjusted range
-          fisArray(a).Outputs(1).MembershipFunctions(mf).Parameters = newParams;
-          range = range + numParams;
-        end
+          % Iterate over each output of the FIS
+          for o = 1:numel(fisArray(a).Outputs)
+              % Iterate over each MF of the output
+              for mf = 1:numel(fisArray(a).Outputs(o).MembershipFunctions)
+                  % Determine the number of parameters for this MF
+                  numParams = numel(fisArray(a).Outputs(o).MembershipFunctions(mf).Parameters);
+                  
+                  % Extract the parameters from 'params'
+                  newParams = params(range:range+numParams-1);
+                  range = range + numParams;
+                  
+                  % Assign the new parameters to the MF
+                  fisArray(a).Outputs(o).MembershipFunctions(mf).Parameters = newParams;
+              end
+          end
       end
+
+      % % V1
+      % for a = 1:agent_model.n_a
+      %   numInputs = numel(fisArray(a).Inputs);  % Get the number of inputs
+      %   numOutputs = numel(fisArray(a).Outputs);
+      %   for mf = 1:numOutputs
+      %     numParams = numInputs + 1;  % Number of parameters for a linear MF
+      %     newParams = params(range:range+numParams-1);  % Adjusted range
+      %     fisArray(a).Outputs(1).MembershipFunctions(mf).Parameters = newParams;
+      %     range = range + numParams;
+      %   end
+      % end
+
+
+
+      
       k_mpc = k_mpc + 1;
     end
 
@@ -67,7 +92,7 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
     
     %% Environment model
     if k_e*config.dk_e <= k_pred
-      environment_model = model_environment(environment_model);          
+      environment_model = model_environment(environment_model, config.dt_e);          
       k_e = k_e + 1;
     end
     

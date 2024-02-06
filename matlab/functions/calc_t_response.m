@@ -7,6 +7,7 @@
 % TODO
 % Refactor: move agent iteration outside function
 % BUGFIX: treating NaN values and breaks
+% BUGFIX: 
 
 % V2.1 
 % V2 refactor: performance improvements and handling depleted task list
