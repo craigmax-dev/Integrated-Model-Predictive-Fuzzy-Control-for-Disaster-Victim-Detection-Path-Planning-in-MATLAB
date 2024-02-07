@@ -28,21 +28,14 @@ function agent_model = model_fis(agent_model, environment_model, config, fisArra
             fis = fisArray(a);
 
             % Generate priority map
-            agent_model.m_prior = calc_prior(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, config.weight, agent_model.m_victim_s);
+            agent_model.m_prior = calc_prior(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, config.weight, agent_model.m_victim_s, config.flag_victim_model);
 
             % Generate attraction map
-            m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target, config.communication_enabled);
+            m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target, config.flag_communication_model);
             
             % Task assignment
-            % agent_model.a_target(a, :, q) = func_taskAssignment(m_att);
-            % agent_model.a_target(a, :, q) = func_taskAssignment(q, agent_model.a_target, m_att, config.communication_enabled);
-
-            % Get the target for the current agent and queue position
-            target_for_q = func_taskAssignment(q, agent_model.a_target, m_att, config.communication_enabled);
+            agent_model.a_target(a, :, q) = func_taskAssignment(q, agent_model.a_target, m_att, config.flag_communication_model);
         
-            % Update the target for the current agent and queue position
-            agent_model.a_target(a, :, q) = target_for_q;
-
         end
     end
 end

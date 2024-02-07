@@ -16,7 +16,7 @@ function environment_model = i_env_basic_no_dynamics(dt_e)
   n_y_e       = 40;
 
   % Create a matrix of ones to represent an even distribution of buildings
-  m_bo = ones(n_x_e, n_y_e);
+  m_bo = 0.5 .* ones(n_x_e, n_y_e);
   m_s = ones(n_x_e, n_y_e);
   m_p_ref = ones(n_x_e, n_y_e);
 

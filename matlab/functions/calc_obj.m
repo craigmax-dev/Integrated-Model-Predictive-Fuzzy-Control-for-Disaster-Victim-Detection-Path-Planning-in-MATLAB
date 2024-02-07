@@ -14,6 +14,7 @@
 % TODO
 % - refactor: remove _s notation and move fire map coarsening outside of
 % function
+% Feature: add victim model flag to function
 
 % V2 REFACTOR V5
 function [s_obj, obj] = calc_obj(weight, m_f, m_bo_s, m_scan, m_victim_s, dt_s, s_obj, c_f_s, t)
@@ -38,7 +39,6 @@ function [s_obj, obj] = calc_obj(weight, m_f, m_bo_s, m_scan, m_victim_s, dt_s, 
   % Repeat scan priority component
   time_since_last_scan = max(t - m_scan, 0);  % Time since each cell was last scanned
   m_P_repeat_scan = time_since_last_scan .* m_victim_s .* (1 + m_P_fire_weight) * weight.repeat_scan;
-  % m_P_repeat_scan = (m_scan ~= 0) .* time_since_last_scan .* m_victim_s .* (1 + m_P_fire_weight) * weight.repeat_scan
 
   % Total priority map
   m_P = m_P_first_scan + m_P_repeat_scan;

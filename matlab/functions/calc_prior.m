@@ -1,20 +1,22 @@
 % CHANGELOG
 % Refactored for objective function refactor: added first scan and rescan
-% component, optional victim map, 
+% component, optional victim map
+% Bugfix: fixed treatment of victim map
 
 % TODO
-% Make floating point calculation
-% Does this need to be per agent or can it be general? - can be done locally
-% possibly
+% Define Method to balance re-scan part: easy to outweigh first scan component
+% Possible improvement: refactor rescan component to include rescan priority using known
+% victim location and m_bo where victim locations not known
 
-% V2 - refactor for cell re-scan
-function m_prior = calc_prior(m_bo, m_dw, m_scan, t, weight, m_victim)
-
-  % Check if m_victim is provided, else use m_bo
-  if nargin < 7
-    m_victim = m_bo;
+% V2.2 - added victim model flag
+function m_prior = calc_prior(m_bo, m_dw, m_scan, t, weight, m_victim, flag_victim_model)
+  
+  % Restrict to range 0-1 to prevent too high attraction
+  if flag_victim_model
+    m_victim = m_victim ./ max(m_victim, [], 'all');
   end
 
+  % Convert matrices to double for calculation
   m_bo = double(m_bo);
   m_dw = double(m_dw);
   m_scan = double(m_scan);
@@ -25,10 +27,17 @@ function m_prior = calc_prior(m_bo, m_dw, m_scan, t, weight, m_victim)
   m_P_first_scan = double(m_scan == 0) .* m_bo * weight.first_scan;
 
   % Re-scan priority
-  % Using victim map (if scanned) or building occupancy (if not scanned)
-  time_since_scan = max(t - m_scan, 0);  % Ensuring no negative values    
-  m_P_re_scan = m_victim .* weight.repeat_scan .* time_since_scan;
-  % m_P_re_scan = double(m_scan ~= 0) .* m_victim .* weight.repeat_scan .* time_since_scan;
+  % Decide on the basis for re-scan priority based on flag_victim_model
+  % NOTE: The second component is an option, but requires gentle balancing
+  % with the first scan priority
+  time_since_scan = max(t - m_scan, 0);  % Ensuring no negative values
+  if flag_victim_model
+    % m_P_re_scan = m_victim .* weight.repeat_scan .* time_since_scan;
+    m_P_re_scan = double(m_scan ~= 0) .* m_victim .* weight.repeat_scan .* time_since_scan + 1;
+  else
+    % m_P_re_scan = m_bo .* weight.repeat_scan .* time_since_scan;
+    m_P_re_scan = double(m_scan ~= 0) .* m_bo .* weight.repeat_scan .* time_since_scan + 1;
+  end
 
   % Incorporate downwind map and travel time
   % Assuming proximity to fire (lower m_dw) increases priority, and longer travel time decreases priority

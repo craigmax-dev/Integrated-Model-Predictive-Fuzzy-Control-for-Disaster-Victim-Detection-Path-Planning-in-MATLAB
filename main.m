@@ -25,12 +25,12 @@
 % - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
 % - Feature: Mirko model implementation
 % - Validation: comms model
-% - Writeup: Generalised description of data model for agents. 
+% - Writeup: Generalised description of data model for agents.
+% - Simulations: Re-run with weights for dynamic environment variables
  
 %% NEXT CHANGES
 % Probability based prediction of fire model
 % Finish battery recharge station model
-% 
 
 
 %% NEXT SIMULATIONS
@@ -63,6 +63,8 @@ addpath('data', ...
 % Simulation variables
 h_s_comms_disabled = @()i_sim_comms_disabled();
 h_s_comms_enabled = @()i_sim_comms_enabled();
+h_s_comms_disabled_victim_model = @()i_sim_comms_disabled_victim_model();
+h_s_comms_enabled_victim_model = @()i_sim_comms_enabled_victim_model();
 
 % Environment
 h_e_static = @(dt_e)i_env_basic_no_dynamics(dt_e);
@@ -100,23 +102,28 @@ h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 %   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_1, h_mpc_disabled;
 %   };
  
-% % MPC basic
+% Dynamic environment test
 % simulationSetup = {
-%   "sim_no_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
-%   "sim_mpc", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
+%   % "sim_dynamics_mpc", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
+%   "sim_static", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
 %   };
 
-% Dynamic environment test
+% % Victim location modelling
+% simulationSetup = { 
+%   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;  
+%   };
+
+% MPC basic 
 simulationSetup = {
-  "sim_dynamics_mpc", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
-  "sim_static", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
-  "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+  "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+  "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
   };
 
-% Victim location modelling
 
 % Define the number of iterations for each simulation setup
-numIterations = 10; 
+numIterations = 5; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -283,13 +290,9 @@ plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetu
 
 %% Save and export simulation results
 
-% Flag to control saving
-saveFlag = true;
-
 % Filename for saving
 % TODO: dynamic naming of simulation
-filename = 'simulationResults';
 
 % Call the function to save results and figures
-saveSimulationResults(saveFlag, simulationData, filename);
+saveSimulationResults(config.flag_save, simulationData, config.save_dir);
 

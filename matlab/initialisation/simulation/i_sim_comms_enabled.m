@@ -3,28 +3,19 @@
 
 % CHANGELOG
 % Refactor: config struct
+% Refactor: removed unused parameters
+% Feature: Added flag_victim_model
 
 % TODO: 
-% - remove test_fis_sensitivity flags
 % - check where r_bo, r_fo are used
-% Remove: exp_dir, flag_fig_simSet, flag_fig_sim, flag_data_exp, test_solvers,
-% test_fis_sensitivity, dt_c, dt_mpc, 
 
 function config = i_sim_comms_enabled()
 
 %% Simulation Settings
-% Tests 
-test_fis_sensitivity  = false;
-test_solvers          = false;
-
-% Test variables
-fis_data = [];
 
 % Data export configuration
-flag_data_exp    = true;
-flag_fig_sim     = true;
-flag_fig_simSet  = true;
-exp_dir     = "simulations";
+flag_save    = true;
+save_dir     = "simulations";
 
 %% Time steps and counters
 t       = 0;        % Current time
@@ -57,12 +48,18 @@ flag_finish    = false;
 
 % Define agent objectives
 weight = struct();
-weight.dw = 0;      % Weight for victims
-weight.fire = 0;      % Weight for victims
-weight.first_scan = 0.5;   % Weight for the first-time scan
-weight.repeat_scan = 0.1;  % Weight for repeat scans
+weight.dw = 0.5;      % Weight for victims
+weight.fire = 0.5;      % Weight for victims
+weight.first_scan = 1;   % Weight for the first-time scan. WARNING: IF 0, AGENT BEHAVIOUR COMPROMISED (will re-scan starting cells continuously)
+weight.repeat_scan = 0.001;  % Weight for repeat scans
 
-communication_enabled = true;
+% Activate/deactivate communication between agents
+% This influences the assignment of cells to agents
+flag_communication_model = true;
+
+% Activate/deactivate victim model in calculation of priority
+% This influences the priority and objective calculations
+flag_victim_model = false; 
 
 % Objective function
 obj           = 0;
@@ -72,10 +69,9 @@ s_obj         = 0;
 r_bo  = 0.5;      % Risk weighting due to building occupancy
 r_fo  = 0.5;      % Risk weighting due to environmental fire
 
-config = struct('test_fis_sensitivity', test_fis_sensitivity, 'test_solvers', test_solvers, 'fis_data', fis_data, ...
-  'flag_data_exp', flag_data_exp, 'flag_fig_sim', flag_fig_sim, 'flag_fig_simSet', flag_fig_simSet, 'exp_dir', exp_dir, ...
+config = struct('flag_save', flag_save, 'save_dir', save_dir, ...
   't', t, 't_f', t_f, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
   'k', k, 'k_a', k_a, 'k_c', k_c, 'k_e', k_e, 'k_mpc', k_mpc, 'k_prog', k_prog, 'endCondition', endCondition, 'flag_finish', flag_finish, ...
-  'obj', obj, 's_obj', s_obj, 'r_bo', r_bo, 'r_fo', r_fo, 'weight', weight, 'communication_enabled', communication_enabled);
+  'obj', obj, 's_obj', s_obj, 'r_bo', r_bo, 'r_fo', r_fo, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model);
 
 end

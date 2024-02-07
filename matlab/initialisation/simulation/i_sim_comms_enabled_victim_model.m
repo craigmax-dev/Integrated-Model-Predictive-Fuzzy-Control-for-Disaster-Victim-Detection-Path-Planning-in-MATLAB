@@ -9,7 +9,7 @@
 % TODO: 
 % - check where r_bo, r_fo are used
 
-function config = i_sim_comms_disabled()
+function config = i_sim_comms_enabled_victim_model()
 
 %% Simulation Settings
 
@@ -55,11 +55,11 @@ weight.repeat_scan = 0.001;  % Weight for repeat scans
 
 % Activate/deactivate communication between agents
 % This influences the assignment of cells to agents
-flag_communication_model = false;
+flag_communication_model = true;
 
 % Activate/deactivate victim model in calculation of priority
 % This influences the priority and objective calculations
-flag_victim_model = false; 
+flag_victim_model = true; 
 
 % Objective function
 obj           = 0;
