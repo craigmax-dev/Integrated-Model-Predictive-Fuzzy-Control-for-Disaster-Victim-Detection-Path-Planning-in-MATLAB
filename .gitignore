@@ -1,9 +1,7 @@
-# Other files
-*.asv
-
-# Simulation figures
-**/*.fig
-**/*.jpg
+# Simulation files
+*.fig
+*.jpg
+*.mat
 
 # LaTeX generated files
 *.aux
@@ -39,4 +37,4 @@
 
 # Other files
 *.pdf
-
+*.asv

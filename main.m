@@ -16,17 +16,18 @@
 % - Feature/performance: add localised predictions for given radius around an agent
 % - Feature: add battery model and loss of agents
 % - Feature: Mirko model implementation: FIS, MPC, MPC steps, 
-% - Feature: Data points to record: battery level, ...
-% - Feature: Finish events plotting function
 % - Feature: Add new environment model: flooding (slow-dynamics additional
 % danger to victims) - allow agents to respond in kind. Suggest parameters for
 % model: water depth, water velocity? Keep simplified. Could add additional danger to
 % individual buildings. 
 % - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
 % - Feature: Mirko model implementation
-% - Validation: comms model
 % - Writeup: Generalised description of data model for agents.
 % - Simulations: Re-run with weights for dynamic environment variables
+% - Feature: Configure MPC first step / subsequent step thresholds
+% - Feature: Plotting of all simulations using light line and mean simulation
+% using solid line
+% - Feature: Fix titles/labels in all plots
  
 %% NEXT CHANGES
 % Probability based prediction of fire model
@@ -35,10 +36,9 @@
 
 %% NEXT SIMULATIONS
 % - 1. Victim locations modeled
-% - 2. Dynamic environment variables: fire and flooding
+% - 2. Dynamic environment variables
 % - 3. Probability based predictions 
-
-% Run monte carlo with comms enabled vs disabled
+% - 4. Using m_bo distributions: 
 
 % Clear workspace 
 clear all  
@@ -84,32 +84,35 @@ h_init_fis_3 = @(n_a)initialise_fis_t_response_priority_r_nextagent(n_a);
 % MPC
 h_mpc_disabled = @(fisArray, n_a)i_mpc_disabled(fisArray, n_a);
 h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
+h_mpc_enabled_longFirstEval = @(fisArray, n_a)i_mpc_enabled_longFirstEval(fisArray, n_a);
 
+% % comparison comms model
 % simulationSetup = {
-%   "Comms_Disabled", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
-%   "Comms_Enabled", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   "Comms_Disabled", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "Comms_Enabled", h_s_comms_enabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
 %   };
 
-% comparison n_a
+% % comparison n_a
 % simulationSetup = {
-%   "sim_na_1", h_s_comms_disabled, h_e_static, h_a_repeat_1, h_init_fis_1, h_mpc_disabled;
-%   "sim_na_2", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
+%   "sim_na_1", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_1, h_init_fis_2, h_mpc_disabled;
+%   "sim_na_2", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
 %   }; 
 
 % % comparison n_a
 % simulationSetup = {
-%   "sim_no_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_1, h_mpc_disabled;
-%   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_1, h_mpc_disabled;
+%   "sim_no_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_disabled;
 %   };
  
-% Dynamic environment test
+% % Dynamic environment test
 % simulationSetup = {
-%   % "sim_dynamics_mpc", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
 %   "sim_static", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
 %   "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
+%   "sim_dynamics_mpc", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
 %   };
 
 % % Victim location modelling
+% simulationName = "Victim location modelling";
 % simulationSetup = { 
 %   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
 %   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;  
@@ -119,11 +122,12 @@ h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 simulationSetup = {
   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled;
   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled;
+  "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
   };
 
 
 % Define the number of iterations for each simulation setup
-numIterations = 5; 
+numIterations = 1; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -168,12 +172,14 @@ for simSetup = 1:size(simulationSetup, 1)
       % Initialise MPC
       mpc_model = f_init_mpc(fisArray, agent_model.n_a);
        
-      % Initialise Plots
-      [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
-      m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
-      t_hist, obj_hist, s_obj_hist] ... 
-      = initialise_plotting(environment_model.n_x_e, environment_model.n_y_e, agent_model.n_x_s, agent_model.n_y_s, environment_model.m_f, environment_model.m_bt, mpc_model.fis_params);
+      % TODO: remove this section
+      % % Initialise Plots
+      % [axis_x_e, axis_y_e, axis_x_s, axis_y_s, ...
+      % m_f_hist, m_f_hist_animate, m_bt_hist_animate, m_dw_hist_animate, ...
+      % t_hist, obj_hist, s_obj_hist] ... 
+      % = initialise_plotting(environment_model.n_x_e, environment_model.n_y_e, agent_model.n_x_s, agent_model.n_y_s, environment_model.m_f, environment_model.m_bt, mpc_model.fis_params);
       
+
       %% Define timestep for saving variables
       % Number of desired data points
       n_prog_data = 500;
@@ -274,25 +280,31 @@ alpha = 0.05;
 
 %% Plotting
 
+% Plot stats for obj_hist
+plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value');
+
+% NOTE: Concept to plot events
 % Let's say we want to plot vertical lines when battery level falls below a threshold
 % Assuming you have a function or a way to find the time when battery level falls below a threshold
 % battery_threshold_events = findBatteryLevelEvents(agent_model.a_battery_level_i, threshold);
 
-% Plot stats for s_obj_hist
-% plotStats(means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj, simulationSetup, 'Sum of Objective History Across Simulation Setups', 'Sum of Objective Value');
-
-% Plot stats for obj_hist
-plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value');
-% plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Objective Values and Confidence Intervals Across Simulation Setups', 'Objective Value', agent_model.a_battery_level_i);
-
 % plotStats(means, ci_lower, ci_upper, time_vector, simulationSetup, titleStr, yLabel, battery_threshold_events);
 
 
+%% Plot Geographical
+
+% Parameters List
+agent_parameter_list = {'m_f', 'm_bo'};
+search_parameter_list = {'m_bo_s', 'm_victim_s'};
+
+% Items and their locations
+items = {'UAV'}; 
+item_locations = {agent_model.a_loc};
+markerSizes = [10]; % List of marker sizes for items
+
+% plotGeographical(agent_model, environment_model, agent_parameter_list, search_parameter_list, items, item_locations, markerSizes);
+
 %% Save and export simulation results
 
-% Filename for saving
-% TODO: dynamic naming of simulation
-
 % Call the function to save results and figures
-saveSimulationResults(config.flag_save, simulationData, config.save_dir);
-
+saveSimulationResults(config.flag_save, allResults, config);

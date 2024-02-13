@@ -16,7 +16,7 @@
 % Review which parameters need to be part of model and which don't
 % Max travel time calc: use (v_as - v_w)
 
-function agent_model = i_a_repeat_2_battery_loss(environment_model)
+function agent_model = i_a_repeat_2(environment_model)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -62,7 +62,7 @@ function agent_model = i_a_repeat_2_battery_loss(environment_model)
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  a_battery_level_i = [2e4; 4e4]; % Fully charged battery level (s)
+  a_battery_level_i = [5000; 4e4]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   
   % Search map cell scan time
@@ -74,7 +74,6 @@ function agent_model = i_a_repeat_2_battery_loss(environment_model)
   
   % Max response time calculation
   maxResponseTime = calc_maxResponseTime(l_x_s, l_y_s, n_q, n_x_s, n_y_s, t_scan_c, v_as);
-
   
   % Create agent structure with all parameters
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...

@@ -11,7 +11,7 @@
 % Review lb/ub constraints (needs to be within range of MFs?)
 % Review advanced constriants: constrain to cover entire input range?
 
-function mpc_model = i_mpc_enabled(fisArray, n_a)
+function mpc_model = i_mpc_enabled_longFirstEval(fisArray, n_a)
 
   flag_mpc = true;
   n_p = 1;                  % Prediction horizon
@@ -63,7 +63,7 @@ function mpc_model = i_mpc_enabled(fisArray, n_a)
 
   % Solver options for first eval
   optTermCond       = 'MaxFunEvals';
-  optTermCond_value = 200;
+  optTermCond_value = 2000;
   options_firstEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Solver options for subsequent eval
