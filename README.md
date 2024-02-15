@@ -278,7 +278,7 @@ The `calc_prior` function computes the scanning priority for areas within a grid
    Priority for cells not yet scanned, based on building occupancy:
    $$ m_{P_{\text{first\_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} = 0\}}) \cdot m_{bo} \cdot weight_{\text{first\_scan}} $$
 
-3. **Re-scan Priority ($m_{P_{\text{re\_scan}}}$):**
+3. **Re-scan Priority ($m_{P rescan}$):**
    Based on time since last scan and, optionally, on victim information or building occupancy:
    $$ m_{P_{\text{re\_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} \neq 0\}}) \cdot (m_{\text{variable}} \cdot weight_{\text{repeat\_scan}} \cdot (\max(t - m_{\text{scan}}, 0)) + 1) $$
    Where $m_{\text{variable}}$ is $m_{victim}$ if `flag_victim_model` is true, otherwise $m_{bo}$.
