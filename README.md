@@ -295,6 +295,35 @@ The `calc_prior` function computes the scanning priority for areas within a grid
 
 - $m_{\text{prior}}$: Matrix of priorities for scanning cells, where higher values indicate a higher priority.
 
+### `calc_prior` Function
+
+The `calc_prior` function computes the scanning priority for areas within a grid. It considers various factors such as building occupancy, downwind map values, scan history, current time, victim information, and specific weights for different priority factors.
+
+#### Inputs
+
+*   mbom\_{bo}mbo​: Matrix representing building occupancy, with higher values indicating more occupancy.
+*   mdwm\_{dw}mdw​: Downwind map matrix, where values closer to 0 indicate proximity to hazards like fire.
+*   mscanm\_{scan}mscan​: Matrix indicating the last scan time for each cell, with 0 indicating that the cell has not been scanned.
+*   ttt: Current time.
+*   weightweightweight: Struct containing weights for different components of priority calculation:
+    *   weightfirst\_scanweight\_{first\\\_scan}weightfirst\_scan​: Weight for first-time scans.
+    *   weightrepeat\_scanweight\_{repeat\\\_scan}weightrepeat\_scan​: Weight for re-scans.
+    *   weightdwweight\_{dw}weightdw​: Weight for downwind information in priority calculation.
+*   mvictimm\_{victim}mvictim​: Matrix indicating the likelihood of finding victims in each cell, normalized to \[0, 1\] if `flag_victim_model` is true.
+*   flagvictim\_modelflag\_{victim\\\_model}flagvictim\_model​: Boolean indicating whether the victim model is used for re-scan priority.
+
+#### Process
+
+1.  **Normalize Victim Information (Optional):** If `flag_victim_model` is true, normalize mvictimm\_{victim}mvictim​ to the range \[0, 1\]: mvictim\=mvictimmax⁡(mvictim)m\_{victim} = \\frac{m\_{victim}}{\\max(m\_{victim})}mvictim​\=max(mvictim​)mvictim​​
+    
+2.  **First-time Scan Priority (mPfirst\_scanm\_{P\_{first\\\_scan}}mPfirst\_scan​​):** Priority for cells not yet scanned, based on building occupancy: mPfirst\_scan\=(1{mscan\=0})⋅mbo⋅weightfirst\_scanm\_{P\_{first\\\_scan}} = (\\mathbf{1}\_{\\{m\_{scan} = 0\\}}) \\cdot m\_{bo} \\cdot weight\_{first\\\_scan}mPfirst\_scan​​\=(1{mscan​\=0}​)⋅mbo​⋅weightfirst\_scan​
+    
+3.  **Re-scan Priority (mPrescanm\_{P\_{rescan}}mPrescan​​):** Based on time since last scan and, optionally, on victim information or building occupancy: mPrescan\=(1{mscan≠0})⋅(mvariable⋅weightrepeat\_scan⋅(max⁡(t−mscan,0))+1)m\_{P\_{rescan}} = (\\mathbf{1}\_{\\{m\_{scan} \\neq 0\\}}) \\cdot (m\_{variable} \\cdot weight\_{repeat\\\_scan} \\cdot (\\max(t - m\_{scan}, 0)) + 1)mPrescan​​\=(1{mscan​\=0}​)⋅(mvariable​⋅weightrepeat\_scan​⋅(max(t−mscan​,0))+1) Where mvariablem\_{variable}mvariable​ is mvictimm\_{victim}mvictim​ if `flag_victim_model` is true, otherwise mbom\_{bo}mbo​.
+    
+4.  **Downwind Map Information (mPdwm\_{P\_{dw}}mPdw​​):** Priority based on hazard proximity, inversely related to downwind values: mPdw\=(1−mdw)⋅weightdwm\_{P\_{dw}} = (1 - m\_{dw}) \\cdot weight\_{dw}mPdw​​\=(1−mdw​)⋅weightdw​
+    
+5.  **Overall Priority (mpriorm\_{prior}mprior​):** Summing the calculated priorities to obtain the overall priority matrix: mprior\=mPfirst\_scan+mPrescan+mPdwm\_{prior} = m\_{P\_{first\\\_scan}} + m\_{P\_{rescan}} + m\_{P\_{dw}}mprior​\=mPfirst\_scan​​+mPrescan​​+mPdw​​
+
 ### `calc_t_response` Function
 
 The `calc_t_response` function calculates the response time matrix for agents to reach various target locations in an environment, considering the agents' current tasks, travel times, and scan times.
