@@ -7,8 +7,6 @@
 % - Refactor: initialise plotting data can be removed
 % - Bugfix: Improve strings used in figures
 % - Simulations: Re-run with weights for dynamic environment variables
-
-% CHANGELOG
 % - Feature: FIS input range - compress inputs to predefined ranges. Add warning
 % message.
 % - Feature: probability-based predictions in MPC
@@ -20,6 +18,16 @@
 % IN PROGRESS
 % - Feature: MPC arcitecture selection
 % - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
+
+% NOTE
+% MPC: can initialise environment_model_prediction using current timestep of environment_model
+% Environment model: possible improvement by moving fire model histories
+
+% TASKS
+% Implement precompute of environment states and store in environment model
+% Implement use of precompute environment states in simulation & test
+% Implement separate prediction of environment states in model_mpc
+% BUGFIX: new environment calculation noticeably slower
 
 % TODO   
 % - Performance: Single prediction of environment states model before MPC
@@ -35,6 +43,9 @@
 % - Plotting: How to visualize agent behaviour over simulation. Think of other
 % plotting options.
 % - Feature: DelftBlue for simulations
+% - Analysis: add analysis of computation times#
+% - Feature: Implement prediction modes
+% - Bugfix: MPC environment prediction
 
 % Questions: 
 % - how to choose suitable range / MF parameters for FIS inputs?
@@ -122,18 +133,18 @@ h_mpc_enabled_longFirstEval = @(fisArray, n_a)i_mpc_enabled_longFirstEval(fisArr
 %   "sim_dynamics_mpc_longFirstEval", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval, "Dynamic Environment with MPC";
 %   };
 
-% Victim location modelling
-simulationSetup = { 
-  "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
-  "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
-  };
+% % Victim location modelling
+% simulationSetup = { 
+%   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
+%   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
+%   };
 
 % % MPC basic 
-% simulationSetup = {
-%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
-%   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC";
+simulationSetup = {
+  "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
+  "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC";
 %   "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
-%   };
+  };
 
 % % FIS Config comparison
 % simulationSetup = {
@@ -191,7 +202,7 @@ for simSetup = 1:size(simulationSetup, 1)
       config = f_init_sim();
       
       % Initialise Environment 
-      environment_model = f_init_env(config.dt_e);
+      environment_model = f_init_env(config);
       
       % Initialise Agent
       agent_model = f_init_agent(environment_model);
@@ -212,6 +223,15 @@ for simSetup = 1:size(simulationSetup, 1)
       % Save data time
       dk_v = k_sim_est / n_prog_data;
       ct_v = 0; 
+
+      %% Precompute dynamic environment states
+      k_precompute = 0;
+      while k_precompute * config.dt_e < config.t_f
+
+        environment_model = model_environment(environment_model, k_precompute, config.dt_e);          
+        k_precompute = k_precompute + 1;
+
+      end
    
       %% Simulation Loop
       while config.flag_finish == false
@@ -230,7 +250,7 @@ for simSetup = 1:size(simulationSetup, 1)
  
         %% Path planning
         if config.k_c*config.dk_c <= config.k
-          [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
+          [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
           config.k_c = config.k_c + 1;
         end     
 
@@ -242,13 +262,12 @@ for simSetup = 1:size(simulationSetup, 1)
    
         %% Environment model
         if config.k_e*config.dk_e <= config.k
-          environment_model = model_environment(environment_model, config.dt_e);          
           config.k_e = config.k_e + 1; 
-        end 
+        end
 
         %% Objective function evaluation
         [config.s_obj, config.obj] = calc_obj(...
-          config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.weight, environment_model.m_f(config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
           config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
         
         %% Store variables 

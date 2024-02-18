@@ -164,14 +164,14 @@
 
 
 % V2.2
-function agent_model = model_fis(agent_model, environment_model, config, fisArray)
+function agent_model = model_fis(agent_model, v_w, ang_w, config, fisArray)
     % Iterate over each task queue
     for q = 2:agent_model.n_q
         % Calculate normalized response time for all agents
         m_t_response = calc_t_response(...
             agent_model.n_x_s, agent_model.n_y_s, agent_model.l_x_s, agent_model.l_y_s, ...
             agent_model.n_a, agent_model.a_t_scan, agent_model.a_t_trav, agent_model.a_target, q, ...
-            environment_model.ang_w, environment_model.v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
+            ang_w, v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
 
         for a = 1:agent_model.n_a
             % FIS of agent

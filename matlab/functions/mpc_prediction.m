@@ -86,13 +86,6 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
   k_mpc   = 0;
   s_obj_pred   = 0;
   
-  % dt_a    = config.dk_a*config.dt_s;
-  % dt_e    = config.dk_e*config.dt_s;
-  
-  % Maps
-  % Downwind map
-  % m_dw_e   = zeros(environment_model.n_x_e, environment_model.n_x_e);
-  
   % Range
   range = 1;
   
@@ -128,7 +121,7 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
     
     %% Path planning
     if k_c*config.dk_c <= k_pred
-      [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
+      [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
       k_c = k_c + 1;
     end
     
@@ -138,9 +131,12 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
       k_a = k_a + 1;
     end
     
-    %% Environment model
+    %% V2 - Environment model - Use predicted states instead of recalculating
+    % TODO: FINISH
+
+    % V1 - Environment model 
     if k_e*config.dk_e <= k_pred
-      environment_model = model_environment(environment_model, config.dt_e);          
+      environment_model = model_environment(environment_model, k_e, config.dt_e); 
       k_e = k_e + 1;
     end
     

@@ -56,15 +56,25 @@ function environment_model = i_env_basic_dynamics(dt_e)
   c_wm_1 = 0.1;
   c_wm_2 = 0.1;
   c_wm_d  = 0.4;
+
+  % % Assuming dimensions of the simulation grid and total time steps are known
+  % max_time_steps = ...; % Total number of time steps in your simulation
+  
+  % Initialize m_f_series and m_dw_e_series in the environment_model
+  m_f_series = zeros(n_x_e, n_y_e);
+  m_dw_e_series = zeros(n_x_e, n_y_e);
+  % m_f_series = zeros(n_x_e, n_y_e, max_time_steps);
+  % m_dw_e_series = zeros(n_x_e, n_y_e, max_time_steps);
+    
   
   % Create environment structure with all parameters
   environment_model = struct('l_x_e', l_x_e, 'l_y_e', l_y_e, 'n_x_e', n_x_e, 'n_y_e', n_y_e, ...
   'm_bo', m_bo, 'm_s', m_s, 'm_f', m_f, 'm_bt', m_bt, 'm_dw_e', m_dw_e, 'm_p_ref', m_p_ref, ...
   'c_fs_1', c_fs_1, 'c_fs_2', c_fs_2, 'v_w', v_w, 'ang_w', ang_w, 't_i', t_i, 't_b', t_b, 'r_w', r_w, ...
-  'c_wm_1', c_wm_1, 'c_wm_2', c_wm_2, 'c_wm_d', c_wm_d);
+  'c_wm_1', c_wm_1, 'c_wm_2', c_wm_2, 'c_wm_d', c_wm_d, 'm_f_series', m_f_series, 'm_dw_e_series', m_dw_e_series);
 
   %  Initialise fire maps
-  environment_model = model_environment(environment_model, dt_e);          
+  environment_model = model_environment(environment_model, 1, dt_e);          
 
 end
 

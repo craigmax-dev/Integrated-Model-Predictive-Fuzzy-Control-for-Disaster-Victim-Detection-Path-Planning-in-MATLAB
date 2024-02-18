@@ -72,8 +72,10 @@ function mpc_model = i_mpc_enabled_longFirstEval(fisArray, n_a)
   options_subsequentEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Prediction mode
-  % "deterministic", "probabilistic", or "downwind_approximation"
-  prediction_model = "deterministic"; 
+  % "deterministic_exact" - In this mode, the MPC predicts the fire spread exactly as it will occur in the simulation. It assumes perfect knowledge of how the fire will evolve over the prediction horizon, making it the most accurate but potentially the least flexible mode. This mode is ideal for scenarios where the fire spread model is highly reliable and environmental conditions are well-understood.
+  % "deterministic_prediction" - This mode also uses a deterministic approach to predict fire spread but allows for different permutations of fire evolution compared to what actually occurs in the simulation. It's useful for exploring various "what-if" scenarios within the planning horizon, providing insights into different possible outcomes based on slight variations in initial conditions or fire behavior.
+  % "probabilistic_threshold" - Unlike the deterministic modes, this mode introduces a probabilistic element to the prediction. It sets a threshold probability for fire spread; if the calculated probability of fire spreading to a cell is above this threshold, the model predicts that the fire will propagate to that cell. This mode is beneficial for incorporating uncertainty into the prediction, allowing for more robust planning under uncertain environmental conditions.
+  prediction_model = "deterministic_exact"; 
 
   % Structure
   mpc_model = struct('architecture', architecture, 'flag_mpc', flag_mpc, 'solver', solver, 'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...

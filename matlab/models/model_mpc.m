@@ -90,6 +90,39 @@
 %     clusters = {}; % Placeholder
 % end
 
+% % % V2.2
+% function [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model)
+%     % Perform environment prediction based on the specified mode
+%     if strcmp(mpc_model.prediction_mode, 'deterministic_prediction') || strcmp(mpc_model.prediction_mode, 'probabilistic_threshold')
+%         % Precompute the environmental predictions for the entire horizon
+%         [predicted_m_f, predicted_m_dw_e] = precompute_environment_predictions(environment_model, config, mpc_model);
+% 
+%         % Pass the predicted environment states to the MPC prediction function
+%         h_mpc = @(params)mpc_prediction(params, agent_model, config, predicted_m_f, predicted_m_dw_e, fisArray, mpc_model);
+%     else
+%         % For deterministic_exact, use the current environment model directly
+%         h_mpc = @(params)mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model);
+%     end
+% 
+% 
+% 
+%     % Update initial guess
+%     mpc_model.ini_params = mpc_params;
+% end
+% 
+% function [predicted_m_f, predicted_m_dw_e] = precompute_environment_predictions(environment_model, config, mpc_model)
+%     % Initialize matrices to store predicted m_f and m_dw_e
+%     % Assuming prediction_horizon and dt_s are defined in config or mpc_model
+%     prediction_steps = config.prediction_horizon / config.dt_s;
+%     predicted_m_f = zeros([size(environment_model.m_f), prediction_steps]);
+%     predicted_m_dw_e = zeros([size(environment_model.m_dw_e), prediction_steps]);
+% 
+%     % Populate predicted_m_f and predicted_m_dw_e based on the prediction mode
+%     % This will involve iterating over prediction steps and applying the 
+%     % deterministic or probabilistic fire spread model accordingly
+%     % Implementation of this depends on the details of the environment prediction model
+% end
+
 % V2.1
 function [fisArray, mpc_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model)
 
