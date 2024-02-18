@@ -17,7 +17,7 @@ function plotStats(means, ci_lower, ci_upper, time_vector, simulationSetups, tit
     colorIndex = 1;
 
     for simSetup = 1:size(simulationSetups, 1)
-        simulationName = simulationSetups{simSetup, 1};
+        simulationName = simulationSetups{simSetup, 7};
         color = colors(mod(colorIndex - 1, size(colors, 1)) + 1, :); % Cycle through predefined colors
         colorIndex = colorIndex + 1;
 

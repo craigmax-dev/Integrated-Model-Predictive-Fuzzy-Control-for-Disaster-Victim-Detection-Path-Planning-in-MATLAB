@@ -6,11 +6,6 @@
 % - refactor: correct rules, add linear output functions
 % - refactor: removed t_dw as this is considered in priority calculation instead
 
-% TODO
-% Check range of priority
-% Research possible functions to apply to inputs to normalise within given range
-% - e.g. S-shape
-
 %% V2 refactor
 function [fisArray] = initialise_fis_t_response_priority_r_nextagent(n_a)
 
@@ -18,7 +13,7 @@ function [fisArray] = initialise_fis_t_response_priority_r_nextagent(n_a)
   inputRanges = [0 1; 0 1000; 0 1];  % [0, 1] for t_response, [0, 1000] for priority
 
   % Define Membership Function (MF) types and evenly distributed parameters
-  mfTypes = ["trimf", "trimf"];  % Triangular MFs for both inputs
+  mfTypes = ["trimf", "trimf", "trimf"];  % Triangular MFs for both inputs
   mfNames = ["low", "medium", "high"];  % Names for MFs
 
   %% Generate FIS
@@ -47,10 +42,12 @@ function [fisArray] = initialise_fis_t_response_priority_r_nextagent(n_a)
     outputs = "attraction";
     fis = addOutput(fis, [0 1], 'Name', outputs);
 
-    % Output MFs for low, medium, high
-    fis = addMF(fis, outputs, 'linear', [0 0 0], 'Name', 'low');    % Low output
-    fis = addMF(fis, outputs, 'linear', [0 0 0.5], 'Name', 'medium');  % Medium output
-    fis = addMF(fis, outputs, 'linear', [0 0 1], 'Name', 'high');   % High output
+    % Assuming there are three inputs, each 'linear' MF for the output should have 4 parameters
+    fis = addMF(fis, outputs, 'linear', [0 0 0 0], 'Name', 'low');    % Adjusted for 3 inputs + constant
+    fis = addMF(fis, outputs, 'linear', [0 0 0 0.5], 'Name', 'medium');  % Adjusted for 3 inputs + constant
+    fis = addMF(fis, outputs, 'linear', [0 0 0 1], 'Name', 'high');   % Adjusted for 3 inputs + constant
+
+
 
     % Dynamically generate ruleList based on inputs
     numMFs = numel(mfNames);

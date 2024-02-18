@@ -71,9 +71,13 @@ function mpc_model = i_mpc_enabled_longFirstEval(fisArray, n_a)
   optTermCond_value = 200;
   options_subsequentEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
+  % Prediction mode
+  % "deterministic", "probabilistic", or "downwind_approximation"
+  prediction_model = "deterministic"; 
+
   % Structure
   mpc_model = struct('architecture', architecture, 'flag_mpc', flag_mpc, 'solver', solver, 'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...
   'n_p', n_p, 'fis_params', fis_params, 'ini_params', ini_params, 'A', A, 'b', b, 'Aeq', Aeq, 'beq', beq, 'lb', lb, 'ub', ub, 'nonlcon', nonlcon, ...
-  'nvars', nvars);
+  'nvars', nvars, 'prediction_model', prediction_model);
 
 end

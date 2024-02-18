@@ -3,9 +3,6 @@
 % CHANGELOG
 % Removed m_f_hist
 
-% TODO
-% Performance improvements
-
 function m_f = applyFireSpread(m_f, F)
 
     n_x_e = size(m_f, 1);
