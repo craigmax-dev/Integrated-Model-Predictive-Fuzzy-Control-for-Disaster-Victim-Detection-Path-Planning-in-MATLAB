@@ -1,22 +1,121 @@
 % Function created for environment model refactor
 
-% V2.3 performance improvements refactor
-function [environment_model, F] = updateFireStatesAndProbabilities(environment_model, F, W, dt_e)
+% CHANGELOG
+% Refactor: environment forecast refactor
+
+% V2.6
+function [m_bt, m_f, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e)
     
-    % Update burn time for active and burning states
-  environment_model.m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) = environment_model.m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) + dt_e;
+    % Initialize F with the correct dimensions
+    F = zeros(environment_model.n_x_e, environment_model.n_y_e);
+    
+    % Direct manipulation of m_bt and m_f
+    m_bt = environment_model.m_bt;
+    m_f = environment_model.m_f;
+    
+    % Logical indexing and update
+    active_or_burning = (m_f == 2) | (m_f == 3);
+    m_bt(active_or_burning) = m_bt(active_or_burning) + dt_e;  % Correctly increments the burn time for active or burning cells by dt_e
 
-  % Transition from active to burning state
-  environment_model.m_f(environment_model.m_f == 2 & environment_model.m_bt >= environment_model.t_i) = 3;
+    % Transition from active to burning state based on ignition time
+    m_f(m_f == 2 & m_bt >= environment_model.t_i) = 3;
 
-  % Update fire spread probability for burning cells
-  burning_cells = find(environment_model.m_f == 3);
-  for idx = 1:length(burning_cells)
-      [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
-      p = calculateSpreadProbability(environment_model.m_bt(i, j), environment_model.t_i, environment_model.t_b);
-      F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
-  end
+    % Update fire spread probability for burning cells and transition to burnout state
+    burning_cells = find(m_f == 3);
+    for idx = 1:length(burning_cells)
+        [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
+        p = calculateSpreadProbability(m_bt(i, j), environment_model.t_i, environment_model.t_b);
+        F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+    end
 
-  % Transition from burning to burnout state
-  environment_model.m_f(environment_model.m_f == 3 & environment_model.m_bt >= environment_model.t_b) = 4;
+    % Transition from burning to burnout state based on burnout time
+    m_f(m_f == 3 & m_bt >= environment_model.t_b) = 4;
+
+    
 end
+
+
+% % V2.5
+% function [m_bt, m_f, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e)
+% 
+%   % Initialize F with the correct dimensions
+%   F = zeros(environment_model.n_x_e, environment_model.n_y_e);
+% 
+%   % Direct manipulation of m_bt and m_f
+%   m_bt = environment_model.m_bt;
+%   m_f = environment_model.m_f;
+% 
+%   % Logical indexing and update
+%   active_or_burning = (m_f == 2) | (m_f == 3);
+%   m_bt(active_or_burning) = m_bt(active_or_burning) + dt_e; % TODO: check this
+% 
+%   % The corresponding cells which are true in active_or_burning should be
+%   % incremented in m_bt by dt_e
+% 
+%   % Transition states based on t_i and t_b
+%   m_f(m_f == 2 & m_bt >= environment_model.t_i) = 3;
+%   m_f(m_f == 3 & m_bt >= environment_model.t_b) = 4;
+% 
+%   % Update fire spread probability for burning cells
+%   burning_cells = find(m_f == 3);
+%   for idx = 1:length(burning_cells)
+%     [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
+%     p = calculateSpreadProbability(m_bt(i, j), environment_model.t_i, environment_model.t_b);
+%     F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+%   end
+% 
+% end
+
+
+
+% % % V2.4 refactor for environment prediction refactor
+% function [m_bt, m_f, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e)
+% 
+%   % Initialize F
+%   F = zeros(environment_model.n_x_e, environment_model.n_y_e);  % Fire spread probability map
+% 
+%   % Update burn time for active and burning states
+%   m_bt = environment_model.m_bt; % Copy burn time matrix for direct manipulation
+%   m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) = m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) + dt_e;
+% 
+%   % Copy fire state matrix for direct manipulation
+%   m_f = environment_model.m_f;
+% 
+%   % Transition from active to burning state
+%   m_f(m_f == 2 & m_bt >= environment_model.t_i) = 3;
+% 
+%   % Update fire spread probability for burning cells
+%   burning_cells = find(m_f == 3);
+%   for idx = 1:length(burning_cells)
+%     [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
+%     p = calculateSpreadProbability(m_bt(i, j), environment_model.t_i, environment_model.t_b);
+%     F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+%   end
+% 
+%   % Transition from burning to burnout state
+%   m_f(m_f == 3 & m_bt >= environment_model.t_b) = 4;
+% end
+
+% % V2.3 performance improvements refactor
+% function [environment_model, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e)
+% 
+%   % Initialize F
+%   F = zeros(environment_model.n_x_e, environment_model.n_y_e);  % Fire spread probability map
+% 
+%   % Update burn time for active and burning states
+%   environment_model.m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) = environment_model.m_bt(environment_model.m_f == 2 | environment_model.m_f == 3) + dt_e;
+% 
+%   % Transition from active to burning state
+%   environment_model.m_f(environment_model.m_f == 2 & environment_model.m_bt >= environment_model.t_i) = 3;
+% 
+%   % Update fire spread probability for burning cells
+%   burning_cells = find(environment_model.m_f == 3);
+%   for idx = 1:length(burning_cells)
+%       [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
+%       p = calculateSpreadProbability(environment_model.m_bt(i, j), environment_model.t_i, environment_model.t_b);
+%       F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+%   end
+% 
+%   % Transition from burning to burnout state
+%   environment_model.m_f(environment_model.m_f == 3 & environment_model.m_bt >= environment_model.t_b) = 4;
+% end

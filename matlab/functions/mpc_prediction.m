@@ -9,70 +9,7 @@
 % Structures refactor
 
 % TODO
-% Check that models are only updated during function and not returned to main
-% function. Also check correct data is accessed in MPC prediction. E.g. do we
-% initialise m_dw_e as 0 for the prediction? Other parameters of concern: k
-% - Validate V2.2 function
-
-% % V2.2
-% function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
-% 
-%   %% Initialize Variables
-%   k_pred = 0;
-%   s_obj_pred = 0;
-%   range = 1;
-% 
-%   %% Prediction Loop
-%   while k_pred < config.dk_mpc*mpc_model.n_p
-% 
-%     %% Update FIS parameters if needed
-%     if mod(k_pred, config.dk_mpc) == 0
-%       % Depending on the architecture, params may represent a single agent, multiple agents, or clusters.
-%       % The structure of params needs to correspond to how many agents or clusters are being optimized.
-%       % Here we assume params is structured correctly for the current architecture.
-%       range = updateFISParameters(fisArray, params, range);
-%     end
-% 
-%     %% Execute models (Path planning, Agent model, Environment model)
-%     [agent_model, environment_model] = executeModels(agent_model, environment_model, config, fisArray, k_pred);
-% 
-%     %% Objective function evaluation
-%     [s_obj_pred, ~] = calc_obj(...
-%       config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
-%       config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
-% 
-%     %% Advance timestep
-%     k_pred = k_pred + 1;
-%     config.k = config.k + 1;
-% 
-%   end
-% end
-% 
-% function range = updateFISParameters(fisArray, params, startRange)
-%   range = startRange;
-%   for a = 1:length(fisArray)
-%       for o = 1:numel(fisArray(a).Outputs)
-%           for mf = 1:numel(fisArray(a).Outputs(o).MembershipFunctions)
-%               numParams = numel(fisArray(a).Outputs(o).MembershipFunctions(mf).Parameters);
-%               newParams = params(range:range+numParams-1);
-%               fisArray(a).Outputs(o).MembershipFunctions(mf).Parameters = newParams;
-%               range = range + numParams;
-%           end
-%       end
-%   end
-% end
-% 
-% function [agent_model, environment_model] = executeModels(agent_model, environment_model, config, fisArray, k_pred)
-%   if mod(k_pred, config.dk_c) == 0
-%     [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
-%   end
-%   if mod(k_pred, config.dk_a) == 0
-%     agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
-%   end
-%   if mod(k_pred, config.dk_e) == 0
-%     environment_model = model_environment(environment_model, config.dt_e);          
-%   end
-% end
+% Update to pass only environment_model depending on choice of prediction mode
 
 % V2.1
 function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
@@ -85,13 +22,6 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
   k_e     = 0;
   k_mpc   = 0;
   s_obj_pred   = 0;
-  
-  % dt_a    = config.dk_a*config.dt_s;
-  % dt_e    = config.dk_e*config.dt_s;
-  
-  % Maps
-  % Downwind map
-  % m_dw_e   = zeros(environment_model.n_x_e, environment_model.n_x_e);
   
   % Range
   range = 1;
@@ -128,7 +58,7 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
     
     %% Path planning
     if k_c*config.dk_c <= k_pred
-      [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
+      [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
       k_c = k_c + 1;
     end
     
@@ -138,15 +68,14 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
       k_a = k_a + 1;
     end
     
-    %% Environment model
+    % V2 - Environment model - Use predicted states instead of recalculating
     if k_e*config.dk_e <= k_pred
-      environment_model = model_environment(environment_model, config.dt_e);          
       k_e = k_e + 1;
     end
     
     %% Objective function evaluation
     [s_obj_pred, ~] = calc_obj(...
-      config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+      config.weight, environment_model.m_f(k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
       config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
           
     %% Advance timestep

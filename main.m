@@ -2,32 +2,27 @@
 % Author: Craig Maxwell
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
- 
+
 % CHANGELOG
 % - Refactor: initialise plotting data can be removed
 % - Bugfix: Improve strings used in figures
 % - Simulations: Re-run with weights for dynamic environment variables
-
-% CHANGELOG
 % - Feature: FIS input range - compress inputs to predefined ranges. Add warning
 % message.
-% - Feature: probability-based predictions in MPC
-% - 1: separate fully-defined fire spread probability likelihood
-% - 2: base probability on simple parameter e.g. downwind map / probability
-% calculation without propagating fire spread.
-% - 3: Monte-carlo simulation (not feasible embedded within an MPC optimization)
+% - Feature: MPC prediction modes
+% - Performance: Single prediction of environment states model before MPC
+% optimization
 
 % IN PROGRESS
+% - Feature: Deterministic Threshold prediction mode
 % - Feature: MPC arcitecture selection
 % - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
 
 % TODO   
-% - Performance: Single prediction of environment states model before MPC
-% optimization
 % - Performance: write data to file after each simulation. Then read and
 % post-processing.
 % - Restructure: clean up unused files
-% - Feature: add battery model and loss of agents
+% - Feature: add battery recharge model and constraints to agent actions & fis
 % - Feature/performance: add localised predictions for given radius around an agent
 % - Feature: Implement ability to initiate fire spread during simulation.
 % - Feature: Plotting of all simulations using light line and mean simulation
@@ -35,20 +30,18 @@
 % - Plotting: How to visualize agent behaviour over simulation. Think of other
 % plotting options.
 % - Feature: DelftBlue for simulations
-
-% Questions: 
-% - how to choose suitable range / MF parameters for FIS inputs?
-% - how to setup optimization? go with current setup or attempt different?
+% - Analysis: add analysis of computation times#
+% - Feature: Implement prediction modes
+% - Performance: better handling of environment history parameters
+% - Tidying: .gitignore all input files except templates
 
 %% SIMULATION CASES
-
-
-
-%% NEXT SIMULATIONS
 % - 1. Victim locations modeled
 % - 2. Dynamic environment variables
 % - 3. Probability based predictions 
 % - 4. Using m_bo distributions: 
+% - Comparison stable behaviour vs MPC for loss of agent
+% - TODO: longer prediction horizon, longer prediction timestep?, 
 
 % Clear workspace 
 clear all  
@@ -97,6 +90,8 @@ h_mpc_enabled = @(fisArray, n_a)i_mpc_enabled(fisArray, n_a);
 h_mpc_enabled_500 = @(fisArray, n_a)i_mpc_enabled_500(fisArray, n_a);
 h_mpc_enabled_1000 = @(fisArray, n_a)i_mpc_enabled_1000(fisArray, n_a);
 h_mpc_enabled_longFirstEval = @(fisArray, n_a)i_mpc_enabled_longFirstEval(fisArray, n_a);
+h_mpc_enabled_deterministic_prediction = @(fisArray, n_a)i_mpc_enabled_deterministic_prediction(fisArray, n_a);
+
 
 % % comparison comms model
 % simulationSetup = {
@@ -122,17 +117,17 @@ h_mpc_enabled_longFirstEval = @(fisArray, n_a)i_mpc_enabled_longFirstEval(fisArr
 %   "sim_dynamics_mpc_longFirstEval", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval, "Dynamic Environment with MPC";
 %   };
 
-% Victim location modelling
-simulationSetup = { 
-  "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
-  "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
-  };
+% % Victim location modelling
+% simulationSetup = { 
+%   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
+%   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
+%   };
 
 % % MPC basic 
 % simulationSetup = {
 %   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
 %   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC";
-%   "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
+% %   "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
 %   };
 
 % % FIS Config comparison
@@ -156,8 +151,22 @@ simulationSetup = {
 %   "sim_mpc_long", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_1000, "MPC 1000 EVAL";
 %   };
 
+% % Prediction Modes Comparison for Static Environment
+% simulationSetup = {
+%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
+%   "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
+%   "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
+%   };
+
+% Prediction Modes Comparison for Dynamic Environment
+simulationSetup = {
+  "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
+  "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
+  "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
+  };
+
 % Define the number of iterations for each simulation setup
-numIterations = 4 ; 
+numIterations = 5; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -176,22 +185,27 @@ for simSetup = 1:size(simulationSetup, 1)
   f_init_fis = simulationSetup{simSetup, 5};
   f_init_mpc = simulationSetup{simSetup, 6};
 
-  % Initialize an array to store results for this simulation setup
-  results = struct('t_hist', [], 's_obj_hist', [], 'obj_hist', []);
+  % V2
+  % Initialize a struct array to store results for this simulation setup
+  % Note: Preallocate the struct array for efficiency
+  results = struct('t_hist', cell(1, numIterations), 's_obj_hist', cell(1, numIterations), 'obj_hist', cell(1, numIterations));
 
+  % V1
+  % % Initialize an array to store results for this simulation setup
+  % results = struct('t_hist', [], 's_obj_hist', [], 'obj_hist', []);
+  
   for iteration = 1:numIterations
 
       %% Initialise models, plotting data, and timestep for saving variables
 
       % Generate and record a unique seed for each iteration
       seeds(iteration) = randi(10000); % or another method to generate a random seed
-      rng(seeds(iteration)); % Set the seed for RNG
 
       % Simulation parameters
       config = f_init_sim();
       
       % Initialise Environment 
-      environment_model = f_init_env(config.dt_e);
+      environment_model = f_init_env(config);
       
       % Initialise Agent
       agent_model = f_init_agent(environment_model);
@@ -212,7 +226,24 @@ for simSetup = 1:size(simulationSetup, 1)
       % Save data time
       dk_v = k_sim_est / n_prog_data;
       ct_v = 0; 
-   
+
+      %% Precompute dynamic environment states
+      % The precompute is performed beyond the end of the simulation for the
+      % case where the MPC prediction horizon extends beyond the simulation
+      % time.
+
+      % Set the seed for RNG once, unless reseeding is explicitly required for each iteration
+      rng(seeds(iteration));
+      
+      % Calculate the total number of steps needed for the pre-computation phase
+      total_steps = round((config.t_f + mpc_model.n_p * config.dt_mpc) / config.dt_e);
+      
+      for k_precompute = 0:(total_steps - 1)
+          % Update the environment for the current step
+          % Consider optimizing model_environment for batch updates if applicable
+          environment_model = model_environment(environment_model, k_precompute, config.dt_e);
+      end
+
       %% Simulation Loop
       while config.flag_finish == false
 
@@ -230,7 +261,7 @@ for simSetup = 1:size(simulationSetup, 1)
  
         %% Path planning
         if config.k_c*config.dk_c <= config.k
-          [agent_model] = model_fis(agent_model, environment_model, config, fisArray);
+          [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
           config.k_c = config.k_c + 1;
         end     
 
@@ -242,13 +273,12 @@ for simSetup = 1:size(simulationSetup, 1)
    
         %% Environment model
         if config.k_e*config.dk_e <= config.k
-          environment_model = model_environment(environment_model, config.dt_e);          
           config.k_e = config.k_e + 1; 
-        end 
+        end
 
         %% Objective function evaluation
         [config.s_obj, config.obj] = calc_obj(...
-          config.weight, environment_model.m_f, agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.weight, environment_model.m_f(config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
           config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
         
         %% Store variables 
@@ -274,11 +304,18 @@ for simSetup = 1:size(simulationSetup, 1)
 
       end
 
-      % Store results for each iteration
-      results(iteration).t_hist = t_hist;
-      results(iteration).s_obj_hist = s_obj_hist;
-      results(iteration).obj_hist = obj_hist;
+      % % V1
+      % % Store results for each iteration
+      % results(iteration).t_hist = t_hist;
+      % results(iteration).s_obj_hist = s_obj_hist;
+      % results(iteration).obj_hist = obj_hist;
 
+      % V2
+      % Correctly store results for each iteration
+      results(iteration).t_hist = t_hist;        % Assuming t_hist is your time history for this iteration
+      results(iteration).s_obj_hist = s_obj_hist; % Assuming s_obj_hist is your objective history for this iteration
+      results(iteration).obj_hist = obj_hist;    % Assuming obj_hist is additional objective metrics for this iteration
+      
   end
 
     % Store results from this setup for later comparison
@@ -291,12 +328,12 @@ end
 % Confidence interval level
 alpha = 0.05;
 
-% Calculate stats for s_obj_hist
-[means_s_obj, ci_lower_s_obj, ci_upper_s_obj, time_vector_s_obj] = calculateStats(allResults, simulationSetup, 's_obj_hist', config.dt_s, alpha);
-
 % Calculate stats for obj_hist
 [means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetup, 'obj_hist', config.dt_s, alpha);
 
+row_sums = cellfun(@sum, means_obj);
+
+fprintf(row_sums)
 
 %% Plotting
 

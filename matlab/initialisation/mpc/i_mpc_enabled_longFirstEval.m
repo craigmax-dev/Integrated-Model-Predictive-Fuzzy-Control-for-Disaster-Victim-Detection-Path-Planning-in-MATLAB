@@ -72,8 +72,11 @@ function mpc_model = i_mpc_enabled_longFirstEval(fisArray, n_a)
   options_subsequentEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Prediction mode
-  % "deterministic", "probabilistic", or "downwind_approximation"
-  prediction_model = "deterministic"; 
+  % "deterministic_exact" - In the “Deterministic Exact ” mode, the exact environment parameters that occur in the simulation are passed to the MPC.
+  % "deterministic_prediction" - In the “Deterministic Prediction” mode, the environment parameters at the current timestep are passed to the MPC, which then uses them to predict the future evolution of the environment parameters over the prediction horizon.
+  % "deterministic_threshold" - TBC - In the “Deterministic Threshold” mode, a predefined threshold and the environment parameters at the current timestep are passed to the MPC. The MPC then performs a prediction using the threshold to determine whether any probabilistic parameters are propagated.
+  % "probabilistic" - TBC - In this proposed mode, the MPC predicts the probability of the propagation of all environment variables at each timestep. The difficulty is that many functions rely on a deterministic propagation of the probabilistic parameters.
+  prediction_model = "deterministic_exact"; 
 
   % Structure
   mpc_model = struct('architecture', architecture, 'flag_mpc', flag_mpc, 'solver', solver, 'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...
