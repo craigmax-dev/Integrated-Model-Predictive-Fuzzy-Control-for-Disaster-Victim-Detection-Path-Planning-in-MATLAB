@@ -1,14 +1,5 @@
 % V2
 
-
-% CHANGELOG
-% Refactor: config struct
-% Refactor: removed unused parameters
-% Feature: Added flag_victim_model
-
-% TODO: 
-% - check where r_bo, r_fo are used
-
 function config = i_sim_comms_disabled()
 
 %% Simulation Settings
@@ -48,8 +39,8 @@ flag_finish    = false;
 
 % Define agent objectives
 weight = struct();
-weight.dw = 0.5;      % Weight for victims
-weight.fire = 0.5;      % Weight for victims
+weight.dw = 0.1;      % Weight for victims
+weight.fire = 0.1;      % Weight for victims
 weight.first_scan = 1;   % Weight for the first-time scan. WARNING: IF 0, AGENT BEHAVIOUR COMPROMISED (will re-scan starting cells continuously)
 weight.repeat_scan = 0.001;  % Weight for repeat scans
 
@@ -65,13 +56,9 @@ flag_victim_model = false;
 obj           = 0;
 s_obj         = 0;
 
-% Risk model
-r_bo  = 0.5;      % Risk weighting due to building occupancy
-r_fo  = 0.5;      % Risk weighting due to environmental fire
-
 config = struct('flag_save', flag_save, 'save_dir', save_dir, ...
   't', t, 't_f', t_f, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
   'k', k, 'k_a', k_a, 'k_c', k_c, 'k_e', k_e, 'k_mpc', k_mpc, 'k_prog', k_prog, 'endCondition', endCondition, 'flag_finish', flag_finish, ...
-  'obj', obj, 's_obj', s_obj, 'r_bo', r_bo, 'r_fo', r_fo, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model);
+  'obj', obj, 's_obj', s_obj, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model);
 
 end

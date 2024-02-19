@@ -13,12 +13,10 @@
 % - Performance: Single prediction of environment states model before MPC
 % optimization
 
-% IN PROGRESS
-% - Feature: Deterministic Threshold prediction mode
-% - Feature: MPC arcitecture selection
-% - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
-
 % TODO   
+% - Feature: Implement tuning of output MF parameters for MPFC
+% - Feature: Implement MPC controller option
+% - Correction: Rename MPC to MPFC
 % - Performance: write data to file after each simulation. Then read and
 % post-processing.
 % - Restructure: clean up unused files
@@ -34,6 +32,13 @@
 % - Feature: Implement prediction modes
 % - Performance: better handling of environment history parameters
 % - Tidying: .gitignore all input files except templates
+% - Feature: Deterministic Threshold prediction mode
+% - Feature: MPC arcitecture selection
+% - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
+% - Feature: Implement new controller architecture - MPC directly tuning agent
+% locations
+% Check: Fire propagation is functioning correctly
+% Set fire weight parameters corectly for each simulation
 
 %% SIMULATION CASES
 % - 1. Victim locations modeled
@@ -41,7 +46,13 @@
 % - 3. Probability based predictions 
 % - 4. Using m_bo distributions: 
 % - Comparison stable behaviour vs MPC for loss of agent
-% - TODO: longer prediction horizon, longer prediction timestep?, 
+% - TODO: longer prediction horizon, longer prediction timestep?
+
+%% CONTROLLER ARCHITECTURES
+% PRE-TUNED FIS (HAND)
+% PRE-TUNED FIS (MPFC)
+% MPFC
+% MPC
 
 % Clear workspace 
 clear all  
@@ -68,6 +79,7 @@ h_s_comms_disabled = @()i_sim_comms_disabled();
 h_s_comms_enabled = @()i_sim_comms_enabled();
 h_s_comms_disabled_victim_model = @()i_sim_comms_disabled_victim_model();
 h_s_comms_enabled_victim_model = @()i_sim_comms_enabled_victim_model();
+h_s_comms_disabled_victim_model_long = @()i_sim_comms_disabled_victim_model_long();
 
 % Environment
 h_e_static = @(dt_e)i_env_basic_no_dynamics(dt_e);
@@ -105,12 +117,12 @@ h_mpc_enabled_deterministic_prediction = @(fisArray, n_a)i_mpc_enabled_determini
 %   "sim_na_2", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Two Agents";
 %   }; 
 
-% % Loss of agent
-% simulationSetup = {
-%   "sim_no_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No loss of agent";
-%   "sim_loss", h_s_comms_enabled, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_disabled, "Loss of agent";
-%   };
- 
+% Loss of agent
+simulationSetup = {
+  "sim_loss_mpc_disabled", h_s_comms_disabled_victim_model_long, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_disabled, "Pre-tuned FIS";
+  "sim_loss_mpc_enabled", h_s_comms_disabled_victim_model_long, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
+  };
+
 % % Dynamic environment test
 % simulationSetup = {
 %   "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Dynamic Environment";
@@ -121,20 +133,6 @@ h_mpc_enabled_deterministic_prediction = @(fisArray, n_a)i_mpc_enabled_determini
 % simulationSetup = { 
 %   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
 %   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
-%   };
-
-% % MPC basic 
-% simulationSetup = {
-%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
-%   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC";
-% %   "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
-%   };
-
-% % FIS Config comparison
-% simulationSetup = {
-%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
-%   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC";
-%   "sim_mpc_longFirstEval", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval;
 %   };
 
 % % FIS input parameter comparison
@@ -158,15 +156,15 @@ h_mpc_enabled_deterministic_prediction = @(fisArray, n_a)i_mpc_enabled_determini
 %   "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
 %   };
 
-% Prediction Modes Comparison for Dynamic Environment
-simulationSetup = {
-  "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
-  "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
-  "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
-  };
+% % Prediction Modes Comparison for Dynamic Environment
+% simulationSetup = {
+%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
+%   "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
+%   "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
+%   };
 
 % Define the number of iterations for each simulation setup
-numIterations = 5; 
+numIterations = 2; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -189,10 +187,6 @@ for simSetup = 1:size(simulationSetup, 1)
   % Initialize a struct array to store results for this simulation setup
   % Note: Preallocate the struct array for efficiency
   results = struct('t_hist', cell(1, numIterations), 's_obj_hist', cell(1, numIterations), 'obj_hist', cell(1, numIterations));
-
-  % V1
-  % % Initialize an array to store results for this simulation setup
-  % results = struct('t_hist', [], 's_obj_hist', [], 'obj_hist', []);
   
   for iteration = 1:numIterations
 
@@ -278,7 +272,7 @@ for simSetup = 1:size(simulationSetup, 1)
 
         %% Objective function evaluation
         [config.s_obj, config.obj] = calc_obj(...
-          config.weight, environment_model.m_f(config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.weight, environment_model.m_f_series(:, :, config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
           config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
         
         %% Store variables 
@@ -304,13 +298,6 @@ for simSetup = 1:size(simulationSetup, 1)
 
       end
 
-      % % V1
-      % % Store results for each iteration
-      % results(iteration).t_hist = t_hist;
-      % results(iteration).s_obj_hist = s_obj_hist;
-      % results(iteration).obj_hist = obj_hist;
-
-      % V2
       % Correctly store results for each iteration
       results(iteration).t_hist = t_hist;        % Assuming t_hist is your time history for this iteration
       results(iteration).s_obj_hist = s_obj_hist; % Assuming s_obj_hist is your objective history for this iteration
@@ -333,7 +320,7 @@ alpha = 0.05;
 
 row_sums = cellfun(@sum, means_obj);
 
-fprintf(row_sums)
+% fprintf(row_sums)
 
 %% Plotting
 

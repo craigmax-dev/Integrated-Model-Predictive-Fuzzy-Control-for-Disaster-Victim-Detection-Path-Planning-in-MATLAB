@@ -11,12 +11,7 @@
 % Refactored function to use agent_model structure
 % Added parameters for battery model
 
-% TODO
-% Better way to structure a_loc_hist
-% Review which parameters need to be part of model and which don't
-% Max travel time calc: use (v_as - v_w)
-
-function agent_model = i_a_repeat_2(environment_model)
+function agent_model = i_a_repeat_2_battery_loss(environment_model)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -62,7 +57,7 @@ function agent_model = i_a_repeat_2(environment_model)
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  a_battery_level_i = [5000; 4e4]; % Fully charged battery level (s)
+  a_battery_level_i = [10000; 4e4]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   
   % Search map cell scan time
