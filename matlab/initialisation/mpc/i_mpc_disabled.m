@@ -43,9 +43,10 @@ function mpc_model = i_mpc_disabled(fisArray, n_a)
   options_subsequentEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Prediction mode
-  % "deterministic_exact" - In this mode, the MPC predicts the fire spread exactly as it will occur in the simulation. It assumes perfect knowledge of how the fire will evolve over the prediction horizon, making it the most accurate but potentially the least flexible mode. This mode is ideal for scenarios where the fire spread model is highly reliable and environmental conditions are well-understood.
-  % "deterministic_prediction" - This mode also uses a deterministic approach to predict fire spread but allows for different permutations of fire evolution compared to what actually occurs in the simulation. It's useful for exploring various "what-if" scenarios within the planning horizon, providing insights into different possible outcomes based on slight variations in initial conditions or fire behavior.
-  % "probabilistic_threshold" - Unlike the deterministic modes, this mode introduces a probabilistic element to the prediction. It sets a threshold probability for fire spread; if the calculated probability of fire spreading to a cell is above this threshold, the model predicts that the fire will propagate to that cell. This mode is beneficial for incorporating uncertainty into the prediction, allowing for more robust planning under uncertain environmental conditions.
+  % "deterministic_exact" - In the “Deterministic Exact ” mode, the exact environment parameters that occur in the simulation are passed to the MPC.
+  % "deterministic_prediction" - In the “Deterministic Prediction” mode, the environment parameters at the current timestep are passed to the MPC, which then uses them to predict the future evolution of the environment parameters over the prediction horizon.
+  % "deterministic_threshold" - TBC - In the “Deterministic Threshold” mode, a predefined threshold and the environment parameters at the current timestep are passed to the MPC. The MPC then performs a prediction using the threshold to determine whether any probabilistic parameters are propagated.
+  % "probabilistic" - TBC - In this proposed mode, the MPC predicts the probability of the propagation of all environment variables at each timestep. The difficulty is that many functions rely on a deterministic propagation of the probabilistic parameters.
   prediction_model = "deterministic_exact"; 
 
   % Structure

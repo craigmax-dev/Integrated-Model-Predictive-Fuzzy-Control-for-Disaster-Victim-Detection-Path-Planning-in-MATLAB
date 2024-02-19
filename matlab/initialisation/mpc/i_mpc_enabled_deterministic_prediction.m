@@ -6,12 +6,10 @@
 % Refactor: mpc_model structure
 
 % TODO
-% Review constraints
-% Implement constraints on low-med-high
 % Review lb/ub constraints (needs to be within range of MFs?)
 % Review advanced constriants: constrain to cover entire input range?
 
-function mpc_model = i_mpc_enabled_1000(fisArray, n_a)
+function mpc_model = i_mpc_enabled_deterministic_prediction(fisArray, n_a)
 
   flag_mpc = true;
   n_p = 1;                  % Prediction horizon
@@ -63,12 +61,12 @@ function mpc_model = i_mpc_enabled_1000(fisArray, n_a)
 
   % Solver options for first eval
   optTermCond       = 'MaxFunEvals';
-  optTermCond_value = 1000;
+  optTermCond_value = 200;
   options_firstEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Solver options for subsequent eval
   optTermCond       = 'MaxFunEvals';
-  optTermCond_value = 1000;
+  optTermCond_value = 200;
   options_subsequentEval = optimoptions('patternsearch','Display','iter', optTermCond, optTermCond_value);
 
   % Prediction mode
@@ -82,5 +80,4 @@ function mpc_model = i_mpc_enabled_1000(fisArray, n_a)
   mpc_model = struct('architecture', architecture, 'flag_mpc', flag_mpc, 'solver', solver, 'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...
   'n_p', n_p, 'fis_params', fis_params, 'ini_params', ini_params, 'A', A, 'b', b, 'Aeq', Aeq, 'beq', beq, 'lb', lb, 'ub', ub, 'nonlcon', nonlcon, ...
   'nvars', nvars, 'prediction_model', prediction_model);
-
 end

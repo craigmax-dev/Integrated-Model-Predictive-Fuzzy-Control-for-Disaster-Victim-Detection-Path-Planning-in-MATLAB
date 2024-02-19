@@ -1,6 +1,7 @@
 # Simulation files
 *.fig
 *.jpg
+*.png
 *.mat
 
 # LaTeX generated files

@@ -2,13 +2,6 @@
 % Initialise environment model
 
 % V2
-% CHANGELOG
-% Refactor: structures
-
-% TODO
-% - replace c_f_s with single unit variable
-% check difference between m_bo, m_s, m_p_ref
-
 function environment_model = i_env_basic_no_dynamics(config)
   
   % Environment map dimensions
@@ -71,7 +64,7 @@ function environment_model = i_env_basic_no_dynamics(config)
 
 
   %  Initialise fire maps
-  environment_model = model_environment(environment_model, config.dt_e);          
+  environment_model = model_environment(environment_model, config.k_e, config.dt_e);
 
 end
 
