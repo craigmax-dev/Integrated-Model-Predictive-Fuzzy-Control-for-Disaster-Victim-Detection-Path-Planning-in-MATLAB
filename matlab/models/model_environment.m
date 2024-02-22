@@ -84,33 +84,5 @@ function environment_model = model_environment(environment_model, k_e, dt_e)
             environment_model.m_dw_e_series(:, :, matlab_index) = environment_model.m_dw_e_series(:, :, matlab_index - 1);
         end
     end
-
-    % % Update the current state in environment_model for continuity
-    % environment_model.m_f = m_f;
-    % environment_model.m_dw_e = m_dw_e;
 end
 
-% % V2
-% function environment_model = model_environment(environment_model, k_e, dt_e)  
-% 
-%   if any(environment_model.m_f(:) == 2) || any(environment_model.m_f(:) == 3)
-% 
-%     W = calculateWindSpreadMatrix(environment_model.r_w, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.c_wm_d, environment_model.ang_w, environment_model.v_w);
-% 
-%     % Update fire map states and calculate fire spread probabilities
-%     [environment_model, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e);
-% 
-%     % Determine if fire spread occurs
-%     environment_model.m_f = applyFireSpread(environment_model.m_f, F);
-% 
-%     % Calculate downwind map
-%     environment_model.m_dw_e = calculateDownwindMap(environment_model.m_f, environment_model.n_x_e, environment_model.n_y_e, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.ang_w, environment_model.v_w);
-% 
-%   else
-% 
-%     % No change from previous step
-%     environment_model.m_dw_e = environment_model.m_dw_e;
-% 
-%   end
-% 
-% end
