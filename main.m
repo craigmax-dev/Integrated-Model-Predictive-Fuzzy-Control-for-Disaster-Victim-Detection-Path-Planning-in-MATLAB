@@ -12,14 +12,15 @@
 % - Feature: MPC prediction modes
 % - Performance: Single prediction of environment states model before MPC
 % optimization
-% - Feature: Implement MPC controller option
+% - Feature: Implement MPC controller option 
 
 % CURRENT FEATURE
 % - Correction: Rename MPC to MPFC
 % - remove/properly implement options_firstEval etc in model_mpc
 % - Analysis: add analysis of computation times
 % - update initial guesses to rand instead of previous / NaN
-% - best methods for 
+% - BUGIFX: agent model treatment of actions and how to deal with empty task
+% queue. Current theory: agent model not performing as required.
 
 % NEXT FEATURE
 % - Feature: Implement tuning of output MF parameters for MPFC
@@ -138,19 +139,19 @@ h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
 %   "sim_fis_2_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "sim_fis_2_inputs";
 %   "sim_fis_3_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_3, h_mpc_disabled, "sim_fis_3_inputs";
 %   };
-
+ 
 % % MPC setup
-% simulationSetup = {
+% simulationSetup = { 
 %   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "PRE-TUNED FIS";
 %   "sim_mpc_short", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC 200 EVAL";
 %   "sim_mpc_med", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_500, "MPC 500 EVAL";
 %   "sim_mpc_long", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_1000, "MPC 1000 EVAL";
-%   };
-
+%   }; 
+ 
 % Controller Architectures
 simulationSetup = {
-  % "sim_fis", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-  % "sim_mpfc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
+  "sim_fis", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+  "sim_mpfc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
   };
 
@@ -162,7 +163,7 @@ simulationSetup = {
 %   };
  
 % Define the number of iterations for each simulation setup
-numIterations = 1; 
+numIterations = 4; 
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -301,7 +302,8 @@ for simSetup = 1:size(simulationSetup, 1)
       results(iteration).t_hist = t_hist;        % Assuming t_hist is your time history for this iteration
       results(iteration).s_obj_hist = s_obj_hist; % Assuming s_obj_hist is your objective history for this iteration
       results(iteration).obj_hist = obj_hist;    % Assuming obj_hist is additional objective metrics for this iteration
-      
+      results(iteration).optimizationTimes = mpc_model.optimizationTimes; 
+
   end
 
     % Store results from this setup for later comparison
@@ -317,9 +319,10 @@ alpha = 0.05;
 % Calculate stats for obj_hist
 [means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetup, 'obj_hist', config.dt_s, alpha);
 
-row_sums = cellfun(@sum, means_obj);
+% % Calculate stats for optimizationTimes
+% [means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(allResults, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
 
-% fprintf(row_sums)
+row_sums = cellfun(@sum, means_obj);
 
 %% Plotting
 

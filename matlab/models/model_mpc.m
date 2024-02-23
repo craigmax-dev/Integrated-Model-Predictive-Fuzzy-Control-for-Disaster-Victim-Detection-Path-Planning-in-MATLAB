@@ -30,6 +30,8 @@ function [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, c
 
     % Update initial guess for next optimization
     mpc_model.ini_params = mpc_params;
+    % mpc_model.ini_params = randomiseAgentTaskQueue(agent_model.n_a, agent_model.n_q, agent_model.n_x_s, agent_model.n_y_s);
+
 end
 
 function options = setOptimizationOptions(config, mpc_model)
@@ -80,10 +82,20 @@ function mpc_environment_model = setupPredictionMode(mpc_model, mpc_environment_
   end
 end
 
-function mpc_params = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray)
+function [mpc_params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray)
+    tic; % Start timing the optimization
     h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model);
     [mpc_params, ~] = optimize_solver(mpc_model, h_mpc);
+    optimizationTime = toc; % End timing and store the elapsed time
+    
+    % Update the mpc_model with the optimization time
+    mpc_model.optimizationTimes = [mpc_model.optimizationTimes, optimizationTime];
 end
+
+% function mpc_params = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray)
+%     h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model);
+%     [mpc_params, ~] = optimize_solver(mpc_model, h_mpc);
+% end
 
 function [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, mpc_params)
     if strcmp(mpc_model.architecture, 'mpfc')

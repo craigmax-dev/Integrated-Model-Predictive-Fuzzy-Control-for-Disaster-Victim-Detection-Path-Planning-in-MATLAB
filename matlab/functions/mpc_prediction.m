@@ -10,7 +10,7 @@
 % Feature: Controller architectures
 % Refactor: Modularisation
 
-% % V2.3
+% V2.3
 function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
 
   %% Variables
