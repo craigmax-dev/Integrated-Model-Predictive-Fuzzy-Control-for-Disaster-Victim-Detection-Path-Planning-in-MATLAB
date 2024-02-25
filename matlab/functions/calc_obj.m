@@ -11,11 +11,6 @@
 % - refactor: all objective function components fully configurable
 % - refactor: first scan, repeat scan, downwind time, optional m_victim
 
-% TODO
-% Feature: add victim model flag to function
-% Feature: Update to consider priority from catching fire
-% Feature: How to consider impact of dynamic environment variables
-
 % V2 REFACTOR V5
 function [s_obj, obj] = calc_obj(weight, m_f, m_bo_s, m_scan, m_victim_s, dt_s, s_obj, c_f_s, t)
     

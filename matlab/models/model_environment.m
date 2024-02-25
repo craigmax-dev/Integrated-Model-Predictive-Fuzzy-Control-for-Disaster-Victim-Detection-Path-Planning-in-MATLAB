@@ -86,3 +86,90 @@ function environment_model = model_environment(environment_model, k_e, dt_e)
     end
 end
 
+function [m_bt, m_f, F] = updateFireStatesAndProbabilities(environment_model, W, dt_e)
+    
+    % Initialize F with the correct dimensions
+    F = zeros(environment_model.n_x_e, environment_model.n_y_e);
+    
+    % Direct manipulation of m_bt and m_f
+    m_bt = environment_model.m_bt;
+    m_f = environment_model.m_f;
+    
+    % Logical indexing and update
+    active_or_burning = (m_f == 2) | (m_f == 3);
+    m_bt(active_or_burning) = m_bt(active_or_burning) + dt_e;  % Correctly increments the burn time for active or burning cells by dt_e
+
+    % Transition from active to burning state based on ignition time
+    m_f(m_f == 2 & m_bt >= environment_model.t_i) = 3;
+
+    % Update fire spread probability for burning cells and transition to burnout state
+    burning_cells = find(m_f == 3);
+    for idx = 1:length(burning_cells)
+        [i, j] = ind2sub([environment_model.n_x_e, environment_model.n_y_e], burning_cells(idx));
+        p = calculateSpreadProbability(m_bt(i, j), environment_model.t_i, environment_model.t_b);
+        F = updateFireSpreadProbability(F, W, p, i, j, environment_model.c_fs_1, environment_model.c_fs_2, environment_model.m_s, environment_model.m_bo, environment_model.n_x_e, environment_model.n_y_e, environment_model.r_w);
+    end
+
+    % Transition from burning to burnout state based on burnout time
+    m_f(m_f == 3 & m_bt >= environment_model.t_b) = 4;
+    
+end
+
+function p = calculateSpreadProbability(t_ckl, t_i, t_b)
+    % Calculation of fire spread probability based on burn time
+    if t_ckl <= (t_b - t_i) / 5 + t_i
+        p = 4 / (t_b - t_i) * t_ckl + (0.2 * t_b - 4.2 * t_i) / (t_b - t_i);
+    elseif t_ckl <= t_b
+        p = 5 / (4 * (t_b - t_i)) * (-t_ckl + t_b);
+    else
+        p = 0; % No spread if outside of time range
+    end
+end
+
+% V2.2 performance improvements refactor
+function F = updateFireSpreadProbability(F, W, p, i, j, c_fs_1, c_fs_2, m_s, m_bo, n_x_e, n_y_e, r_w)
+    % Determine the range for local update
+    row_range = max(1, i - r_w) : min(n_x_e, i + r_w);
+    col_range = max(1, j - r_w) : min(n_y_e, j + r_w);
+
+    % Adjust indices in W to align with F's indices
+    W_row_range = (row_range - i + r_w + 1);
+    W_col_range = (col_range - j + r_w + 1);
+
+    % Update the fire spread probability
+    local_W = W(W_row_range, W_col_range);
+    F(row_range, col_range) = F(row_range, col_range) + ...
+                              c_fs_1 * (m_s(row_range, col_range) .* m_bo(row_range, col_range)) .* ...
+                              local_W.^c_fs_2 * p;
+end
+
+function m_f = applyFireSpread(m_f, F)
+
+    n_x_e = size(m_f, 1);
+    n_y_e = size(m_f, 2);
+
+    for i = 1:n_x_e
+        for j = 1:n_y_e
+            if m_f(i, j) == 1 && rand <= F(i, j)
+                m_f(i, j) = 2;  % Ignition occurs
+            end
+        end
+    end
+end
+
+function m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w, v_w)
+
+    % Initialize m_dw_e with zeros
+    m_dw_e = zeros(n_x_e, n_y_e);
+    
+    for i = 1:n_x_e
+        for j = 1:n_y_e
+            if m_f(i, j) == 2 || m_f(i, j) == 3  % Active or burning fire
+                [W_dir_ws, W_dis_ws] = calculateLocalWindMap(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2);
+                m_dw_e = max(m_dw_e, W_dir_ws .* W_dis_ws);
+            end
+        end
+    end
+
+    m_dw_e = 1 - m_dw_e;  % Invert the downwind effect
+end

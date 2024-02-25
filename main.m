@@ -19,8 +19,9 @@
 % - remove/properly implement options_firstEval etc in model_mpc
 % - Analysis: add analysis of computation times
 % - update initial guesses to rand instead of previous / NaN
-% - BUGIFX: agent model treatment of actions and how to deal with empty task
-% queue. Current theory: agent model not performing as required.
+% - BUGIFX: MPC performance below FIS. Troubleshooting:
+% 1. Check prediction in line with reality
+% 2. Check parameters in prediction and MPC updated in the same way.
 
 % NEXT FEATURE
 % - Feature: Implement tuning of output MF parameters for MPFC
@@ -28,8 +29,6 @@
 % TODO   
 % - Performance: write data to file after each simulation. Then read and
 % post-processing.
-% - Restructure: clean up unused files & include functions under appropriate
-% scripts
 % - Feature: add battery recharge model and constraints to agent actions & fis
 % - Feature/performance: add localised predictions for given radius around an agent
 % - Feature: Implement ability to initiate fire spread during simulation.
@@ -37,7 +36,6 @@
 % using solid line 
 % - Plotting: How to visualize agent behaviour over simulation. Think of other
 % plotting options.
-% - Feature: DelftBlue for simulations
 % - Feature: Implement prediction modes
 % - Performance: better handling of environment history parameters
 % - Tidying: .gitignore all input files except templates
@@ -79,10 +77,8 @@ addpath('data', ...
 %% Define function handles 
 
 % Simulation variables
-h_s_comms_disabled = @()i_sim_comms_disabled();
-h_s_comms_enabled = @()i_sim_comms_enabled();
+h_s_comms_disabled_victim_model_short = @()i_sim_comms_disabled_victim_model_short();
 h_s_comms_disabled_victim_model = @()i_sim_comms_disabled_victim_model();
-h_s_comms_enabled_victim_model = @()i_sim_comms_enabled_victim_model();
 h_s_comms_disabled_victim_model_long = @()i_sim_comms_disabled_victim_model_long();
 
 % Environment
@@ -148,12 +144,19 @@ h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
 %   "sim_mpc_long", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_1000, "MPC 1000 EVAL";
 %   }; 
  
-% Controller Architectures
+% Comparison of Controller Architectures, Static Environment, Exact, 
 simulationSetup = {
   "sim_fis", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
   "sim_mpfc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
   "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
   };
+
+% % Comparison of Controller Architectures, Dynamic Environment, 
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mpfc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
+%   "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
+%   };
 
 % % Prediction Modes Comparison for Dynamic Environment
 % simulationSetup = {
@@ -163,7 +166,7 @@ simulationSetup = {
 %   };
  
 % Define the number of iterations for each simulation setup
-numIterations = 4; 
+numIterations = 5;   
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -263,7 +266,7 @@ for simSetup = 1:size(simulationSetup, 1)
         if config.k_a*config.dk_a <= config.k 
           agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
           config.k_a = config.k_a + 1; 
-        end    
+        end     
    
         %% Environment Model
         if config.k_e*config.dk_e <= config.k
@@ -292,7 +295,7 @@ for simSetup = 1:size(simulationSetup, 1)
           report_progress(config.endCondition, config.t, config.t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
           config.k_prog = config.k_prog + 1;
         end
-
+ 
         %% Check end condition
         [config.flag_finish] = func_endCondition(config.endCondition, config.t, config.t_f, agent_model.m_scan, agent_model.n_x_s, agent_model.n_y_s);
 
@@ -309,7 +312,7 @@ for simSetup = 1:size(simulationSetup, 1)
     % Store results from this setup for later comparison
     allResults.(simulationName) = results;
 
-end
+end 
 
 %% Statistical analysis
 
@@ -320,7 +323,7 @@ alpha = 0.05;
 [means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetup, 'obj_hist', config.dt_s, alpha);
 
 % % Calculate stats for optimizationTimes
-% [means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(allResults, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
+[means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(allResults, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
 
 row_sums = cellfun(@sum, means_obj);
 
@@ -328,6 +331,7 @@ row_sums = cellfun(@sum, means_obj);
 
 % Plot stats for obj_hist
 plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Mean Objective Value', 'Objective Value');
+plotStats(means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt, simulationSetup, 'Mean Optimisation Time', 'Optimisation Time');
 
 % NOTE: Concept to plot events
 % battery_threshold_events = findBatteryLevelEvents(agent_model.a_battery_level_i, threshold);
