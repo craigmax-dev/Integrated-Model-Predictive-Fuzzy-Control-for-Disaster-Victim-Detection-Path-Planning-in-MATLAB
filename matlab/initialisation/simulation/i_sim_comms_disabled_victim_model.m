@@ -17,7 +17,7 @@ dt_s    = 15;        % Simulation step size
 dk_a    = 1;        % Agent step size
 dk_c    = 1;        % Control step size
 dk_e    = 4;        % Fire step size NOTE: environment model assumes 60s
-dk_mpc  = 50;     % MPC step size
+dk_mpc  = 20;     % MPC step size
 dk_prog = 50;     % Progress report step size
 
 % Time steps

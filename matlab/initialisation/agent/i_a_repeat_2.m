@@ -16,7 +16,7 @@
 % Review which parameters need to be part of model and which don't
 % Max travel time calc: use (v_as - v_w)
 
-function agent_model = i_a_repeat_2(environment_model)
+function agent_model = i_a_repeat_2(environment_model, config)
   
   % Search map coarsen factors
   c_f_s  = [5, 5];
@@ -36,41 +36,43 @@ function agent_model = i_a_repeat_2(environment_model)
   % Search map cell lengths
   l_x_s     = c_f_s(1)*environment_model.l_x_e;
   l_y_s     = c_f_s(2)*environment_model.l_y_e;
-  
-  % Agent parameters
-  n_a           = 2;                % Number of UAVs in simulation
-  n_q           = 2;                % Queue length for UAV tasks
-  v_as          = 1;               % UAV airspeed (m/s)
-  a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
-  t_scan_m      = 0.01;             % Scan time per square metre
-  a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
-  a_loc         = [ 1, 1;   
-                    1, 2];          % Current locations of UAVs
-  a_loc_hist    = [];
-  for a = 1:n_a
-    a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; % Note: format is x-axis, y-axis, agent number, timestep number
-  end  
-
-  % Agent targets
-  a_target        = nan(n_a, 2, n_q);
-  a_target(:,:,1) = a_loc;
-  
-  a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
-  for a = 1:n_a
-      a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
-  end
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
   a_battery_level_i = [4e4; 4e4]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   
+  % Agent parameters
+  n_a           = 2;                % Number of UAVs in simulation
+  v_as          = 1;               % UAV airspeed (m/s)
+  a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
+  t_scan_m      = 0.01;             % Scan time per square metre
+  a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
+  a_loc         = [ 1, 1;   
+                    1, 2];          % Current locations of UAVs
+
   % Search map cell scan time
   t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
   m_scan      = zeros(n_x_s, n_y_s);        % Scan map
   m_prior      = zeros(n_x_s, n_y_s);        % Priority map
   m_scan_hist = zeros(n_x_s, n_y_s);  
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
+
+  a_loc_hist    = [];
+  for a = 1:n_a
+    % Note: format is x-axis, y-axis, agent number, timestep number
+    a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; 
+  end  
+
+  % Agent targets
+  n_q             = 2;
+  a_target        = ones(n_a, 2, n_q);
+  a_target(:,:,1) = a_loc;
+  
+  a_t_scan  = zeros(n_a, 1);    % Time left to complete current scanning task
+  for a = 1:n_a
+      a_t_scan(a) = m_bo_s(a_loc(a, 1), a_loc(a, 2));
+  end
   
   % Max response time calculation
   maxResponseTime = calc_maxResponseTime(l_x_s, l_y_s, n_q, n_x_s, n_y_s, t_scan_c, v_as);

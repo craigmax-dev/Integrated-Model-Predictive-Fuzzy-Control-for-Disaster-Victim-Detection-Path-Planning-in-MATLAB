@@ -1,6 +1,6 @@
 % V2
 
-function config = i_sim_comms_enabled()
+function config = i_sim_comms_disabled_victim_model_long()
 
 %% Simulation Settings
 
@@ -10,14 +10,14 @@ save_dir     = "simulations";
 
 %% Time steps and counters
 t       = 0;        % Current time
-t_f     = 10000;    % Simulation end time (s)
+t_f     = 20000;    % Simulation end time (s)
 dt_s    = 15;        % Simulation step size
 
 % Discrete steps
 dk_a    = 1;        % Agent step size
 dk_c    = 1;        % Control step size
 dk_e    = 4;        % Fire step size NOTE: environment model assumes 60s
-dk_mpc  = 50;     % MPC step size
+dk_mpc  = 20;     % MPC step size
 dk_prog = 50;     % Progress report step size
 
 % Time steps
@@ -44,13 +44,13 @@ weight.fire = 0.1;      % Weight for victims
 weight.first_scan = 1;   % Weight for the first-time scan. WARNING: IF 0, AGENT BEHAVIOUR COMPROMISED (will re-scan starting cells continuously)
 weight.repeat_scan = 0.001;  % Weight for repeat scans
 
-% Activate/deactivate communication between agents
-% This influences the assignment of cells to agents
-flag_communication_model = true;
-
 % Activate/deactivate victim model in calculation of priority
+% This influences the assignment of cells to agents
+flag_communication_model = false;
+
+% Activate/deactivate discrete victim locations
 % This influences the priority and objective calculations
-flag_victim_model = false; 
+flag_victim_model = true; 
 
 % Objective function
 obj           = 0;
