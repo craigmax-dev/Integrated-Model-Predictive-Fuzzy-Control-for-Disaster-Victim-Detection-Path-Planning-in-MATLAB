@@ -12,16 +12,7 @@
 % - Feature: MPC prediction modes
 % - Performance: Single prediction of environment states model before MPC
 % optimization
-% - Feature: Implement MPC controller option 
-
-% CURRENT FEATURE
-% - Correction: Rename MPC to MPFC
-% - remove/properly implement options_firstEval etc in model_mpc
-% - Analysis: add analysis of computation times
-% - update initial guesses to rand instead of previous / NaN
-% - BUGIFX: MPC performance below FIS. Troubleshooting:
-% 1. Check prediction in line with reality
-% 2. Check parameters in prediction and MPC updated in the same way.
+% - Feature: Implement MPC and MPFC supervisory controller architectures
 
 % NEXT FEATURE
 % - Feature: Implement tuning of output MF parameters for MPFC
@@ -31,18 +22,16 @@
 % post-processing.
 % - Feature: add battery recharge model and constraints to agent actions & fis
 % - Feature/performance: add localised predictions for given radius around an agent
-% - Feature: Implement ability to initiate fire spread during simulation.
 % - Feature: Plotting of all simulations using light line and mean simulation
 % using solid line 
 % - Plotting: How to visualize agent behaviour over simulation. Think of other
 % plotting options.
-% - Feature: Implement prediction modes
 % - Performance: better handling of environment history parameters
 % - Tidying: .gitignore all input files except templates
-% - Feature: Deterministic Threshold prediction mode
+% - Feature: Deterministic Threshold prediction mode & other prediction modes
 % - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
-% - Option: implement functions for procedural search of disaster environment to
-% compare performance
+% - Feature: slow dynamic variables. Options: wind (affecting agent movement and fire/chemical hazards) or flooding.
+% - Feature: add template initialization files
 
 %% SIMULATION CASES
 % - 1. Victim locations modeled
@@ -52,11 +41,6 @@
 % - Comparison stable behaviour vs MPC for loss of agent
 % - TODO: longer prediction horizon, longer prediction timestep?
 
-%% CONTROLLER ARCHITECTURES
-% PRE-TUNED FIS (HAND)
-% PRE-TUNED FIS (MPFC) 
-% MPFC
-% MPC
 
 % Clear workspace 
 clear all  
@@ -206,10 +190,10 @@ for simSetup = 1:size(simulationSetup, 1)
       % Initialise Agent
       agent_model = f_init_agent(environment_model, config);
 
-      % Initialise FIS
+      % Initialise FIS Path Planning
       [fisArray] = f_init_fis(agent_model.n_a);
 
-      % Initialise MPC
+      % Initialise Supervisory Control
       mpc_model = f_init_mpc(fisArray, agent_model);
        
       %% Define timestep for saving variables
@@ -246,7 +230,7 @@ for simSetup = 1:size(simulationSetup, 1)
         % Start timer 
         t_sim = tic;
   
-        %% MPC
+        %% Supervisory Control Model
         if ~strcmp(mpc_model.architecture, 'fis')
           if config.k_mpc*config.dk_mpc <= config.k
             [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model); 
@@ -254,7 +238,7 @@ for simSetup = 1:size(simulationSetup, 1)
           end 
         end  
  
-        %% FIS Path Planning
+        %% FIS Path Planning Model
         if ~strcmp(mpc_model.architecture, 'mpc')
           if config.k_c*config.dk_c <= config.k
             [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
@@ -332,11 +316,6 @@ row_sums = cellfun(@sum, means_obj);
 % Plot stats for obj_hist
 plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Mean Objective Value', 'Objective Value');
 plotStats(means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt, simulationSetup, 'Mean Optimisation Time', 'Optimisation Time');
-
-% NOTE: Concept to plot events
-% battery_threshold_events = findBatteryLevelEvents(agent_model.a_battery_level_i, threshold);
-
-% plotStats(means, ci_lower, ci_upper, time_vector, simulationSetup, titleStr, yLabel, battery_threshold_events);
 
 %% Plot Geographical
 

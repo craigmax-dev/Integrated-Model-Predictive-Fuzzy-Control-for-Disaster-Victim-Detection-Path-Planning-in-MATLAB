@@ -5,20 +5,20 @@
 *.mat
 
 # Ignore everything in the initialisation file paths
-matlab/initialisation/simulation/*
-matlab/initialisation/plotting/*
-matlab/initialisation/pathPlanning/*
-matlab/initialisation/mpc/*
-matlab/initialisation/environment/*
-matlab/initialisation/agent/*
+*/matlab/initialisation/simulation/*
+*/matlab/initialisation/plotting/*
+*/matlab/initialisation/pathPlanning/*
+*/matlab/initialisation/mpc/*
+*/matlab/initialisation/environment/*
+*/matlab/initialisation/agent/*
 
 # Except for template.m files
-!matlab/initialisation/simulation/template.m
-!matlab/initialisation/plotting/template.m
-!matlab/initialisation/pathPlanning/template.m
-!matlab/initialisation/mpc/template.m
-!matlab/initialisation/environment/template.m
-!matlab/initialisation/agent/template.m
+*/!matlab/initialisation/simulation/template.m
+*/!matlab/initialisation/plotting/template.m
+*/!matlab/initialisation/pathPlanning/template.m
+*/!matlab/initialisation/mpc/template.m
+*/!matlab/initialisation/environment/template.m
+*/!matlab/initialisation/agent/template.m
 
 # LaTeX generated files
 *.aux
