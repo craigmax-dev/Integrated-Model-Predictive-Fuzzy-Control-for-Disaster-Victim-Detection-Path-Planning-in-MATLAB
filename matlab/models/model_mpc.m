@@ -26,7 +26,7 @@ function [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, c
     [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
 
     % Update initial guess for next optimization
-    % mpc_model.ini_params = params;
+    mpc_model.ini_params = params;
 
 end
 

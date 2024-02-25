@@ -6,64 +6,13 @@
 % - refactor: correct rules, add linear output functions
 % - refactor: removed t_dw as this is considered in priority calculation instead
 
-%% V2 refactor
+% V2.3
 function [fisArray] = initialise_fis_t_response_priority_r_nextagent(n_a)
-
-  inputs = ["t_response", "priority", "r_nextagent"];
-  inputRanges = [0 1; 0 1000; 0 1];  % [0, 1] for t_response, [0, 1000] for priority
-
-  % Define Membership Function (MF) types and evenly distributed parameters
-  mfTypes = ["trimf", "trimf", "trimf"];  % Triangular MFs for both inputs
-  mfNames = ["low", "medium", "high"];  % Names for MFs
-
-  %% Generate FIS
-  for a = 1:n_a
-
-    fis = sugfis;
-
-    % Evenly distribute MF parameters for each input
-    for i = 1:numel(inputs)
-        fis = addInput(fis, inputRanges(i, :), 'Name', inputs(i));
-        range = inputRanges(i, :);
-        step = (range(2) - range(1)) / 2;
-        
-        % Create parameters for 'low', 'medium', 'high' MFs
-        lowParams = [range(1) - step, range(1), range(1) + step];
-        mediumParams = [range(1), (range(1) + range(2)) / 2, range(2)];
-        highParams = [range(2) - step, range(2), range(2) + step];
-        
-        mfParams = [lowParams; mediumParams; highParams];
-        
-        for j = 1:numel(mfNames)
-            fis = addMF(fis, inputs(i), mfTypes(i), mfParams(j, :), 'Name', mfNames(j));
-        end
-    end
-
-    outputs = "attraction";
-    fis = addOutput(fis, [0 1], 'Name', outputs);
-
-    % Assuming there are three inputs, each 'linear' MF for the output should have 4 parameters
-    fis = addMF(fis, outputs, 'linear', [0 0 0 0], 'Name', 'low');    % Adjusted for 3 inputs + constant
-    fis = addMF(fis, outputs, 'linear', [0 0 0 0.5], 'Name', 'medium');  % Adjusted for 3 inputs + constant
-    fis = addMF(fis, outputs, 'linear', [0 0 0 1], 'Name', 'high');   % Adjusted for 3 inputs + constant
-
-
-
-    % Dynamically generate ruleList based on inputs
-    numMFs = numel(mfNames);
-    numInputs = numel(inputs);
-    ruleList = [];
-    for i = 1:numMFs^numInputs
-        inputCombination = dec2base(i-1, numMFs, numInputs) - '0' + 1;
-        outputLevel = round(mean(inputCombination));
-        rule = [inputCombination, outputLevel, 1, 1];
-        ruleList = [ruleList; rule];
-    end
-
-    fis = addRule(fis, ruleList);
-
-    %% Add to FIS array
-    fisArray(a) = fis;
-  end
+    inputs = ["t_response", "priority", "r_nextagent"];
+    inputPreferences = ["minimize", "maximize", "maximize"];
+    inputRanges = [0 1; 0 1000; 0 1];
+    mfTypes = ["trimf", "trimf", "trimf"]; % MF type for each inputs
+    mfNames = ["low", "medium", "high"]; % Number and names for MF of each input
+    
+    fisArray = arrayfun(@(x) initSingleFIS(inputs, inputRanges, mfTypes, mfNames, inputPreferences), 1:n_a);
 end
-

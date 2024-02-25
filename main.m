@@ -13,11 +13,17 @@
 % - Performance: Single prediction of environment states model before MPC
 % optimization
 % - Feature: Implement MPC and MPFC supervisory controller architectures
-
-% NEXT FEATURE
 % - Feature: Implement tuning of output MF parameters for MPFC
 
-% TODO   
+% CURRENT FEATURE
+% - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
+% - Feature: implement MPC/MPFC controller architectures: centralized vs
+% decentralized
+
+% REMOVED
+
+
+% TODO
 % - Performance: write data to file after each simulation. Then read and
 % post-processing.
 % - Feature: add battery recharge model and constraints to agent actions & fis
@@ -29,9 +35,10 @@
 % - Performance: better handling of environment history parameters
 % - Tidying: .gitignore all input files except templates
 % - Feature: Deterministic Threshold prediction mode & other prediction modes
-% - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
 % - Feature: slow dynamic variables. Options: wind (affecting agent movement and fire/chemical hazards) or flooding.
-% - Feature: add template initialization files
+% - Plotting: Could update plots to be rolling average (smooth out lines)
+% - Feature: Online/remote running of simulations
+% Update i_arch files if corrected now
 
 %% SIMULATION CASES
 % - 1. Victim locations modeled
@@ -40,7 +47,6 @@
 % - 4. Using m_bo distributions: 
 % - Comparison stable behaviour vs MPC for loss of agent
 % - TODO: longer prediction horizon, longer prediction timestep?
-
 
 % Clear workspace 
 clear all  
@@ -72,6 +78,8 @@ h_e_dynamic = @(dt_e)i_env_basic_dynamics(dt_e);
 % Agent
 h_a_repeat_2 = @(environment_model, config)i_a_repeat_2(environment_model, config);
 h_a_repeat_2_mpc = @(environment_model, config)i_a_repeat_2_mpc(environment_model, config);
+h_a_repeat_3 = @(environment_model, config)i_a_repeat_3(environment_model, config);
+h_a_repeat_3_mpc = @(environment_model, config)i_a_repeat_3_mpc(environment_model, config);
 
 % FIS
 h_init_fis_2 = @(n_a)initialise_fis_t_response_priority(n_a);
@@ -79,7 +87,8 @@ h_init_fis_3 = @(n_a)initialise_fis_t_response_priority_r_nextagent(n_a);
 
 % Controller Architecture
 h_arch_fis = @(fisArray, agent_model)i_arch_fis(fisArray, agent_model);
-h_arch_mpfc = @(fisArray, agent_model)i_arch_mpfc(fisArray, agent_model);
+h_arch_mpfc_input = @(fisArray, agent_model)i_arch_mpfc_input(fisArray, agent_model);
+h_arch_mpfc_output = @(fisArray, agent_model)i_arch_mpfc_output(fisArray, agent_model);
 h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
 
 %% Simulation setup
@@ -119,7 +128,7 @@ h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
 %   "sim_fis_2_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "sim_fis_2_inputs";
 %   "sim_fis_3_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_3, h_mpc_disabled, "sim_fis_3_inputs";
 %   };
- 
+  
 % % MPC setup
 % simulationSetup = { 
 %   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "PRE-TUNED FIS";
@@ -128,18 +137,26 @@ h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
 %   "sim_mpc_long", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_1000, "MPC 1000 EVAL";
 %   }; 
  
-% Comparison of Controller Architectures, Static Environment, Exact, 
+% Comparison of Controller Architectures, Static Environment, Exact
 simulationSetup = {
-  "sim_fis", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-  "sim_mpfc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
-  "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
+  "sim_fis", h_s_comms_disabled_victim_model_short, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+  "sim_mpfc_input", h_s_comms_disabled_victim_model_short, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_input, "MPFC Input";
+  "sim_mpfc_output", h_s_comms_disabled_victim_model_short, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output, "MPFC Output";
+  "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_static, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
   };
 
-% % Comparison of Controller Architectures, Dynamic Environment, 
+% Comparison of Controller Architectures, Dynamic Environment, Two Agents
 % simulationSetup = {
-%   "sim_fis", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-%   "sim_mpfc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
-%   "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
+  % "sim_fis", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+  % "sim_mpfc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
+  % "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
+  % };
+
+% % Comparison of Controller Architectures, Dynamic Environment, Three Agents
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mpfc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_mpfc, "MPFC";
+%   "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_3_mpc, h_init_fis_2, h_arch_mpc, "MPC";
 %   };
 
 % % Prediction Modes Comparison for Dynamic Environment
@@ -148,7 +165,9 @@ simulationSetup = {
 %   "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
 %   "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
 %   };
- 
+
+% % Environment Size Comparison for Dynamic Environment
+
 % Define the number of iterations for each simulation setup
 numIterations = 5;   
 
@@ -156,6 +175,7 @@ numIterations = 5;
 seeds = randi(10000, numIterations, 1);
 
 % Initialize a structure to store results from all setups
+
 allResults = struct();
 
 % Iterate over each simulation setup
@@ -185,7 +205,7 @@ for simSetup = 1:size(simulationSetup, 1)
       config = f_init_sim();
       
       % Initialise Environment 
-      environment_model = f_init_env(config);
+      environment_model = f_init_env(config); 
       
       % Initialise Agent
       agent_model = f_init_agent(environment_model, config);
