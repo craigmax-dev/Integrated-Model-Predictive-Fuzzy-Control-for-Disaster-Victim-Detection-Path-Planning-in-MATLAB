@@ -1,11 +1,6 @@
 %% Function initialise_pathPlanning
 % Initialise path planning model
 
-% V2
-% CHANGELOG
-% - refactor: correct rules, add linear output functions
-% - refactor: removed t_dw as this is considered in priority calculation instead
-
 % V2.3
 function [fisArray] = initialise_fis_t_response_priority(n_a)
     inputs = ["t_response", "priority"];

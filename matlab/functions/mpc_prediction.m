@@ -13,8 +13,9 @@
 % NOTES
 % Current implementation will not work for multiple prediction steps (which could be beneficial for MPC)
 
-% V2.3
-function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model)
+% % V2.3
+function s_obj_pred = mpc_prediction(params, agent_model, config, environment_model, fisArray, mpc_model, agentIndex)
+
 
   %% Variables
   % Counters
@@ -30,8 +31,14 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, environment_mo
 
     if k_mpc*config.dk_mpc <= k_pred
 
-      % Update model based on architecture
-      [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
+      % Update model based on architecture and structure
+      if strcmp(mpc_model.structure, 'decentralised')
+          % For decentralised, update parameters for the specific agent
+          [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params, agentIndex);
+      else
+          % For centralised or if agentIndex is not provided, update parameters globally
+          [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
+      end
 
       k_mpc = k_mpc + 1;
 

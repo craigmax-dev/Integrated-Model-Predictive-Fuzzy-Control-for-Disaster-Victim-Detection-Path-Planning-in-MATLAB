@@ -1,19 +1,13 @@
-%% Function initialise_MPC
-% Initialise MPC model
+function mpc_model = i_arch_mpfc_output_exact_decentralised(fisArray, agent_model)
 
-% V2
-% CHANGELOG
-% Refactor: mpc_model structure
-% Feature: mpc and mpfc architectures
-
-function mpc_model = i_arch_fis(fisArray, agent_model)
   % Architecture setup
-  architecture = 'fis'; % Options: mpc, mpfc, fis
-  structure = 'centralised'; % Options: centralised, decentralised, clustered (TBC)
+  architecture = 'mpfc'; % Options: mpc, mpfc, fis
+  structure = 'decentralised'; % Options: centralised, decentralised, clustered (TBC)
   prediction_model = 'deterministic_exact'; % Prediction model setup
+  optimization_target = 'output'; % or 'input'
 
   % Initial parameter and constraints setup
-  [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model);
+  [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target);
 
   % Structuring mpc_model
   mpc_model = struct('architecture', architecture, 'structure', structure, 'solver', solver, 'intCon', intCon, ...

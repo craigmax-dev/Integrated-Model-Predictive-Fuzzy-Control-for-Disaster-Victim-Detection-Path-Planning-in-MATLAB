@@ -80,8 +80,11 @@ function ruleList = generateRules(fis, inputPreferences)
             currentIndex = mfIndices(n_inputs);
             if strcmp(inputPreferences(n_inputs), 'minimize')
                 scores(n_inputs) = maxScore - (currentIndex - 1);
-            else
+            elseif strcmp(inputPreferences(n_inputs), 'maximize')
                 scores(n_inputs) = currentIndex;
+            elseif strcmp(inputPreferences(n_inputs), 'neutral')
+              % Assign a middle score for neutral preference
+              scores(n_inputs) = round(maxScore / 2);
             end
         end
 

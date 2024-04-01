@@ -1,4 +1,32 @@
 % V2.2
+% function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target)
+%     % Initialization depending on architecture
+%     switch architecture
+%         case 'mpc'
+%             ini_params = randomiseAgentTaskQueue(agent_model.n_a, agent_model.n_q, agent_model.n_x_s, agent_model.n_y_s);
+%             solver = 'ga';
+%             [A, b, lb, ub, intCon] = defineConstraintsForMPC(agent_model);
+%         case 'mpfc'
+%             if strcmp(optimization_target, 'input')
+%                 ini_params = extractFISInputParameters(fisArray);
+%             else % 'output'
+%                 ini_params = extractFISOutputParameters(fisArray);
+%             end
+%             solver = 'patternsearch';
+%             [A, b, lb, ub, intCon] = defineConstraintsForMPFC(ini_params, optimization_target);
+%         case 'fis'
+%             % For 'fis', set placeholders as optimization is not required
+%             ini_params = [];
+%             solver = '';
+%             A = []; b = []; lb = []; ub = []; intCon = [];
+%         otherwise
+%             error('Invalid architecture value: %s', architecture);
+%     end
+% 
+%     % Set optimization options
+%     [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture);
+% end
+
 function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target)
     % Initialization depending on architecture
     switch architecture
@@ -9,11 +37,12 @@ function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, l
         case 'mpfc'
             if strcmp(optimization_target, 'input')
                 ini_params = extractFISInputParameters(fisArray);
+                [A, b, lb, ub, intCon] = defineConstraintsForMPFCInput(ini_params);
             else % 'output'
                 ini_params = extractFISOutputParameters(fisArray);
+                [A, b, lb, ub, intCon] = defineConstraintsForMPFCOutput(ini_params);
             end
             solver = 'patternsearch';
-            [A, b, lb, ub, intCon] = defineConstraintsForMPFC(ini_params, optimization_target);
         case 'fis'
             % For 'fis', set placeholders as optimization is not required
             ini_params = [];
@@ -27,6 +56,7 @@ function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, l
     [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture);
 end
 
+
 function [A, b, lb, ub, intCon] = defineConstraintsForMPC(agent_model)
     lb = ones(1, agent_model.n_a * agent_model.n_q * 2);
     ub = reshape([repmat(agent_model.n_x_s, 1, agent_model.n_a * agent_model.n_q); repmat(agent_model.n_y_s, 1, agent_model.n_a * agent_model.n_q)], 1, []);
@@ -34,12 +64,29 @@ function [A, b, lb, ub, intCon] = defineConstraintsForMPC(agent_model)
     intCon = 1:numel(lb); % All variables are integers
 end
 
-function [A, b, lb, ub, intCon] = defineConstraintsForMPFC(ini_params, optimizeWhat)
+function [A, b, lb, ub, intCon] = defineConstraintsForMPFCInput(ini_params)
+    % Constraints ensuring that input parameters allow for some rules to be always applicable
     lb = zeros(size(ini_params)); % Assuming all parameters have a lower bound of 0
-    ub = repmat(1000, size(ini_params)); % Assuming a generic upper bound for all parameters
-    A = []; b = []; % No linear constraints
-    intCon = []; % No integer constraints in MPFC
+    ub = repmat(100, size(ini_params)); % Adjust upper bound to ensure parameters stay within a range that allows rule firing
+    A = []; b = []; % Additional constraints can be added here if needed
+    intCon = []; % No integer constraints in MPFC for input parameters
 end
+
+function [A, b, lb, ub, intCon] = defineConstraintsForMPFCOutput(ini_params)
+    % Constraints ensuring that output parameters allow for some rules to be always applicable
+    lb = zeros(size(ini_params)); % Assuming all parameters have a lower bound of 0
+    ub = repmat(100, size(ini_params)); % Adjust upper bound to ensure parameters stay within a range that allows rule firing
+    A = []; b = []; % Additional constraints can be added here if needed
+    intCon = []; % No integer constraints in MPFC for output parameters
+end
+
+
+% function [A, b, lb, ub, intCon] = defineConstraintsForMPFC(ini_params, optimizeWhat)
+%     lb = zeros(size(ini_params)); % Assuming all parameters have a lower bound of 0
+%     ub = repmat(1000, size(ini_params)); % Assuming a generic upper bound for all parameters
+%     A = []; b = []; % No linear constraints
+%     intCon = []; % No integer constraints in MPFC
+% end
 
 function [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture)
     switch architecture

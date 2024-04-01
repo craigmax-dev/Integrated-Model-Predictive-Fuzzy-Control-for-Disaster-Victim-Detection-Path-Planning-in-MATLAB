@@ -9,26 +9,52 @@
 % - removed fis_param_hist
 % - Feature: Prediction modes
 % - Feature: Controller architectures: mpc and mpfc
+% - Feature: Controller structures: centralised, decentralised, clustered (TBC)
 
-% V2.3
+% V2.4 - STRUCTURES
+% TO DO
+% - same functions will be used to perform optimisation?
 function [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model)
-
-    % Set optimization options
     mpc_model = setOptimizationOptions(config, mpc_model);
-
-    % Setup the prediction mode and initialize mpc_environment_model within it
     mpc_environment_model = setupPredictionMode(mpc_model, environment_model, config);
 
-    % Perform optimization
-    [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray);
+    if strcmp(mpc_model.structure, 'centralised')
+        [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray);
+        [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
+    elseif strcmp(mpc_model.structure, 'decentralised')
+        params = [];
+        for agentIndex = 1:agent_model.n_a
+            [individualParams, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray, agentIndex);
+            params = [params, individualParams];
+        end
+        [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
+    else
+        error('Unrecognised MPC structure: %s', mpc_model.structure);
+    end
 
-    % Update model based on architecture
-    [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
-
-    % Update initial guess for next optimization
     mpc_model.ini_params = params;
-
 end
+
+
+% % % V2.3
+% function [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model)
+% 
+%     % Set optimization options
+%     mpc_model = setOptimizationOptions(config, mpc_model);
+% 
+%     % Setup the prediction mode and initialize mpc_environment_model within it
+%     mpc_environment_model = setupPredictionMode(mpc_model, environment_model, config);
+% 
+%     % Perform optimization
+%     [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray);
+% 
+%     % Update model based on architecture
+%     [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
+% 
+%     % Update initial guess for next optimization
+%     mpc_model.ini_params = params;
+% 
+% end
 
 function mpc_model = setOptimizationOptions(config, mpc_model)
   if config.k_mpc == 0
@@ -43,20 +69,20 @@ function mpc_environment_model = setupPredictionMode(mpc_model, environment_mode
     mpc_environment_model = environment_model; % Copy environment model for MPC prediction
     current_step = config.k_e + 1;
     prediction_steps = round((mpc_model.n_p * config.dt_mpc) / config.dt_e); % Remaining steps to predict
-    
+
     % Prediction Modes
     if mpc_model.prediction_model == "deterministic_exact"
-        
+
         % For deterministic_exact, directly use the simulation's future states if available
         mpc_environment_model.m_f_series = environment_model.m_f_series(:, :, current_step:(current_step+prediction_steps));
         mpc_environment_model.m_dw_e_series = environment_model.m_dw_e_series(:, :, current_step:(current_step+prediction_steps));
 
     elseif mpc_model.prediction_model == "deterministic_prediction"
-        
+
         % For deterministic_prediction, simulate the environment forward using a deterministic model
         mpc_environment_model.m_f_series = environment_model.m_f_series(:, :, current_step);
         mpc_environment_model.m_dw_e_series = environment_model.m_dw_e_series(:, :, current_step);
-        
+
         % Precompute future states based on the current state
         k_precompute = 0;
         while k_precompute * config.dt_e < config.dt_mpc
@@ -69,15 +95,35 @@ function mpc_environment_model = setupPredictionMode(mpc_model, environment_mode
     end
 end
 
-function [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray)
-    tic; % Start timing the optimization
-    h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model);
-    [params, ~] = optimize_solver(mpc_model, h_mpc);
-    optimizationTime = toc; % End timing and store the elapsed time
-    
-    % Update the mpc_model with the optimization time
-    mpc_model.optimizationTimes = [mpc_model.optimizationTimes, optimizationTime];
+
+% V2
+function [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray, agentIndex)
+  tic; % Start timing the optimization
+  if strcmp(mpc_model.structure, 'decentralised')
+      % Decentralised optimization: Pass the agentIndex to the prediction function
+      h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model, agentIndex);
+  else
+      % Centralised optimization
+      h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model);
+  end
+  
+  [params, ~] = optimize_solver(mpc_model, h_mpc);
+  optimizationTime = toc; % End timing and store the elapsed time
+
+  % Update the mpc_model with the optimization time
+  mpc_model.optimizationTimes = [mpc_model.optimizationTimes, optimizationTime];
 end
+
+
+% function [params, mpc_model] = performOptimization(mpc_model, agent_model, config, mpc_environment_model, fisArray)
+%     tic; % Start timing the optimization
+%     h_mpc = @(params)mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model);
+%     [params, ~] = optimize_solver(mpc_model, h_mpc);
+%     optimizationTime = toc; % End timing and store the elapsed time
+% 
+%     % Update the mpc_model with the optimization time
+%     mpc_model.optimizationTimes = [mpc_model.optimizationTimes, optimizationTime];
+% end
 
 function [params, fval] = optimize_solver(mpc_model, h_mpc)
     % Initialize output variables to default values
@@ -95,12 +141,12 @@ function [params, fval] = optimize_solver(mpc_model, h_mpc)
         case "particleswarm"
             [params, fval] = particleswarm(h_mpc, mpc_model.nvars, mpc_model.lb, mpc_model.ub, mpc_model.options);
         otherwise
-            error('Unrecognized solver: %s', mpc_model.solver);
+            error('Unrecognised solver: %s', mpc_model.solver);
     end
 
     % Ensure params has been assigned; otherwise, handle the error or fallback case
     if isempty(params)
-        % Handle the case where params could not be assigned due to an unrecognized solver or other error
+        % Handle the case where params could not be assigned due to an unrecognised solver or other error
         warning('params was not assigned. Check the solver configuration and input parameters.');
         % Consider setting params to default values or handling the error appropriately
     end

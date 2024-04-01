@@ -1,14 +1,7 @@
-%% Function initialise_MPC
-% Initialise MPC model
+function mpc_model = i_arch_mpc_exact(fisArray, agent_model)
 
-% V2
-% CHANGELOG
-% Refactor: mpc_model structure
-% Feature: mpc and mpfc architectures
-
-function mpc_model = i_arch_fis(fisArray, agent_model)
   % Architecture setup
-  architecture = 'fis'; % Options: mpc, mpfc, fis
+  architecture = 'mpc'; % Options: mpc, mpfc, fis
   structure = 'centralised'; % Options: centralised, decentralised, clustered (TBC)
   prediction_model = 'deterministic_exact'; % Prediction model setup
 
@@ -20,6 +13,6 @@ function mpc_model = i_arch_fis(fisArray, agent_model)
                      'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...
                      'n_p', 1, 'ini_params', ini_params, 'A', A, 'b', b, 'Aeq', [], 'beq', [], ...
                      'lb', lb, 'ub', ub, 'nonlcon', [], 'nvars', numel(ini_params), 'prediction_model', prediction_model, ...
-                     'mpc_tuning_parameters', 'input', 'optimizationTimes', [], 'optimization_target', optimization_target);
+                     'mpc_tuning_parameters', 'input', 'optimizationTimes', []);
 end
 
