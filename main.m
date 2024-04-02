@@ -42,6 +42,7 @@
 % - Writeup: Simulation results
 % - Writeup: Description of modelling decisions: timesteps, 
 % - Naming change: architecture -> controller, structure -> architecture
+% - Note: previous simulation failed due to matrix size >10gb
 
 %% SIMULATION CASES
 % - Analysis: Look at contribution of each part of objective function without
@@ -100,7 +101,9 @@ h_arch_mpfc_output_exact_decentralised = @(fisArray, agent_model)i_arch_mpfc_out
 h_arch_mpc_exact = @(fisArray, agent_model)i_arch_mpc_exact(fisArray, agent_model);
 h_arch_mpfc_input_prediction = @(fisArray, agent_model)i_arch_mpfc_input_prediction(fisArray, agent_model);
 h_arch_mpfc_output_prediction = @(fisArray, agent_model)i_arch_mpfc_output_prediction(fisArray, agent_model);
+h_arch_mpfc_output_prediction_decentralised = @(fisArray, agent_model)i_arch_mpfc_output_prediction_decentralised(fisArray, agent_model);
 h_arch_mpc_prediction = @(fisArray, agent_model)i_arch_mpc_prediction(fisArray, agent_model);
+h_arch_mpc_prediction_decentralised = @(fisArray, agent_model)i_arch_mpc_prediction_decentralised(fisArray, agent_model);
 
 % Simulation
 h_sim_first_scan_no_victim_model = @()i_sim_first_scan_no_victim_model();
@@ -112,7 +115,7 @@ h_sim_dw_fire = @()i_sim_dw_fire();
  
 %% Simulation setup
 
-% TODO
+% TODO  
 % Structure tests to be done in the future
 
 % % DO WE CARE ABOUT THIS PART ANY MORE?
@@ -123,21 +126,28 @@ h_sim_dw_fire = @()i_sim_dw_fire();
 %   "sim_mpfc_proximity", h_sim_comms_disabled_victim_model_long, h_e_dynamic_large, h_a_repeat_2, h_init_fis_proximity, h_arch_mpfc_output_prediction, "MPFC Proximity Input";
 %   "sim_mpc", h_sim_comms_disabled_victim_model_long, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_proximity, h_arch_mpc_prediction, "MPC";
 %   }; 
+ 
+% % TODO          
+% % Test: h_arch_mpfc_output_exact_decentralised 
+% simulationSetup = { 
+%   "sim_mpfc", h_sim_dw_fire, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_exact_decentralised, "MPFC TEST";
+%   }; 
+  
 
-% TODO
-% Test: h_arch_mpfc_output_exact_decentralised 
+% Decentralised vs centralised structures for MPC
 simulationSetup = {
-  "sim_mpfc", h_sim_dw_fire, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_exact_decentralised, "MPFC TEST";
+  "sim_fis", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+  "sim_mfpc_centralised", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC Centralised";
+  "sim_mfpc_decentralised", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
   }; 
 
-
-% % IN PROGRESS
-% % Decentralised vs centralised structures for MPC and MPFC
+% % Decentralised vs centralised structures for MPC
 % simulationSetup = {
-%   % "sim_fis", h_sim_dw_fire, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-%   "sim_mpfc", h_sim_dw_fire, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_exact_decentralised, "MPFC Proximity Input";
-%   "sim_mpc", h_sim_dw_fire, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction_decentralised, "MPC";
+%   "sim_fis", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mpc_centralised", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC Centralised";
+%   "sim_mpc_decentralised", h_sim_dw_fire, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction_decentralised, "MPC Decentralised";
 %   }; 
+
 
 % % IN PROGRESS
 % % FIS input parameters, two population centres, three agents
