@@ -33,25 +33,3 @@ function F_likelihood = calculateFireSpreadLikelihood(environment_model, config,
     % Normalize the likelihood map to represent probability
     F_likelihood(F_likelihood > 1) = 1;
 end
-
-% NOTE: code for validation
-% % Calculate the likelihood of fire spread over a given time period
-% time_period = 300; % Define time period for prediction
-% F_likelihood = calculateFireSpreadLikelihood(environment_model, config, time_period);
-% 
-% % Update environment model to get actual fire spread (for comparison)
-% for t = 1:time_period/config.dt_e
-%     environment_model = model_environment(environment_model);
-% end
-% 
-% % Plot likelihood estimation vs actual fire spread
-% figure;
-% subplot(1,2,1);
-% imagesc(F_likelihood);
-% title('Likelihood of Fire Spread');
-% colorbar;
-% 
-% subplot(1,2,2);
-% imagesc(environment_model.m_f);
-% title('Actual Fire Spread');
-% colorbar;

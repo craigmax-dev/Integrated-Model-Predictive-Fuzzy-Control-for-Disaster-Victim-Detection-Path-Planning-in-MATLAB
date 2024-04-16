@@ -1,6 +1,3 @@
-% TODO: 
-% - validate max time calculation
-
 % Theoretical max response time for agent used to normalise FIS input
 function maxResponseTime = calc_maxResponseTime(l_x_s, l_y_s, n_q, n_x_s, n_y_s, t_scan_c, v_as)
 

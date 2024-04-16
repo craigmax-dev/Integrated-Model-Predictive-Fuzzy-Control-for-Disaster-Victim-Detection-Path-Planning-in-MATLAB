@@ -2,7 +2,7 @@
 % Initialise agent model
 
 % V2
-function agent_model = i_a_repeat_3_mpc(environment_model, config)
+function agent_model = i_a_repeat_4_mpc(environment_model, config)
   
   % Search map building occupancy
   m_bo_s = func_coarsen(environment_model.m_bo, config.c_f_s); 
@@ -22,14 +22,15 @@ function agent_model = i_a_repeat_3_mpc(environment_model, config)
   l_y_s     = config.c_f_s(2)*environment_model.l_y_e;
   
   % Agent parameters
-  n_a           = 3;                % Number of UAVs in simulation
+  n_a           = 4;                % Number of UAVs in simulation
   v_as          = 5;               % UAV airspeed (m/s)
   a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
   t_scan_m      = 0.01;             % Scan time per square metre
   a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
   a_loc         = [ 1, 1;   
-                    1, 2;
-                    1, 3];          % Current locations of UAVs
+                    1, 2;   
+                    1, 3;
+                    1, 4];          % Current locations of UAVs
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations

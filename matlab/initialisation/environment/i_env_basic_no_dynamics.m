@@ -49,12 +49,15 @@ function environment_model = i_env_basic_no_dynamics(config)
   c_wm_2 = 0.1;
   c_wm_d  = 0.4;
   
-  % % Assuming dimensions of the simulation grid and total time steps are known
-  max_time_steps = round(config.t_f ./ config.dt_e);
+  % Calculate the total number of steps needed for the pre-computation phase
+  % assuming one prediction step
+  prediction_duration = config.dk_pred * config.dt_s;
+  total_time = config.t_f + prediction_duration;
+  total_steps = ceil(total_time / config.dt_e);  
   
   % Initialize m_f_series and m_dw_e_series in the environment_model
-  m_f_series = zeros(n_x_e, n_y_e, max_time_steps);
-  m_dw_e_series = zeros(n_x_e, n_y_e, max_time_steps);
+  m_f_series = zeros(n_x_e, n_y_e, total_steps);
+  m_dw_e_series = zeros(n_x_e, n_y_e, total_steps);
     
   % Create environment structure with all parameters
   environment_model = struct('l_x_e', l_x_e, 'l_y_e', l_y_e, 'n_x_e', n_x_e, 'n_y_e', n_y_e, ...
