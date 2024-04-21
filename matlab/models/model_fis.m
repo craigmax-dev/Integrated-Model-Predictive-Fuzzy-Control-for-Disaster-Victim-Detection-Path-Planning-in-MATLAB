@@ -9,164 +9,34 @@
 % Refactor: environment_model and agent_model structures
 
 % TODO
-% Refactor: schedule map removed. Instead agents rely on local task queue
-% Refactor: move m_t_response inside agent loop
-% Review changes
-% Test % V2.3 implementation
+% Combined priority should use weights
+% Test fire burn risk - should be infinite if/very high if unburnable - could
+% also test unburnable neighbourhoods
+% Add new inputs to init files (config.sigma, agent_model.sensor_accuracy)
+% Check if to do calculations by agent or not - will be some repeated operations
+% here
+% Can be simplified by removing n_q and moving m_t_response to the calculation
+% per agent
 
-% % V2.4 
-% % NOTE: in progress, results not good
-% function agent_model = model_fis(agent_model, environment_model, config, fisArray)
-%   % Calculate distances of all cells from other agents, normalized
-%   gridSize = [agent_model.n_x_s, agent_model.n_y_s];
-%   agentPositions = reshape(agent_model.a_target(:,1:2,:), [], 2); % Assuming a_target contains [x,y] positions
-%   distanceMatrix = calculateAgentDistances(gridSize, agentPositions);
-% 
-%   % Normalisation
-%   maxDist = sqrt(gridSize(1)^2 + gridSize(2)^2);
-%   for a = 1:agent_model.n_a
-%       distanceMatrix{a} = distanceMatrix{a} / maxDist; % Normalize to [0, 1]
-%   end
-% 
-%   % Iterate over each task queue
-%   for q = 2:agent_model.n_q
-% 
-%     % Calculate normalized response time for all agents
-%     m_t_response = calc_t_response(...
-%       agent_model.n_x_s, agent_model.n_y_s, agent_model.l_x_s, agent_model.l_y_s, ...
-%       agent_model.n_a, agent_model.a_t_scan, agent_model.a_t_trav, agent_model.a_target, q, ...
-%       environment_model.ang_w, environment_model.v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
-% 
-%     for a = 1:agent_model.n_a
-%       % FIS of agent
-%       fis = fisArray(a);
-% 
-%       % Identify which inputs the current FIS has
-%       fisInputs = getFisInputs(fis);
-% 
-%       % Flatten fisInputs for direct string comparison
-%       fisInputsFlat = cellfun(@(c) c{1}, fisInputs, 'UniformOutput', false);
-% 
-%       % Dynamically build the input matrix based on available FIS inputs
-%       fisInputMatrix = [];
-%       if ismember('t_response', fisInputsFlat)
-%         t_response_input = reshape(m_t_response(:,:,a), [], 1);
-%         fisInputMatrix = [fisInputMatrix, t_response_input];
-%       end
-%       if ismember('priority', fisInputsFlat)
-%         priority_input = reshape(agent_model.m_prior, [], 1);
-%         fisInputMatrix = [fisInputMatrix, priority_input];
-%       end
-%       if ismember('r_nextagent', fisInputsFlat)
-%         r_nextagent_input = reshape(distanceMatrix{a}, [], 1);
-%         fisInputMatrix = [fisInputMatrix, r_nextagent_input];
-%       end
-% 
-%       % Handling of valid cells
-%       valid_cells = all(~isinf(fisInputMatrix) & ~isnan(fisInputMatrix), 2); % Identify non-NaN and non-Inf cells
-% 
-%       % Initialize attraction map
-%       m_att = nan(size(m_t_response(:,:,a))); % Use NaN to initialize for clearer handling of invalid cells
-% 
-%       % Call evalfis only for valid cells
-%       if any(valid_cells)
-%         % Adjust the indexing for valid_cells to match evalfis input requirement
-%         valid_fisInputMatrix = fisInputMatrix(valid_cells, :);
-%         valid_outputs = evalfis(valid_fisInputMatrix, fis);
-%         m_att(valid_cells) = valid_outputs; % Assign FIS outputs to valid cells in the attraction map
-%       end
-% 
-%       % Task assignment
-%       agent_model.a_target(a, :, q) = func_taskAssignment(q, agent_model.a_target, m_att, config.flag_communication_model);
-%     end
-%   end
-% end
-% 
-% function fisInputs = getFisInputs(fis)
-%     % Extracts the names of inputs defined in the FIS
-%     fisInputs = arrayfun(@(input) input.Name, fis.Inputs, 'UniformOutput', false);
-% end
+% COMMENTS
+% cell_fire_time_risk not directional with wind
 
+% V2.4
+function agent_model = model_fis(agent_model, ang_w, v_w, config, fisArray)
+    gridSize = [agent_model.n_x_s, agent_model.n_y_s];
+    agentPositions = agent_model.a_loc; % Assuming a_loc stores the (x, y) positions of agents
+    
+    % Determine if 'r_nextagent' input is required by checking the first FIS
+    % (assuming all agents have the same FIS inputs)
+     inputNames = [fisArray(1).Inputs.Name];  % Concatenate into a single string array
 
-% % V2.3
-% function agent_model = model_fis(agent_model, environment_model, config, fisArray)
-% 
-%     % Calculate distances of all cells from other agents, normalized
-%     gridSize = [agent_model.n_x_s, agent_model.n_y_s];
-%     agentPositions = reshape(agent_model.a_target(:,1:2,:), [], 2); % Assuming a_target contains [x,y] positions
-%     distanceMatrix = calculateAgentDistances(gridSize, agentPositions);
-% 
-%     % Normalisation
-%     % NOTE: move inside calculateAgentDistances function?
-%     maxDist = sqrt(gridSize(1)^2 + gridSize(2)^2);
-%     for a = 1:agent_model.n_a
-%         distanceMatrix{a} = distanceMatrix{a} / maxDist; % Normalize to [0, 1]
-%     end
-% 
-%     % Iterate over each task queue
-%     for q = 2:agent_model.n_q
-% 
-%         % Calculate normalized response time for all agents
-%         m_t_response = calc_t_response(...
-%             agent_model.n_x_s, agent_model.n_y_s, agent_model.l_x_s, agent_model.l_y_s, ...
-%             agent_model.n_a, agent_model.a_t_scan, agent_model.a_t_trav, agent_model.a_target, q, ...
-%             environment_model.ang_w, environment_model.v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
-% 
-%         for a = 1:agent_model.n_a
-%             % FIS of agent
-%             fis = fisArray(a);
-% 
-%             % Generate attraction map
-%             m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target, config.flag_communication_model;
-%             % m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target, config.flag_communication_model, distanceMatrix{a});
-% 
-% 
-%             % Identify which inputs the current FIS has
-%             fisInputs = getFisInputs(fis);
-% 
-%             % Generate inputs for FIS based on what's available
-%             fisInputValues = [];
-% 
-%             % Flatten fisInputs for direct string comparison
-%             fisInputsFlat = cellfun(@(c) c{1}, fisInputs, 'UniformOutput', false);
-% 
-%             if ismember('t_response', fisInputsFlat)
-% 
-%               fisInputValues = [fisInputValues, m_t_response(:,:,a)]; % Assuming m_t_response calculated elsewhere
-% 
-%             end
-% 
-%             if ismember('priority', fisInputsFlat)
-% 
-%               % Generate priority map
-%               agent_model.m_prior = calc_prior(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, config.weight, agent_model.m_victim_s, config.flag_victim_model);
-% 
-%               fisInputValues = [fisInputValues, agent_model.m_prior]; % Assuming m_prior calculated elsewhere
-% 
-%             end
-% 
-%             if ismember('r_nextagent', fisInputsFlat)
-% 
-%               fisInputValues = [fisInputValues, distanceMatrix{a}]; % Assuming distanceMatrix calculated above
-% 
-%             end
-% 
-%             % Task assignment
-%             agent_model.a_target(a, :, q) = func_taskAssignment(q, agent_model.a_target, m_att, config.flag_communication_model);
-%         end
-%     end
-% end
-% 
-% function fisInputs = getFisInputs(fis)
-%     % Extracts the names of inputs defined in the FIS
-%     fisInputs = arrayfun(@(input) input.Name, fis.Inputs, 'UniformOutput', false);
-% end
+    % Calculate distanceMatrix if required
+    if any(inputNames == "r_nextagent")
+        distanceMatrix = calc_r_nextagent(gridSize, agentPositions, agent_model.n_x_s, agent_model.n_y_s);
+    end
 
-
-% V2.2
-function agent_model = model_fis(agent_model, v_w, ang_w, config, fisArray)
-    % Iterate over each task queue
     for q = 2:agent_model.n_q
+
         % Calculate normalized response time for all agents
         m_t_response = calc_t_response(...
             agent_model.n_x_s, agent_model.n_y_s, agent_model.l_x_s, agent_model.l_y_s, ...
@@ -174,46 +44,142 @@ function agent_model = model_fis(agent_model, v_w, ang_w, config, fisArray)
             ang_w, v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
 
         for a = 1:agent_model.n_a
-            % FIS of agent
             fis = fisArray(a);
+            fisInputs = struct;
 
-            % Generate priority map
-            agent_model.m_prior = calc_prior(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, config.weight, agent_model.m_victim_s, config.flag_victim_model);
+            for i = 1:numel(fis.Inputs)
+                inputName = fis.Inputs(i).Name;
 
-            % Generate attraction map
-            m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target, config.flag_communication_model);
+                switch inputName
+                  case 't_response' % Equivalent to 'Cell time efficiency' in Mirko model
+                      fisInputs.t_response = m_t_response(:,:,a);
+                  case 'priority_combined'
+                      agent_model.m_prior = calc_prior_combined(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, agent_model.m_victim_s, config.flag_victim_model);
+                      fisInputs.priority = agent_model.m_prior;
+                  case 'priority_first_scan'
+                      fisInputs.priority_first_scan = calc_prior_first_scan(m_bo, m_scan);
+                  % case 'priority_rescan'
+                  %     fisInputs.priority_rescan = calc_prior_rescan(m_bo, m_scan, t, m_victim, flag_victim_model);
+                  case 'priority_dw'
+                      fisInputs.priority_dw = calc_prior_dw(agent_model.m_dw_s);
+                  case 'r_nextagent'
+                      fisInputs.r_nextagent = distanceMatrix{a};
+                  case 'cell_priority'
+                      fisInputs.cell_priority = agent_model.m_bo_s;
+                  case 'cell_scan_certainty'
+                    fisInputs.cell_scan_certainty = agent_model.m_scan;
+                  case 'cell_fire_time_risk'
+                    fisInputs.cell_fire_time_risk = calc_fire_time_risk(agent_model.m_f_s, v_w);
+                end
+            end
+
+            % Generate attraction map using prepared FIS inputs
+            m_att = calc_att(fis, fisInputs, agent_model.a_target, config.flag_communication_model);
 
             % Task assignment
             agent_model.a_target(a, :, q) = func_taskAssignment(q, agent_model.a_target, m_att, config.flag_communication_model);
-
         end
     end
 end
 
+function m_prior_rescan = calc_prior_rescan(m_bo, m_scan, t, m_victim, flag_victim_model)
+  
+  % Restrict to range 0-1 to prevent too high attraction
+  if flag_victim_model
+    m_victim = m_victim ./ max(m_victim, [], 'all');
+  end
 
-% V2.1
-% function agent_model = model_fis(agent_model, environment_model, config, fisArray)
-%     % Iterate over each task queue
-%     for q = 2:agent_model.n_q
-%       % Calculate normalized response time for all agents
-%       m_t_response = calc_t_response(...
-%         agent_model.n_x_s, agent_model.n_y_s, agent_model.l_x_s, agent_model.l_y_s, ...
-%         agent_model.n_a, agent_model.a_t_scan, agent_model.a_t_trav, agent_model.a_target, q, ...
-%         environment_model.ang_w, environment_model.v_w, agent_model.v_as, agent_model.m_t_scan, agent_model.maxResponseTime);
-% 
-%         for a = 1:agent_model.n_a
-%             % FIS of agent
-%             fis = fisArray(a);
-% 
-%             % Generate priority map
-%             agent_model.m_prior = calc_prior(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, config.weight, agent_model.m_victim_s);
-% 
-%             % Generate attraction map
-%             m_att = calc_att(fis, m_t_response(:,:,a), agent_model.m_prior, agent_model.a_target);
-% 
-%             % Task assignment
-%             agent_model.a_target(a, :, q) = func_taskAssignment(m_att);
-% 
-%         end
-%     end
-% end
+  % Convert matrices to double for calculation
+  m_bo = double(m_bo);
+  m_scan = double(m_scan);
+  m_victim = double(m_victim);
+
+  % Re-scan priority
+  % Decide on the basis for re-scan priority based on flag_victim_model
+  time_since_scan = max(t - m_scan, 0);  % Ensuring no negative values
+  if flag_victim_model
+    % m_P_re_scan = m_victim .* weight.repeat_scan .* time_since_scan;
+    m_prior_rescan = double(m_scan ~= 0) .* m_victim .* time_since_scan + 1;
+  else
+    % m_P_re_scan = m_bo .* weight.repeat_scan .* time_since_scan;
+    m_prior_rescan = double(m_scan ~= 0) .* m_bo .* time_since_scan + 1;
+  end
+
+end
+
+% V2.2 - added victim model flag
+function m_prior_first_scan = calc_prior_first_scan(m_bo, m_scan)
+  
+  % Convert matrices to double for calculation
+  m_bo = double(m_bo);
+  m_scan = double(m_scan);
+
+  % First-time scan priority
+  % Using building occupancy as a basis for unscanned cells
+  m_prior_first_scan = double(m_scan == 0) .* m_bo;
+
+end
+
+function m_prior_dw = calc_prior_dw(m_dw)
+  
+  % Convert matrices to double for calculation
+  m_dw = double(m_dw);
+
+  % Incorporate downwind map and travel time
+  % Assuming proximity to fire (lower m_dw) increases priority, and longer travel time decreases priority
+  m_prior_dw = (1 - m_dw);
+end
+
+% Single priority with multiple components
+function m_prior = calc_prior_combined(m_bo, m_dw, m_scan, t, m_victim, flag_victim_model)
+
+  % 
+  m_P_first_scan  =  calc_prior_first_scan(m_bo, m_scan);
+  m_P_rescan  = calc_prior_rescan(m_bo, m_scan, t, m_victim, flag_victim_model);
+  m_P_dw = calc_prior_dw(m_dw);
+
+  % Calculate overall priority
+  m_prior = m_P_first_scan + m_P_rescan + m_P_dw;
+end
+
+% Return map of distance of each cell from an agent other than the current agent
+
+function distanceMatrix = calc_r_nextagent(gridSize, agentPositions, n_x_s, n_y_s)
+    % gridSize is a two-element vector [numRows, numCols]
+    % agentPositions is an n-by-2 matrix, where n is the number of agents,
+    % and each row represents the (x, y) coordinates of an agent.
+
+    numRows = gridSize(1);
+    numCols = gridSize(2);
+    numAgents = size(agentPositions, 1);
+    
+    % Calculate the diagonal distance of the search area
+    diagonalDistance = sqrt((n_x_s-1)^2 + (n_y_s-1)^2);
+    
+    % Initialize the distance matrix
+    distanceMatrix = cell(numAgents, 1);
+    
+    for a = 1:numAgents
+        % Create a matrix for the current agent with initial values as infinity
+        currentAgentDistances = inf(numRows, numCols);
+        
+        for row = 1:numRows
+            for col = 1:numCols
+                % Calculate the Euclidean distance from the cell to all other agents
+                for otherAgent = 1:numAgents
+                    if otherAgent ~= a
+                        distToOtherAgent = sqrt((col - agentPositions(otherAgent, 1))^2 + (row - agentPositions(otherAgent, 2))^2);
+                        % Update the minimum distance to any other agent
+                        currentAgentDistances(row, col) = min(currentAgentDistances(row, col), distToOtherAgent);
+                    end
+                end
+            end
+        end
+
+        % Normalize the distances by the diagonal length of the search area
+        currentAgentDistances(currentAgentDistances == inf) = 0;  % Handle case where no other agent is close
+        distanceMatrix{a} = currentAgentDistances / diagonalDistance;
+    end
+end
+
+

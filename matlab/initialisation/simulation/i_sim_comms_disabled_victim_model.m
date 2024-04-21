@@ -13,14 +13,18 @@ t       = 0;        % Current time
 t_f     = 10000;    % Simulation end time (s)
 dt_s    = 15;        % Simulation step size
 
+% Search map coarsen factors
+c_f_s  = [5, 5];
+
 % Discrete steps
 dk_a    = 1;        % Agent step size
 dk_c    = 1;        % Control step size
 dk_e    = 4;        % Fire step size NOTE: environment model assumes 60s
-dk_mpc  = 20;     % MPC step size
-dk_prog = 50;     % Progress report step size
+dk_mpc  = 30;       % MPC step size
+dk_pred  = 45;      % Prediction step size
+dk_prog = 100;      % Progress report step size
 
-% Time steps
+% Time steps % Could remove these
 dt_a    = dk_a*dt_s;
 dt_c    = dk_c*dt_s;
 dt_e    = dk_e*dt_s;
@@ -39,10 +43,11 @@ flag_finish    = false;
 
 % Define agent objectives
 weight = struct();
-weight.dw = 0.1;      % Weight for victims
-weight.fire = 0.1;      % Weight for victims
+weight.dw = 1;      % Weight for victims
+weight.fire = 1;      % Weight for victims
 weight.first_scan = 1;   % Weight for the first-time scan. WARNING: IF 0, AGENT BEHAVIOUR COMPROMISED (will re-scan starting cells continuously)
-weight.repeat_scan = 0.001;  % Weight for repeat scans
+weight.repeat_scan = 1;  % Weight for repeat scans
+sigma = 0.01; % we assume that due to the dynamics of the environment the scan certainty state reduces by a fixed ratio per global simulation time step
 
 % Activate/deactivate victim model in calculation of priority
 % This influences the assignment of cells to agents
@@ -57,8 +62,8 @@ obj           = 0;
 s_obj         = 0;
 
 config = struct('flag_save', flag_save, 'save_dir', save_dir, ...
-  't', t, 't_f', t_f, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
+  't', t, 't_f', t_f, 'c_f_s', c_f_s, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_pred', dk_pred, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
   'k', k, 'k_a', k_a, 'k_c', k_c, 'k_e', k_e, 'k_mpc', k_mpc, 'k_prog', k_prog, 'endCondition', endCondition, 'flag_finish', flag_finish, ...
-  'obj', obj, 's_obj', s_obj, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model);
+  'obj', obj, 's_obj', s_obj, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model, 'sigma', sigma);
 
 end

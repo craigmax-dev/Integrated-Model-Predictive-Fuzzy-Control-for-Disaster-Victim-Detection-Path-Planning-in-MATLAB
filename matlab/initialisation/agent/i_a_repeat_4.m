@@ -2,7 +2,8 @@
 % Initialise agent model
 
 % V2
-function agent_model = i_a_repeat_2_mpc(environment_model, config)
+
+function agent_model = i_a_repeat_4(environment_model, config)
   
   % Search map building occupancy
   m_bo_s = func_coarsen(environment_model.m_bo, config.c_f_s); 
@@ -20,20 +21,17 @@ function agent_model = i_a_repeat_2_mpc(environment_model, config)
   % Search map cell lengths
   l_x_s     = config.c_f_s(1)*environment_model.l_x_e;
   l_y_s     = config.c_f_s(2)*environment_model.l_y_e;
-
-  % Battery parameters
-  m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  a_battery_level_i = [4e4; 4e4]; % Fully charged battery level (s)
-  a_battery_level = a_battery_level_i; % Current battery level (s)
   
   % Agent parameters
-  n_a           = 2;                % Number of UAVs in simulation
+  n_a           = 4;                % Number of UAVs in simulation
   v_as          = 5;               % UAV airspeed (m/s)
   a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
   t_scan_m      = 0.01;             % Scan time per square metre
   a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
   a_loc         = [ 1, 1;   
-                    1, 2];          % Current locations of UAVs
+                    1, 2;
+                    1, 3;
+                    1, 4];          % Current locations of UAVs
 
   % Search map cell scan time
   t_scan_c    = t_scan_m*l_x_s*l_y_s;       % Scan time per cell
@@ -43,14 +41,20 @@ function agent_model = i_a_repeat_2_mpc(environment_model, config)
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
   sensor_accuracy = 0.9; % [0 1]
 
-  a_loc_hist    = [];
-  for a = 1:n_a
-    % Note: format is x-axis, y-axis, agent number, timestep number
-    a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; 
-  end  
+  % Battery parameters
+  m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
+  a_battery_level_i = 4e4.*ones(n_a, 1); % Fully charged battery level (s)
+  a_battery_level = a_battery_level_i; % Current battery level (s)
+
+
+  % a_loc_hist    = [];
+  % for a = 1:n_a
+  %   % Note: format is x-axis, y-axis, agent number, timestep number
+  %   a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; 
+  % end  
 
   % Agent targets
-  n_q             = calculateMinimumQueueLength(t_scan_c, l_x_s, v_as, environment_model.v_w, config);
+  n_q             = 2;
   a_target        = ones(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;
   
@@ -66,7 +70,7 @@ function agent_model = i_a_repeat_2_mpc(environment_model, config)
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
                        'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, ...
                        't_scan_m', t_scan_m, 't_scan_c', t_scan_c, 'a_battery_level_i', a_battery_level_i, 'a_battery_level', a_battery_level, 'a_task', a_task, ... 
-                       'a_loc', a_loc, 'a_loc_hist', a_loc_hist, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
+                       'a_loc', a_loc, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
                        'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, ...
                        'm_bo_s', m_bo_s, 'm_dw_s', m_dw_s, 'm_f_s', m_f_s, 'm_victim_s', m_victim_s, 'maxResponseTime', maxResponseTime, 'sensor_accuracy', sensor_accuracy);
 end

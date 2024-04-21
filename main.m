@@ -3,57 +3,50 @@
 % Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
 % Technology
 
-% CHANGELOG
-% - Refactor: initialise plotting data can be removed
-% - Bugfix: Improve strings used in figures
-% - Simulations: Re-run with weights for dynamic environment variables
-% - Feature: FIS input range - compress inputs to predefined ranges. Add warning
-% message.
-% - Feature: MPC prediction modes
-% - Performance: Single prediction of environment states model before MPC
-% optimization
-% - Feature: Implement MPC and MPFC supervisory controller architectures
+% Simulations
+% - Mirko stable case
+% - Mirko loss of agent
+% - Mirko number of agents
+% - Mirko disaster environment size 
+% - Uneven distribution m_bo and building flammability
 
-% NEXT FEATURE
-% - Feature: Implement tuning of output MF parameters for MPFC
+% CURRENT FEATURE
+% - Feature: Scatter plot accumulated/mean results over multiple simulations &
+% line of best fit.
 
-% TODO   
-% - Performance: write data to file after each simulation. Then read and
-% post-processing.
+% REMOVED - SUGGESTED FOR FURTHER IMPROVEMENTS
 % - Feature: add battery recharge model and constraints to agent actions & fis
 % - Feature/performance: add localised predictions for given radius around an agent
-% - Feature: Plotting of all simulations using light line and mean simulation
-% using solid line 
-% - Plotting: How to visualize agent behaviour over simulation. Think of other
-% plotting options.
-% - Performance: better handling of environment history parameters
-% - Tidying: .gitignore all input files except templates
-% - Feature: Deterministic Threshold prediction mode & other prediction modes
-% - Feature: Implement calculateAgentDistances in agent controller (if active - 3rd input)
 % - Feature: slow dynamic variables. Options: wind (affecting agent movement and fire/chemical hazards) or flooding.
-% - Feature: add template initialization files
+% - Feature: Deterministic Threshold prediction mode
+
+% TO DO
+% - Writeup of current formulation of FIS/MPC/MPFC
+% - Writeup: Simulation results
+% - Writeup: Description of modelling decisions: timesteps, 
+% - Bugfix: fix bounds setting on MPC/MPFC initialisation (lb/ub)
 
 %% SIMULATION CASES
-% - 1. Victim locations modeled
-% - 2. Dynamic environment variables
-% - 3. Probability based predictions 
-% - 4. Using m_bo distributions: 
-% - Comparison stable behaviour vs MPC for loss of agent
-% - TODO: longer prediction horizon, longer prediction timestep?
+% - Centralised vs Decentralised MPC & MPFC controller architecture comparison
+% - Scalability simulations: computation time and performance vs disaster
+% environment size, number of agents
+% - Prediction modes
+% - 
 
+%% RESULTS
 
 % Clear workspace 
 clear all  
 close all
  
-% Set up folder paths
+%% Set up folder paths
 addpath('data', ...
   'matlab', ...
   'matlab/functions', ...
   'matlab/models', ...
   'matlab/initialisation/simulation', ...
   'matlab/initialisation/plotting', ...
-  'matlab/initialisation/pathPlanning', ...
+  'matlab/initialisation/pathPlanning', ... 
   'matlab/initialisation/mpc', ...
   'matlab/initialisation/environment', ...
   'matlab/initialisation/agent');
@@ -61,113 +54,213 @@ addpath('data', ...
 %% Define function handles 
 
 % Simulation variables
-h_s_comms_disabled_victim_model_short = @()i_sim_comms_disabled_victim_model_short();
+h_s_comms_disabled_no_victim_model = @()i_sim_comms_disabled();
 h_s_comms_disabled_victim_model = @()i_sim_comms_disabled_victim_model();
-h_s_comms_disabled_victim_model_long = @()i_sim_comms_disabled_victim_model_long();
+h_s_comms_disabled_victim_model_5000 = @()i_sim_comms_disabled_victim_model_5000();
 
 % Environment
 h_e_static = @(dt_e)i_env_basic_no_dynamics(dt_e);
 h_e_dynamic = @(dt_e)i_env_basic_dynamics(dt_e);
+h_e_dynamic_large = @(dt_e)i_env_basic_dynamics_large(dt_e);
 
 % Agent
 h_a_repeat_2 = @(environment_model, config)i_a_repeat_2(environment_model, config);
 h_a_repeat_2_mpc = @(environment_model, config)i_a_repeat_2_mpc(environment_model, config);
+h_a_repeat_3 = @(environment_model, config)i_a_repeat_3(environment_model, config);
+h_a_repeat_3_mpc = @(environment_model, config)i_a_repeat_3_mpc(environment_model, config);
+h_a_repeat_4 = @(environment_model, config)i_a_repeat_4(environment_model, config);
+h_a_repeat_4_mpc = @(environment_model, config)i_a_repeat_4_mpc(environment_model, config);
 
 % FIS
 h_init_fis_2 = @(n_a)initialise_fis_t_response_priority(n_a);
-h_init_fis_3 = @(n_a)initialise_fis_t_response_priority_r_nextagent(n_a);
-
+h_init_fis_proximity = @(n_a)initialise_fis_t_response_priority_r_nextagent(n_a);
+h_init_fis_mirko_4 = @(n_a)initialise_fis_mirko_4(n_a);
+h_init_fis_mod = @(n_a)initialise_fis_mod(n_a);
+ 
 % Controller Architecture
 h_arch_fis = @(fisArray, agent_model)i_arch_fis(fisArray, agent_model);
-h_arch_mpfc = @(fisArray, agent_model)i_arch_mpfc(fisArray, agent_model);
-h_arch_mpc = @(fisArray, agent_model)i_arch_mpc(fisArray, agent_model);
+h_arch_mpfc_input_exact = @(fisArray, agent_model)i_arch_mpfc_input_exact(fisArray, agent_model);
+h_arch_mpfc_output_exact = @(fisArray, agent_model)i_arch_mpfc_output_exact(fisArray, agent_model);
+h_arch_mpfc_output_exact_decentralised = @(fisArray, agent_model)i_arch_mpfc_output_exact_decentralised(fisArray, agent_model);
+h_arch_mpc_exact = @(fisArray, agent_model)i_arch_mpc_exact(fisArray, agent_model);
+h_arch_mpfc_input_prediction = @(fisArray, agent_model)i_arch_mpfc_input_prediction(fisArray, agent_model);
+h_arch_mpfc_output_prediction = @(fisArray, agent_model)i_arch_mpfc_output_prediction(fisArray, agent_model);
+h_arch_mpfc_output_prediction_decentralised = @(fisArray, agent_model)i_arch_mpfc_output_prediction_decentralised(fisArray, agent_model);
+h_arch_mpc_prediction = @(fisArray, agent_model)i_arch_mpc_prediction(fisArray, agent_model);
+h_arch_mpc_prediction_decentralised = @(fisArray, agent_model)i_arch_mpc_prediction_decentralised(fisArray, agent_model);
 
 %% Simulation setup
 
-% % comparison comms model
+% ------------------
+% SIMULATION X: LARGE ENVIRONMENT 4 AGENTS
 % simulationSetup = {
-%   "Comms_Disabled", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Comms Disabled";
-%   "Comms_Enabled", h_s_comms_enabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Comms Enabled";
-%   };
+%   "sim_fis", h_sim_comms_disabled_victim_model_no_rescan, h_e_dynamic_large, h_a_repeat_4, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mfpc", h_sim_comms_disabled_victim_model_no_rescan, h_e_dynamic_large, h_a_repeat_4, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC";
+%   "sim_mfc", h_sim_comms_disabled_victim_model_no_rescan, h_e_dynamic_large, h_a_repeat_4_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC";
+% }; 
+% ------------------
 
-% % comparison n_a
+
+% ------------------
+% SIMULATION 1: SCALABILITY WITH NUMBER OF AGENTS
+ 
+% % DONE - REVIEW WHAT TO DO WITH THIS
+% % % Two agents
+% % simulationSetup = {
+% %   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS 2";
+% %   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC Centralised";
+% %   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC 2";
+% % };   
+
+% % Done: Two agents dynamic
+% simulationSetup = { 
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
+%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+% };  
+
+% DONE: Two agents dynamic - cell_fire_proximity vs m_dw FIS input
+% simulationSetup = { 
+%   "sim_mpfc_centralised_mod", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mod, h_arch_mpfc_output_prediction, "MPFC Centralised Downwind Input";
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised Mirko Inputs";
+%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+% };  
+
+% Three agents
+% TODO: update FIS with new inputs
 % simulationSetup = {
-%   "sim_na_1", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_1, h_init_fis_2, h_mpc_disabled, "Single Agent";
-%   "sim_na_2", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Two Agents";
+%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_fis, "FIS 3";
+%   "sim_mfpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC 3";
+%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC 3";
+%   };  
+
+% DONE: Four agents    
+% simulationSetup = { 
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
+%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_exact, "MPC 2";
+% };  
+
+% Four agents decentralised
+simulationSetup = { 
+  "sim_mpfc_decentralised", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
+};  
+
+% ------------------
+
+% ------------------
+% SIMULATION X: ENVIRONMENT SIZE
+% DONE - ALL PARAMETERS NOT SAVED
+
+% simulationSetup = { 
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+  % "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised Mirko Inputs";
+  % "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+% };  
+
+% ------------------
+
+% ------------------
+% SIMULATION X: PREDICTION MODES COMPARISON
+
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_mfpc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC PREDICTION";
+%   "sim_mfpc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "MPFC EXACT";
+% }; 
+
+
+% ------------------
+
+% ------------------
+% SIMULATION X: PROXIMITY FIS INPUT (SHOW PERCENT IMPROVEMENT)
+% UAV/AGENT HEATMAP DEMO FOR TWO POPULATION CENTRES
+
+% % Two agents 
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mfpc_2", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC 2 inputs";
+  % "sim_mfpc_3", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_proximity, h_arch_mpfc_output_prediction, "MPFC 3 inputs";
+  % "sim_mfpc_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Mirko Inputs";
+  %   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC";
+% };
+
+% % Two agents, double population centre
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model, h_e_, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mfpc_2", h_s_comms_disabled_victim_model, h_e_, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC 2 inputs";
+  % "sim_mfpc_3", h_s_comms_disabled_victim_model, h_e_, h_a_repeat_2, h_init_fis_proximity, h_arch_mpfc_output_prediction, "MPFC 3 inputs";
+%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC";
+  % }; 
+
+
+% ------------------
+
+% ------------------
+% SIMULATION X: STABLE BEHAVIOUR CONVERGENCE DEMONSTRATION
+% ------------------
+ 
+% ------------------
+% SIMULATION X: ADAPTIVE BEHAVIOUR DEMONSTRATION - LOSS OF AGENT
+% ------------------
+
+% ------------------
+% SIMULATION X: MPC ARCHITECTURES PERFORMANCE AND OPTIMIZATION TIME COMPARISON
+ 
+% % Decentralised vs centralised structures for MPFC
+% simulationSetup = {
+%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
+%   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
+%   "sim_mpfc_decentralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
 %   }; 
 
-% % Loss of agent
+% NOTE: Extremely time-intensive (current setup for MPC? Check if still present in current simulations.)
+% % Decentralised vs centralised structures for MPC
 % simulationSetup = {
-%   "sim_loss_mpc_disabled", h_s_comms_disabled_victim_model_long, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_disabled, "Pre-tuned FIS";
-%   "sim_loss_mpc_enabled", h_s_comms_disabled_victim_model_long, h_e_static, h_a_repeat_2_battery_loss, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
-%   };
+%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+%   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_output_prediction, "MPC Centralised";
+%   "sim_mpfc_decentralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_output_prediction_decentralised, "MPC Decentralised";
+%   };  
+% ------------------
 
-% % Dynamic environment test
+% ------------------
+% SIMULATION X:    
+% ------------------
+
+% ------------------
+% SIMULATION X:  
+% ------------------
+
+% Compare FIS input parameters
 % simulationSetup = {
-%   "sim_dynamics", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Dynamic Environment";
-%   "sim_dynamics_mpc_longFirstEval", h_s_comms_enabled, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_longFirstEval, "Dynamic Environment with MPC";
-%   };
+  % "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
+  % "sim_mpfc_basic", h_s_comms_disabled_victim_model, h_e_dynamic_large, h_a_repeat_2, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC Basic";
+  % "sim_mpfc_proximity", h_s_comms_disabled_victim_model, h_e_dynamic_large, h_a_repeat_2, h_init_fis_proximity, h_arch_mpfc_output_prediction, "MPFC Proximity Input";
+  % "sim_mpfc_mirko", h_s_comms_disabled_victim_model, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko, h_arch_mpfc_output_prediction, "MPFC Proximity Input";
+  % "sim_mpc", h_s_comms_disabled_victim_model, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC";
+  % }; 
 
-% % Victim location modelling
-% simulationSetup = { 
-%   "sim_no_victim_model", h_s_comms_disabled, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No Victim Model";
-%   "sim_victim_model", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "Victim Model";  
-%   };
-
-% % FIS input parameter comparison
-% simulationSetup = {
-%   "sim_fis_2_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "sim_fis_2_inputs";
-%   "sim_fis_3_inputs", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_3, h_mpc_disabled, "sim_fis_3_inputs";
-%   };
- 
-% % MPC setup
-% simulationSetup = { 
-%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "PRE-TUNED FIS";
-%   "sim_mpc_short", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC 200 EVAL";
-%   "sim_mpc_med", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_500, "MPC 500 EVAL";
-%   "sim_mpc_long", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_1000, "MPC 1000 EVAL";
-%   }; 
- 
-% Comparison of Controller Architectures, Static Environment, Exact, 
-simulationSetup = {
-  "sim_fis", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-  "sim_mpfc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
-  "sim_mpc", h_s_comms_disabled_victim_model, h_e_static, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
-  };
-
-% % Comparison of Controller Architectures, Dynamic Environment, 
-% simulationSetup = {
-%   "sim_fis", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-%   "sim_mpfc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_mpfc, "MPFC";
-%   "sim_mpc", h_s_comms_disabled_victim_model_short, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc, "MPC";
-%   };
-
-% % Prediction Modes Comparison for Dynamic Environment
-% simulationSetup = {
-%   "sim_no_mpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_disabled, "No MPC";
-%   "sim_mpc_enabled", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled, "MPC Deterministic Exact";
-%   "sim_mpc_enabled_deterministic_prediction", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_mpc_enabled_deterministic_prediction, "MPC Deterministic Prediction";
-%   };
- 
-% Define the number of iterations for each simulation setup
+%% Define the number of iterations for each simulation setup
 numIterations = 5;   
-
+ 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
 
-% Initialize a structure to store results from all setups
-allResults = struct();
+% Initialize a structure to store results from all setups 
+data = struct();
 
 % Iterate over each simulation setup
 for simSetup = 1:size(simulationSetup, 1)
     
-  % TODO REPLACE WITH ORIGINAL STRUCTURE
   simulationName = simulationSetup{simSetup, 1};
   f_init_sim = simulationSetup{simSetup, 2};
-  f_init_env = simulationSetup{simSetup, 3};
+  f_init_env = simulationSetup{simSetup, 3};  
   f_init_agent = simulationSetup{simSetup, 4};
   f_init_fis = simulationSetup{simSetup, 5};
   f_init_mpc = simulationSetup{simSetup, 6};
+
+  fprintf("Simulation: %s \n", simulationName)
 
   % V2
   % Initialize a struct array to store results for this simulation setup
@@ -176,8 +269,10 @@ for simSetup = 1:size(simulationSetup, 1)
   
   for iteration = 1:numIterations
 
+      fprintf("Iteration: %i \n", iteration)
+    
       %% Initialise models, plotting data, and timestep for saving variables
-
+ 
       % Generate and record a unique seed for each iteration
       seeds(iteration) = randi(10000); % or another method to generate a random seed
 
@@ -185,70 +280,68 @@ for simSetup = 1:size(simulationSetup, 1)
       config = f_init_sim();
       
       % Initialise Environment 
-      environment_model = f_init_env(config);
+      environment_model = f_init_env(config); 
       
       % Initialise Agent
       agent_model = f_init_agent(environment_model, config);
 
       % Initialise FIS Path Planning
       [fisArray] = f_init_fis(agent_model.n_a);
-
-      % Initialise Supervisory Control
+ 
+      % Initialise Supervisory Control 
       mpc_model = f_init_mpc(fisArray, agent_model);
        
       %% Define timestep for saving variables
       % Number of desired data points
-      n_prog_data = 500;
+      n_prog_data = 500; 
       % Estimated avg travel time
       k_trav_avg = (agent_model.t_scan_c + agent_model.l_x_s/agent_model.v_as)/config.dt_s;
       % Estimated sim time
       k_sim_est = k_trav_avg * agent_model.n_x_s * agent_model.n_y_s / agent_model.n_a;
       % Save data time
-      dk_v = k_sim_est / n_prog_data;
-      ct_v = 0; 
-
-      %% Precompute dynamic environment states
+      dk_v = k_sim_est / n_prog_data;  
+      ct_v = 0;  
+  
+      %% Precompute dynamic environment states 
       % The precompute is performed beyond the end of the simulation for the
       % case where the MPC prediction horizon extends beyond the simulation
-      % time.
+      % time. 
 
       % Set the seed for RNG once, unless reseeding is explicitly required for each iteration
-      rng(seeds(iteration));
+      rng(seeds(iteration));  
       
       % Calculate the total number of steps needed for the pre-computation phase
-      total_steps = round((config.t_f + mpc_model.n_p * config.dt_mpc) / config.dt_e);
-      
-      for k_precompute = 0:(total_steps - 1)
+      prediction_duration = mpc_model.n_p * config.dk_pred * config.dt_s;
+      total_time = config.t_f + prediction_duration;
+      total_steps = ceil(total_time / config.dt_e) + 1;
+
+      for k_precompute = 0:total_steps
           % Update the environment for the current step
-          % Consider optimizing model_environment for batch updates if applicable
           environment_model = model_environment(environment_model, k_precompute, config.dt_e);
-      end
+
+      end 
 
       %% Simulation Loop
       while config.flag_finish == false
-
+ 
         % Start timer 
         t_sim = tic;
   
         %% Supervisory Control Model
-        if ~strcmp(mpc_model.architecture, 'fis')
-          if config.k_mpc*config.dk_mpc <= config.k
-            [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model); 
-            config.k_mpc = config.k_mpc + 1;
-          end 
+        if (strcmp(mpc_model.architecture, 'mpc') || strcmp(mpc_model.architecture, 'mpfc')) && (config.k_mpc*config.dk_mpc <= config.k)
+          [fisArray, mpc_model, agent_model] = model_mpc(fisArray, agent_model, config, environment_model, mpc_model);
+          config.k_mpc = config.k_mpc + 1;
         end  
  
-        %% FIS Path Planning Model
-        if ~strcmp(mpc_model.architecture, 'mpc')
-          if config.k_c*config.dk_c <= config.k
-            [agent_model] = model_fis(agent_model, environment_model.v_w, environment_model.ang_w, config, fisArray);
+        %% FIS Path Planning Model 
+        if (strcmp(mpc_model.architecture, 'fis') || strcmp(mpc_model.architecture, 'mpfc')) && (config.k_c * config.dk_c <= config.k)
+            [agent_model] = model_fis(agent_model, environment_model.ang_w, environment_model.v_w, config, fisArray);
             config.k_c = config.k_c + 1;
-          end
         end
 
-        %% Agent Model
+        %% Agent Model 
         if config.k_a*config.dk_a <= config.k 
-          agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, config.dt_a, config.k, config.dt_s);
+          agent_model = model_agent(agent_model, environment_model.v_w, environment_model.ang_w, environment_model.m_f_series(:, :, config.k_e + 1), environment_model.m_dw_e_series(:, :, config.k_e + 1), config);
           config.k_a = config.k_a + 1; 
         end     
    
@@ -258,10 +351,24 @@ for simSetup = 1:size(simulationSetup, 1)
         end
 
         %% Objective function evaluation
-        [config.s_obj, config.obj] = calc_obj(...
-          config.weight, environment_model.m_f_series(:, :, config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
-          config.dt_s, config.s_obj, agent_model.c_f_s, config.t);
-        
+        % % V1
+        % [config.s_obj, config.obj] = calc_obj(...
+        %   config.weight, environment_model.m_f_series(:, :, config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+        %   config.dt_s, config.s_obj, config.c_f_s, config.t);
+
+        % % V2 REFACTOR
+        % [config.s_obj, config.obj] = calc_obj_v2(...
+        %   config.weight, environment_model.m_f_series(:, :, config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+        %   config.dt_s, config.s_obj, config.c_f_s);
+
+        % V3 REFACTOR
+        [config.s_obj, config.obj] = calc_obj_v3(...
+          config.weight, environment_model.m_dw_e_series(:, :, config.k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+          config.dt_s, config.s_obj, config.c_f_s);
+
+        % % MIRKO OBJECTIVE
+        % [config.s_obj, config.obj] = calc_obj_mirko(agent_model, fisArray, environment_model.v_w, environment_model.ang_w, config);               
+
         %% Store variables 
         if ct_v*dk_v <= config.k
           ct_v = ct_v + 1; 
@@ -294,7 +401,7 @@ for simSetup = 1:size(simulationSetup, 1)
   end
 
     % Store results from this setup for later comparison
-    allResults.(simulationName) = results;
+    data.(simulationName) = results;
 
 end 
 
@@ -304,10 +411,10 @@ end
 alpha = 0.05;
 
 % Calculate stats for obj_hist
-[means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(allResults, simulationSetup, 'obj_hist', config.dt_s, alpha);
+[means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(data, simulationSetup, 'obj_hist', config.dt_s, alpha);
 
 % % Calculate stats for optimizationTimes
-[means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(allResults, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
+[means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(data, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
 
 row_sums = cellfun(@sum, means_obj);
 
@@ -333,4 +440,8 @@ markerSizes = [10]; % List of marker sizes for items
 %% Save and export simulation results
 
 % Call the function to save results and figures
-saveSimulationResults(config.flag_save, allResults, config);
+saveSimulationResults(config.flag_save, config);
+
+% %% Replot using only certain lines
+% plotStats(means_obj(end-1:end), ci_lower_obj(end-1:end), ci_upper_obj(end-1:end), time_vector_obj(end-1:end), simulationSetup(end-1:end, :), 'Mean Objective Value', 'Objective Value');
+% plotStats(means_t_opt(end-1:end), ci_lower_t_opt(end-1:end), ci_upper_t_opt(end-1:end), time_vector_t_opt(end-1:end), simulationSetup(end-1:end, :), 'Mean Optimisation Time', 'Optimisation Time');
