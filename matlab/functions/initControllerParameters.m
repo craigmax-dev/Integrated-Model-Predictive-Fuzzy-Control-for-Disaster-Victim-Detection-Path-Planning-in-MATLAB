@@ -47,8 +47,10 @@ end
 
 function [A, b, lb, ub, intCon] = defineConstraintsForMPFCOutput(ini_params)
     % Constraints ensuring that output parameters allow for some rules to be always applicable
-    lb = zeros(size(ini_params)); % Assuming all parameters have a lower bound of 0
-    ub = repmat(100, size(ini_params)); % Adjust upper bound to ensure parameters stay within a range that allows rule firing
+    % lb = repmat(-1, size(ini_params)); % Assume lower bound of -1
+    % ub = repmat(1, size(ini_params)); % Assume upper bound of 1
+    lb = -1 * ones(size(ini_params)); % Assume lower bound of -1
+    ub = ones(size(ini_params)); % Assume upper bound of 1    
     A = []; b = []; % Additional constraints can be added here if needed
     intCon = []; % No integer constraints in MPFC for output parameters
 end
@@ -56,10 +58,10 @@ end
 function [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture)
     switch architecture
         case 'mpc'
-            options_firstEval = optimoptions(solver, 'Display', 'iter', 'PopulationSize', 50, 'MaxGenerations', 100, 'UseParallel', true);
+            options_firstEval = optimoptions(solver, 'UseParallel', false, 'PopulationSize', 100, 'MaxGenerations', 100, 'UseParallel', true);
             options_subsequentEval = options_firstEval; % Same options for simplicity
         case 'mpfc'
-            options_firstEval = optimoptions(solver, 'Display', 'iter', 'MaxFunEvals', 100, 'MeshTolerance', 1e-3, 'StepTolerance', 1e-3);
+            options_firstEval = optimoptions(solver, 'MaxFunEvals', 100, 'MeshTolerance', 1e-3, 'StepTolerance', 1e-3);
             options_subsequentEval = options_firstEval; % Same options for simplicity
         otherwise
             options_firstEval = optimoptions('fmincon'); % Default options, won't be used

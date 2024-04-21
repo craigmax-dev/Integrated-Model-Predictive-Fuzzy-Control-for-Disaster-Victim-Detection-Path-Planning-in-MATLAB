@@ -13,9 +13,6 @@
 % NOTES
 % Current implementation will not work for multiple prediction steps (which could be beneficial for MPC)
 
-% TO DO
-% - check and fix environment model
-
 % % V2.3
 function s_obj_pred = mpc_prediction(params, agent_model, config, mpc_environment_model, fisArray, mpc_model, agentIndex)
 
@@ -41,22 +38,19 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, mpc_environmen
           % For centralised or if agentIndex is not provided, update parameters globally
           [fisArray, agent_model] = updateModel(mpc_model, fisArray, agent_model, params);
       end
-
       k_mpc = k_mpc + 1;
 
     end
 
     %% FIS Path planning
-    if ~strcmp(mpc_model.architecture, 'mpc')
-      if k_c*config.dk_c <= k_pred
-        [agent_model] = model_fis(agent_model, mpc_environment_model.ang_w, mpc_environment_model.v_w, config, fisArray);
-        k_c = k_c + 1;
-      end
+    if strcmp(mpc_model.architecture, 'mpfc') && (k_c*config.dk_c <= k_pred)
+      [agent_model] = model_fis(agent_model, mpc_environment_model.ang_w, mpc_environment_model.v_w, config, fisArray);
+      k_c = k_c + 1;
     end
 
     %% Agent model
     if k_a*config.dk_a <= k_pred
-          agent_model = model_agent(agent_model, mpc_environment_model.v_w, mpc_environment_model.ang_w, mpc_environment_model.m_f_series(:, :, k_e + 1), mpc_environment_model.m_dw_e_series(:, :, k_e + 1), config);
+      agent_model = model_agent(agent_model, mpc_environment_model.v_w, mpc_environment_model.ang_w, mpc_environment_model.m_f_series(:, :, k_e + 1), mpc_environment_model.m_dw_e_series(:, :, k_e + 1), config);
       k_a = k_a + 1;
     end
 
@@ -71,10 +65,18 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, mpc_environmen
     %   config.weight, mpc_environment_model.m_f(k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
     %   config.dt_s, config.s_obj, config.c_f_s, config.t);
 
-    % V2 REFACTOR
-    [s_obj_pred, ~] = calc_obj_v2(...
-      config.weight, mpc_environment_model.m_f_series(:, :, k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+    % % V2 REFACTOR
+    % [s_obj_pred, ~] = calc_obj_v2(...
+    %   config.weight, mpc_environment_model.m_f_series(:, :, k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
+    %   config.dt_s, config.s_obj, config.c_f_s);
+
+    % V3 REFACTOR
+    [s_obj_pred, ~] = calc_obj_v3(...
+      config.weight, mpc_environment_model.m_dw_e_series(:, :, k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
       config.dt_s, config.s_obj, config.c_f_s);
+
+    % % MIRKO OBJECTIVE
+    % [s_obj_pred, ~] = calc_obj_mirko(agent_model, fisArray, mpc_environment_model.v_w, mpc_environment_model.ang_w, config);     
 
     %% Advance timestep
     k_pred = k_pred + 1;

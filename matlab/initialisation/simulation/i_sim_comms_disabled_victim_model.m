@@ -43,10 +43,10 @@ flag_finish    = false;
 
 % Define agent objectives
 weight = struct();
-weight.dw = 0.1;      % Weight for victims
-weight.fire = 0.1;      % Weight for victims
+weight.dw = 1;      % Weight for victims
+weight.fire = 1;      % Weight for victims
 weight.first_scan = 1;   % Weight for the first-time scan. WARNING: IF 0, AGENT BEHAVIOUR COMPROMISED (will re-scan starting cells continuously)
-weight.repeat_scan = 0.001;  % Weight for repeat scans
+weight.repeat_scan = 1;  % Weight for repeat scans
 sigma = 0.01; % we assume that due to the dynamics of the environment the scan certainty state reduces by a fixed ratio per global simulation time step
 
 % Activate/deactivate victim model in calculation of priority
