@@ -7,7 +7,7 @@ function mpc_model = i_arch_mpfc_output_prediction_decentralised(fisArray, agent
     optimization_target = 'output'; % or 'input'
 
     % Initial parameter and constraints setup
-    [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target);
+    [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initSupervisoryController(architecture, structure, fisArray, agent_model, optimization_target);
 
     % Structuring mpc_model
     mpc_model = struct('architecture', architecture, 'structure', structure, 'solver', solver, 'intCon', intCon, ...

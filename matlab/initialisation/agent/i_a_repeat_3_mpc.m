@@ -42,6 +42,7 @@ function agent_model = i_a_repeat_3_mpc(environment_model, config)
   m_prior      = zeros(n_x_s, n_y_s);        % Priority map
   m_scan_hist = zeros(n_x_s, n_y_s);  
   m_t_scan    = t_scan_c.*ones(n_x_s, n_y_s); % Scan time map (s) - time to scan each cell
+  sensor_accuracy = 0.9; % [0 1]
 
   % a_loc_hist    = [];
   % for a = 1:n_a
