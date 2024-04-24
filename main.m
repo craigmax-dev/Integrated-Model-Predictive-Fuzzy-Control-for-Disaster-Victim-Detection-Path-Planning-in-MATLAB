@@ -25,6 +25,7 @@
 % - Writeup: Simulation results
 % - Writeup: Description of modelling decisions: timesteps, 
 % - Bugfix: fix bounds setting on MPC/MPFC initialisation (lb/ub)
+% - Change parallel coordinate plot - add names of inputs or theta notation
 
 %% SIMULATION CASES
 % - Centralised vs Decentralised MPC & MPFC controller architecture comparison
@@ -36,8 +37,8 @@
 %% RESULTS
 
 % Clear workspace 
-clear all  
-close all
+% clear all  
+% close all
  
 %% Set up folder paths
 addpath('data', ...
@@ -107,45 +108,44 @@ h_arch_mpc_prediction_decentralised = @(fisArray, agent_model)i_arch_mpc_predict
 % % DONE - REVIEW WHAT TO DO WITH THIS
 % % % Two agents
 % % simulationSetup = {
-% %   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS 2";
+% %   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
 % %   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC Centralised";
-% %   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC 2";
+% %   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC";
 % % };   
 
 % % Done: Two agents dynamic
 % simulationSetup = { 
-%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
 %   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
-%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC";
 % };  
 
 % DONE: Two agents dynamic - cell_fire_proximity vs m_dw FIS input
 % simulationSetup = { 
 %   "sim_mpfc_centralised_mod", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mod, h_arch_mpfc_output_prediction, "MPFC Centralised Downwind Input";
-%   "sim_fis_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
 %   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised Mirko Inputs";
-%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC";
 % };  
 
 % Three agents
-% TODO: update FIS with new inputs
-% simulationSetup = {
-%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_fis, "FIS 3";
-%   "sim_mfpc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3, h_init_fis_2, h_arch_mpfc_output_prediction, "MPFC 3";
-%   "sim_mfc", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_3_mpc, h_init_fis_2, h_arch_mpc_prediction, "MPC 3";
-%   };  
-
-% DONE: Four agents    
 % simulationSetup = { 
-%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
-%   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
-%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_exact, "MPC 2";
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_3, h_init_fis_mirko_4, h_arch_fis, "FIS";
+%   "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
+%   "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_3_mpc, h_init_fis_mirko_4, h_arch_mpc_exact, "MPC";
 % };  
 
-% Four agents decentralised
+% DONE: Four agents    
 simulationSetup = { 
-  "sim_mpfc_decentralised", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
+  "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "FIS";
+  "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
+  "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_exact, "MPC";
 };  
+
+% Four agents decentralised - DONE
+% simulationSetup = { 
+%   "sim_mpfc_decentralised", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
+% };  
 
 % ------------------
 
@@ -154,9 +154,9 @@ simulationSetup = {
 % DONE - ALL PARAMETERS NOT SAVED
 
 % simulationSetup = { 
-%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_fis_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
   % "sim_mpfc_centralised_mirko", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised Mirko Inputs";
-  % "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC 2";
+  % "sim_mfc", h_s_comms_disabled_victim_model_5000, h_e_dynamic_large, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "MPC";
 % };  
 
 % ------------------
@@ -165,7 +165,7 @@ simulationSetup = {
 % SIMULATION X: PREDICTION MODES COMPARISON
 
 % simulationSetup = {
-%   "sim_fis", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS 2";
+%   "sim_fis", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
 %   "sim_mfpc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC PREDICTION";
 %   "sim_mfpc", h_s_comms_disabled_victim_model_5000, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "MPFC EXACT";
 % }; 
@@ -211,25 +211,13 @@ simulationSetup = {
 % % Decentralised vs centralised structures for MPFC
 % simulationSetup = {
 %   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "FIS";
-%   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
 %   "sim_mpfc_decentralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "MPFC Decentralised";
+%   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "MPFC Centralised";
 %   }; 
-
-% NOTE: Extremely time-intensive (current setup for MPC? Check if still present in current simulations.)
-% % Decentralised vs centralised structures for MPC
-% simulationSetup = {
-%   "sim_fis", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2, h_init_fis_2, h_arch_fis, "FIS";
-%   "sim_mpfc_centralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_output_prediction, "MPC Centralised";
-%   "sim_mpfc_decentralised", h_s_comms_disabled_victim_model, h_e_dynamic, h_a_repeat_2_mpc, h_init_fis_2, h_arch_mpc_output_prediction_decentralised, "MPC Decentralised";
-%   };  
 % ------------------
 
 % ------------------
-% SIMULATION X:    
-% ------------------
-
-% ------------------
-% SIMULATION X:  
+% SIMULATION X:  FIS Input Parameters
 % ------------------
 
 % Compare FIS input parameters
@@ -250,7 +238,7 @@ seeds = randi(10000, numIterations, 1);
 % Initialize a structure to store results from all setups 
 data = struct();
 
-% Iterate over each simulation setup
+%% Iterate over each simulation setup
 for simSetup = 1:size(simulationSetup, 1)
     
   simulationName = simulationSetup{simSetup, 1};

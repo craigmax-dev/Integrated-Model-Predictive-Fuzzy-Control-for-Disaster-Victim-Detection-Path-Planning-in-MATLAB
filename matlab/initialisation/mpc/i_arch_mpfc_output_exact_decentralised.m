@@ -3,17 +3,17 @@ function mpc_model = i_arch_mpfc_output_exact_decentralised(fisArray, agent_mode
   % Architecture setup
   architecture = 'mpfc'; % Options: mpc, mpfc, fis
   structure = 'decentralised'; % Options: centralised, decentralised, clustered (TBC)
-  prediction_model = 'deterministic_exact'; % Prediction model setup
+  prediction_mode = 'deterministic_exact'; % Prediction model setup
   optimization_target = 'output'; % or 'input'
 
   % Initial parameter and constraints setup
-  [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target);
+  [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, structure, fisArray, agent_model, optimization_target);
 
   % Structuring mpc_model
   mpc_model = struct('architecture', architecture, 'structure', structure, 'solver', solver, 'intCon', intCon, ...
                      'options_firstEval', options_firstEval, 'options_subsequentEval', options_subsequentEval, ...
                      'n_p', 1, 'ini_params', ini_params, 'A', A, 'b', b, 'Aeq', [], 'beq', [], ...
-                     'lb', lb, 'ub', ub, 'nonlcon', [], 'nvars', numel(ini_params), 'prediction_model', prediction_model, ...
+                     'lb', lb, 'ub', ub, 'nonlcon', [], 'nvars', numel(ini_params), 'prediction_model', prediction_mode, ...
                      'mpc_tuning_parameters', 'input', 'optimizationTimes', [], 'optimization_target', optimization_target);
 end
 

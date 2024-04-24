@@ -1,6 +1,4 @@
-% TO DO: rename initControllerParameters -> initSupervisoryController
-
-function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initControllerParameters(architecture, fisArray, agent_model, optimization_target)
+function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, lb, ub, intCon] = initSupervisoryController(architecture, structure, fisArray, agent_model, optimization_target)
     % Initialization depending on architecture
     switch architecture
         case 'mpc'
@@ -26,7 +24,7 @@ function [ini_params, solver, options_firstEval, options_subsequentEval, A, b, l
     end
     
     % Set optimization options
-    [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture);
+     [options_firstEval, options_subsequentEval] = setOptimizationOptions(architecture, agent_model.n_a, solver, structure);
 end
 
 
@@ -55,13 +53,22 @@ function [A, b, lb, ub, intCon] = defineConstraintsForMPFCOutput(ini_params)
     intCon = []; % No integer constraints in MPFC for output parameters
 end
 
-function [options_firstEval, options_subsequentEval] = setOptimizationOptions(solver, architecture)
+function [options_firstEval, options_subsequentEval] = setOptimizationOptions(architecture, n_a, solver, structure)
+
+    if strcmp(structure, 'decentralised')
+      maxFunEvals = ceil(100 / n_a);
+      maxGenerations = ceil(100 / n_a);
+    else
+      maxFunEvals = 100;
+      maxGenerations = 100;
+    end
+
     switch architecture
         case 'mpc'
-            options_firstEval = optimoptions(solver, 'UseParallel', false, 'PopulationSize', 100, 'MaxGenerations', 100, 'UseParallel', true);
+            options_firstEval = optimoptions(solver, 'UseParallel', false, 'PopulationSize', 100, 'MaxGenerations', maxGenerations);
             options_subsequentEval = options_firstEval; % Same options for simplicity
         case 'mpfc'
-            options_firstEval = optimoptions(solver, 'MaxFunEvals', 100, 'MeshTolerance', 1e-3, 'StepTolerance', 1e-3);
+            options_firstEval = optimoptions(solver, 'MaxFunEvals', maxFunEvals, 'MeshTolerance', 1e-3, 'StepTolerance', 1e-3);
             options_subsequentEval = options_firstEval; % Same options for simplicity
         otherwise
             options_firstEval = optimoptions('fmincon'); % Default options, won't be used
