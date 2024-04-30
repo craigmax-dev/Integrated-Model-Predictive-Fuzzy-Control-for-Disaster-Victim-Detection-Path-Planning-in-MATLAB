@@ -60,23 +60,11 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, mpc_environmen
     end
 
     %% Objective function evaluation
-    % % V1
-    % [s_obj_pred, ~] = calc_obj(...
-    %   config.weight, mpc_environment_model.m_f(k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
-    %   config.dt_s, config.s_obj, config.c_f_s, config.t);
-
-    % % V2 REFACTOR
-    % [s_obj_pred, ~] = calc_obj_v2(...
-    %   config.weight, mpc_environment_model.m_f_series(:, :, k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
-    %   config.dt_s, config.s_obj, config.c_f_s);
 
     % V3 REFACTOR
-    [s_obj_pred, ~] = calc_obj_v3(...
+    [s_obj_pred, ~] = calc_obj_v4(...
       config.weight, mpc_environment_model.m_dw_e_series(:, :, k_e + 1), agent_model.m_bo_s, agent_model.m_scan, agent_model.m_victim_s, ...
       config.dt_s, config.s_obj, config.c_f_s);
-
-    % % MIRKO OBJECTIVE
-    % [s_obj_pred, ~] = calc_obj_mirko(agent_model, fisArray, mpc_environment_model.v_w, mpc_environment_model.ang_w, config);     
 
     %% Advance timestep
     k_pred = k_pred + 1;
