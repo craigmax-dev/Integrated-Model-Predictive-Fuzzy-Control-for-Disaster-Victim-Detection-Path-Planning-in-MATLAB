@@ -44,7 +44,11 @@ function s_obj_pred = mpc_prediction(params, agent_model, config, mpc_environmen
 
     %% FIS Path planning
     if strcmp(mpc_model.architecture, 'mpfc') && (k_c*config.dk_c <= k_pred)
-      [agent_model] = model_fis(agent_model, mpc_environment_model.ang_w, mpc_environment_model.v_w, config, fisArray);
+      if isfield(config, 'flag_local_maps') && config.flag_local_maps
+        [agent_model] = model_fis_local(agent_model, mpc_environment_model.ang_w, mpc_environment_model.v_w, config, fisArray);
+      else
+        [agent_model] = model_fis_global(agent_model, mpc_environment_model.ang_w, mpc_environment_model.v_w, config, fisArray);
+      end      
       k_c = k_c + 1;
     end
 

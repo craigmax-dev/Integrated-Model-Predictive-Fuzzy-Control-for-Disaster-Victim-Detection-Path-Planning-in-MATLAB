@@ -39,12 +39,4 @@ function brownNoiseMatrix = generateBrownNoiseMatrix(rows, cols, fluctuation, se
     % Normalize the matrix to have values between 0 and 1
     brownNoiseMatrix = (brownNoiseMatrix - min(brownNoiseMatrix(:))) / (max(brownNoiseMatrix(:)) - min(brownNoiseMatrix(:)));
 
-    % Plot the matrix
-    imagesc(brownNoiseMatrix);
-    colormap('hot');
-    colorbar;
-    title('2D Brown Noise Matrix');
-    xlabel('Columns');
-    ylabel('Rows');
 end
-

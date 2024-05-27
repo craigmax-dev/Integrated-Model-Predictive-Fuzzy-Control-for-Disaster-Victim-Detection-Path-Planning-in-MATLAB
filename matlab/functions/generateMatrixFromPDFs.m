@@ -42,9 +42,6 @@ function matrix = generateMatrixFromPDFs(dims, pdfs, weights, seed)
         % Evaluate the PDF at each point
         pdfVals = pdf(X, Y);
 
-        % Debug: Check the range of pdfVals
-        disp(['PDF ', num2str(i), ' min and max values: ', num2str(min(pdfVals(:))), ', ', num2str(max(pdfVals(:)))]);
-
         % Handle constant PDFs
         if max(pdfVals(:)) == min(pdfVals(:))
             pdfVals = ones(size(pdfVals));
@@ -65,18 +62,7 @@ function matrix = generateMatrixFromPDFs(dims, pdfs, weights, seed)
         matrix = (matrix - min(matrix(:))) / (max(matrix(:)) - min(matrix(:)));
     end
 
-    % Debug: Check final matrix range and for NaN values
-    disp(['Final matrix min and max values: ', num2str(min(matrix(:))), ', ', num2str(max(matrix(:)))]);
-    if any(isnan(matrix(:)))
-        disp('NaN values detected in the final matrix.');
-    end
     
-    % Plot the matrix
-    imagesc(matrix);
-    colormap('jet'); % Using 'jet' for more color contrast
-    colorbar;
-    title('2D Matrix from Combined PDFs');
-    xlabel('Columns');
-    ylabel('Rows');
 end
+
 
