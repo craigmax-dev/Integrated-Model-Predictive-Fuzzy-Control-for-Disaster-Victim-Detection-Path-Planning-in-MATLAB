@@ -2,10 +2,11 @@
 % Initialise agent model
 
 % V2
-function agent_model = i_a_repeat_2(environment_model, config)
+function agent_model = i_a_repeat_2_low_battery(environment_model, config)
   
   % Search map building occupancy
   m_bo_s = func_coarsen(environment_model.m_bo, config.c_f_s); 
+  m_bo_s(1,1) = 0;  % Recharge station
   m_dw_s = func_coarsen(environment_model.m_dw_e, config.c_f_s); 
   m_f_s = func_coarsen(environment_model.m_f, config.c_f_s); 
   
@@ -23,7 +24,8 @@ function agent_model = i_a_repeat_2(environment_model, config)
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  a_battery_level_i = [4e4; 4e4]; % Fully charged battery level (s)
+  m_recharge(1,1) = 1;
+  a_battery_level_i = [1000; 1000]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   t_recharge = 100;
   
@@ -31,6 +33,7 @@ function agent_model = i_a_repeat_2(environment_model, config)
   n_a           = 2;                % Number of UAVs in simulation
   v_as          = 5;               % UAV airspeed (m/s)
   a_t_trav      = zeros(n_a, 1);    % Time left to complete travel
+  a_t_recharge      = zeros(n_a, 1);    % Time left to complete recharge
   t_scan_m      = 0.01;             % Scan time per square metre (s)
   a_task        = 2.*ones(n_a, 1);  % Current task for UAVs
   a_loc         = [ 1, 1;   
@@ -66,7 +69,7 @@ function agent_model = i_a_repeat_2(environment_model, config)
  
   % Create agent structure with all parameters
   agent_model = struct('n_x_s', n_x_s, 'n_y_s', n_y_s, 'l_x_s', l_x_s, 'l_y_s', l_y_s, ...
-                       'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, ...
+                       'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, 'a_t_recharge', a_t_recharge, ...
                        't_scan_m', t_scan_m, 't_scan_c', t_scan_c, 't_recharge', t_recharge, 'a_battery_level_i', a_battery_level_i, 'a_battery_level', a_battery_level, 'a_task', a_task, ... 
                        'a_loc', a_loc, 'a_loc_hist', a_loc_hist, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
                        'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, ...

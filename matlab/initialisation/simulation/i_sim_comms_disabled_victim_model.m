@@ -1,5 +1,8 @@
 % V2
 
+% TODO: review weights and check necessary
+% TODO: add flag for recharge model
+
 function config = i_sim_comms_disabled_victim_model()
 
 %% Simulation Settings

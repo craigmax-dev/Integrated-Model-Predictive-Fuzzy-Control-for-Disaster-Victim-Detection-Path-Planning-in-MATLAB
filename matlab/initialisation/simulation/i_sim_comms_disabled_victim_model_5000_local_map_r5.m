@@ -1,6 +1,6 @@
 % V2
 
-function config = i_sim_comms_disabled_victim_model_5000()
+function config = i_sim_comms_disabled_victim_model_5000_local_map_r5()
 
 %% Simulation Settings
 
@@ -38,7 +38,7 @@ k_mpc   = 0;        % MPC counter
 k_prog  = 0;        % Prog report counter
 
 % Simulation end condition - "time" or "s can"
-endCondition  = "time";  
+endCondition  = "time"; 
 flag_finish    = false;
 
 % Define agent objectives
@@ -53,6 +53,10 @@ sigma = 0.01; % we assume that due to the dynamics of the environment the scan c
 % This influences the assignment of cells to agents
 flag_communication_model = false;
 
+% Enable/Disable local maps
+flag_local_maps = true;
+r_local_maps = 5;
+
 % Activate/deactivate discrete victim locations
 % This influences the priority and objective calculations
 flag_victim_model = true; 
@@ -64,6 +68,6 @@ s_obj         = 0;
 config = struct('flag_save', flag_save, 'save_dir', save_dir, ...
   't', t, 't_f', t_f, 'c_f_s', c_f_s, 'dt_s', dt_s, 'dk_a', dk_a, 'dk_c', dk_c, 'dk_e', dk_e, 'dk_mpc', dk_mpc, 'dk_pred', dk_pred, 'dk_prog', dk_prog, 'dt_a', dt_a, 'dt_c', dt_c, 'dt_e', dt_e, 'dt_mpc', dt_mpc, ...
   'k', k, 'k_a', k_a, 'k_c', k_c, 'k_e', k_e, 'k_mpc', k_mpc, 'k_prog', k_prog, 'endCondition', endCondition, 'flag_finish', flag_finish, ...
-  'obj', obj, 's_obj', s_obj, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model, 'sigma', sigma);
+  'obj', obj, 's_obj', s_obj, 'weight', weight, 'flag_communication_model', flag_communication_model, 'flag_victim_model', flag_victim_model, 'flag_local_maps', flag_local_maps, 'sigma', sigma, 'r_local_maps', r_local_maps);
 
 end
