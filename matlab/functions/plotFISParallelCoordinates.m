@@ -1,45 +1,95 @@
-function plotFISParallelCoordinates(fis)
-    % Total number of membership functions across all outputs
-    totalMFs = sum(arrayfun(@(out) numel(out.MembershipFunctions), fis.Outputs));
+function plotFISParallelCoordinates(fisArray)
+    % Number of FIS provided
+    numFIS = numel(fisArray);
 
+    % Determine the number of outputs and membership functions (assuming all FIS have the same structure)
+    numOutputs = numel(fisArray(1).Outputs);
+    numMFs = numel(fisArray(1).Outputs(1).MembershipFunctions);
+    
     % Create a figure
     figure;
-    sgtitle('Parallel Coordinates Plot for Each Output Membership Function');
+    sgtitle('FIS Output MF Parameters', 'Interpreter', 'latex');
+    colors = lines(numFIS);  % Get distinct colors for each FIS
 
-    % Counter for subplots
-    mfCounter = 1;
+    % Loop over each membership function index
+    for mfIndex = 1:numMFs
+        subplot(numMFs, 1, mfIndex);
+        hold on;
 
-    % Loop over each output
-    for i = 1:numel(fis.Outputs)
-        % Loop over each membership function in the current output
-        for j = 1:numel(fis.Outputs(i).MembershipFunctions)
-            subplot(totalMFs, 1, mfCounter);
-            hold on;
+        % Plot each FIS's parameters for this MF
+        for f = 1:numFIS
+            fis = fisArray(f);
+            for i = 1:numOutputs
+                mf = fis.Outputs(i).MembershipFunctions(mfIndex);
+                paramsMatrix = mf.Parameters;
 
-            % Get the membership function
-            mf = fis.Outputs(i).MembershipFunctions(j);
-            paramsMatrix = mf.Parameters;
+                % Prepare labels for parameters using the input names and LaTeX
+                labels = arrayfun(@(n) strcat('$', strrep(fisArray(1).Inputs(n).Name, '_', '\_'), '$'), 1:length(mf.Parameters)-1, 'UniformOutput', false);
+                labels{end+1} = '$c$';  % Label for constant term
 
-            % Prepare labels for parameters
-            paramCount = numel(mf.Parameters);
-            labels = arrayfun(@(n) sprintf('Param %d', n), 1:paramCount, 'UniformOutput', false);
+                % Convert labels to cell array of character vectors
+                labels = cellstr(labels);  % This should ensure the correct format for parallelcoords
 
-            % Plot the parameters of the membership function
-            parallelcoords(paramsMatrix, 'Labels', labels, 'Marker', 'o');
-
-            % Customize subplot
-            title(sprintf('Output %s - MF "%s"', fis.Outputs(i).Name, mf.Name));
-            xlabel('Parameters');
-            ylabel('Parameter Value');
-            grid on;
-
-            hold off;
-
-            % Increment the membership function counter
-            mfCounter = mfCounter + 1;
+                parallelcoords(paramsMatrix, 'Labels', labels, 'Color', colors(f,:), 'Marker', 'o', 'DisplayName', sprintf('FIS %d', f));
+            end
         end
+
+        % Customize subplot for this MF
+        title(sprintf('MF "%s"', fisArray(1).Outputs(1).MembershipFunctions(mfIndex).Name), 'Interpreter', 'latex');
+        xlabel('Parameter Index', 'Interpreter', 'latex');
+        ylabel('Value', 'Interpreter', 'latex');
+        grid on;
+        legend show;
+
+        hold off;
     end
 
     % Adjust layout to prevent overlapping of titles and labels
     set(gcf, 'Name', 'FIS Output MF Parameters', 'NumberTitle', 'off');
 end
+
+% function plotFISParallelCoordinates(fis)
+%     % Total number of membership functions across all outputs
+%     totalMFs = sum(arrayfun(@(out) numel(out.MembershipFunctions), fis.Outputs));
+% 
+%     % Create a figure
+%     figure;
+%     sgtitle('Parallel Coordinates Plot for Each Output Membership Function');
+% 
+%     % Counter for subplots
+%     mfCounter = 1;
+% 
+%     % Loop over each output
+%     for i = 1:numel(fis.Outputs)
+%         % Loop over each membership function in the current output
+%         for j = 1:numel(fis.Outputs(i).MembershipFunctions)
+%             subplot(totalMFs, 1, mfCounter);
+%             hold on;
+% 
+%             % Get the membership function
+%             mf = fis.Outputs(i).MembershipFunctions(j);
+%             paramsMatrix = mf.Parameters;
+% 
+%             % Prepare labels for parameters
+%             paramCount = numel(mf.Parameters);
+%             labels = arrayfun(@(n) sprintf('Param %d', n), 1:paramCount, 'UniformOutput', false);
+% 
+%             % Plot the parameters of the membership function
+%             parallelcoords(paramsMatrix, 'Labels', labels, 'Marker', 'o');
+% 
+%             % Customize subplot
+%             title(sprintf('Output %s - MF "%s"', fis.Outputs(i).Name, mf.Name));
+%             xlabel('Parameters');
+%             ylabel('Parameter Value');
+%             grid on;
+% 
+%             hold off;
+% 
+%             % Increment the membership function counter
+%             mfCounter = mfCounter + 1;
+%         end
+%     end
+% 
+%     % Adjust layout to prevent overlapping of titles and labels
+%     set(gcf, 'Name', 'FIS Output MF Parameters', 'NumberTitle', 'off');
+% end

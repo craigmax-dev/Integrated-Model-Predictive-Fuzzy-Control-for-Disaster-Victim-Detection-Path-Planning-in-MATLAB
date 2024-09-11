@@ -110,8 +110,6 @@ function combinations = allComb(numMFsEachInput)
     combinations = combinations(:, end:-1:1); % Correct order to match input sequence
 end
 
-
-
 % % V2
 % function ruleList = generateRules(fis, inputPreferences)
 %     numInputs = numel(fis.Inputs);

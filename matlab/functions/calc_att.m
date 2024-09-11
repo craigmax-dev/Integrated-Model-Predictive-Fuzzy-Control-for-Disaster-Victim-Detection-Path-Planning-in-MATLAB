@@ -3,6 +3,8 @@
 
 % V2
 
+% WRITEUP
+
 % CHANGELOG
 % removed valid_cells calculation for now
 % Fixed bug with m_dw changing dimensions

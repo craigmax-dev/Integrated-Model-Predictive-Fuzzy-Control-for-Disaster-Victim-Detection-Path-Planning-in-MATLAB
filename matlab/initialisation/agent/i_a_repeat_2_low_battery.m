@@ -24,8 +24,8 @@ function agent_model = i_a_repeat_2_low_battery(environment_model, config)
 
   % Battery parameters
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
-  m_recharge(1,1) = 1;
-  a_battery_level_i = [1000; 1000]; % Fully charged battery level (s)
+  % m_recharge(1,1) = 1;
+  a_battery_level_i = [25000; 100000]; % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
   t_recharge = 100;
   

@@ -171,3 +171,32 @@ function m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w,
 
     m_dw_e = 1 - m_dw_e;  % Invert the downwind effect
 end
+
+% V2.2 - performance improvements
+function W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, c_wm_d, ang_w, v_w)
+    % Create grid for wind influence
+    [X, Y] = meshgrid(-r_w:r_w, -r_w:r_w);
+
+    % Calculate angle difference between wind direction and cell direction
+    F_d = atan2(Y, X);
+    ang_diff = ang_w - F_d;
+
+    % Calculate wind direction modifier using vectorized operations
+    w_dir = exp(v_w * (c_wm_1 + c_wm_2 * (cos(ang_diff) - 1)));
+
+    % Calculate wind distance modifier using vectorized operations
+    distances = sqrt(X.^2 + Y.^2);
+    w_dis = c_wm_d .^ distances;
+
+    % Combine direction and distance modifiers
+    W = w_dir .* w_dis;
+end
+
+function [W_dir_ws, W_dis_ws] = calculateLocalWindMap(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2)
+    [X, Y] = meshgrid(1:n_x_e, 1:n_y_e);
+    f_d = atan2(Y - i, X - j);
+    ang = ang_w - f_d;
+    W_dir_ws = exp(v_w * (c_wm_1 + c_wm_2 * (cos(ang) - 1)));
+    W_dis_ws = 1 - sqrt((X - i).^2 + (Y - j).^2) / sqrt(n_x_e^2 + n_y_e^2);
+    W_dir_ws = mat2gray(W_dir_ws);  % Normalize wind direction influence
+end

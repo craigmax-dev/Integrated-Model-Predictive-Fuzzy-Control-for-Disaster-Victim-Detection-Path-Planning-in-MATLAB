@@ -2,11 +2,11 @@
 % Initialise environment model
 
 % V2
-function environment_model = i_env_basic_no_dynamics(config)
+function environment_model = i_env_dynamics_80(config)
   
   % Environment map dimensions
-  n_x_e       = 40;
-  n_y_e       = 40;
+  n_x_e       = 80;
+  n_y_e       = 80;
 
   % Create a matrix of ones to represent an even distribution of buildings
   m_bo = 0.5 .* ones(n_x_e, n_y_e);
@@ -33,6 +33,7 @@ function environment_model = i_env_basic_no_dynamics(config)
 
   % Initialise fire map
   m_f       = m_s;
+  m_f(20:22, 20:22) = 3;
   
   % Initialise burntime map
   m_bt        = zeros(n_x_e,n_y_e);
@@ -65,9 +66,7 @@ function environment_model = i_env_basic_no_dynamics(config)
   'c_fs_1', c_fs_1, 'c_fs_2', c_fs_2, 'v_w', v_w, 'ang_w', ang_w, 't_i', t_i, 't_b', t_b, 'r_w', r_w, ...
   'c_wm_1', c_wm_1, 'c_wm_2', c_wm_2, 'c_wm_d', c_wm_d, 'm_f_series', m_f_series, 'm_dw_e_series', m_dw_e_series);
 
-
   %  Initialise fire maps
   environment_model = model_environment(environment_model, config.k_e, config.dt_e);
 
 end
-

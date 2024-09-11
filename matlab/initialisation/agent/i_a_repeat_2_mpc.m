@@ -50,7 +50,7 @@ function agent_model = i_a_repeat_2_mpc(environment_model, config)
   end  
 
   % Agent targets
-  n_q             = calculateMinimumQueueLength(t_scan_c, l_x_s, v_as, environment_model.v_w, config);
+  n_q             = calculateMinimumQueueLength(t_scan_c, l_x_s, v_as, environment_model.v_w, config)+10
   a_target        = ones(n_a, 2, n_q);
   a_target(:,:,1) = a_loc;
   

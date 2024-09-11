@@ -52,16 +52,16 @@ function agent_model = model_fis_global(agent_model, ang_w, v_w, config, fisArra
                 switch inputName
                     case 't_response'
                         fisInputs.t_response = m_t_response(:,:,a);
-                    case 'priority_combined'
-                        agent_model.m_prior = calc_prior_combined(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, agent_model.m_victim_s, config.flag_victim_model);
-                        fisInputs.priority = agent_model.m_prior;
-                    case 'priority_first_scan'
-                        % NOTE: Not updated for local prediction
-                        fisInputs.priority_first_scan = calc_prior_first_scan(agent_model.m_bo_s, agent_model.m_scan);
+                    % case 'priority_combined'
+                    %     agent_model.m_prior = calc_prior_combined(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, agent_model.m_victim_s, config.flag_victim_model);
+                    %     fisInputs.priority = agent_model.m_prior;
+                    % case 'priority_first_scan'
+                    %     % NOTE: Not updated for local prediction
+                    %     fisInputs.priority_first_scan = calc_prior_first_scan(agent_model.m_bo_s, agent_model.m_scan);
                     case 'priority_dw'
                         fisInputs.priority_dw = agent_model.m_dw_s;
-                    case 'r_nextagent'
-                        fisInputs.r_nextagent = distanceMatrix{a};
+                    % case 'r_nextagent'
+                    %     fisInputs.r_nextagent = distanceMatrix{a};
                     case 'cell_priority'
                         fisInputs.cell_priority = agent_model.m_bo_s;
                     case 'cell_scan_certainty'

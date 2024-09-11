@@ -2,11 +2,11 @@
 % Initialise environment model
 
 % V2
-function environment_model = i_env_basic_dynamics(config)
+function environment_model = i_env_dynamics_60(config)
   
   % Environment map dimensions
-  n_x_e       = 40;
-  n_y_e       = 40;
+  n_x_e       = 60;
+  n_y_e       = 60;
 
   % Create a matrix of ones to represent an even distribution of buildings
   m_bo = 0.5 .* ones(n_x_e, n_y_e);
@@ -33,7 +33,7 @@ function environment_model = i_env_basic_dynamics(config)
 
   % Initialise fire map
   m_f       = m_s;
-  m_f(10, 10) = 3;
+  m_f(20:22, 20:22) = 3;
   
   % Initialise burntime map
   m_bt        = zeros(n_x_e,n_y_e);
