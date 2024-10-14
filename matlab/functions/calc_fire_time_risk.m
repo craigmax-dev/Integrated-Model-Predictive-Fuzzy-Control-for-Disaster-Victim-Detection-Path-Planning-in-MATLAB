@@ -2,7 +2,7 @@
 
 function t_fire = calc_fire_time_risk(m_f, v_w)
     [n_rows, n_cols] = size(m_f);
-    % Initialize with 1000 to signify cells not yet affected by fire.
+    % Initialize with 100 to signify cells not yet affected by fire.
     % Must be within range of input fuzzy MF
     t_fire = 100 * ones(n_rows, n_cols); 
   

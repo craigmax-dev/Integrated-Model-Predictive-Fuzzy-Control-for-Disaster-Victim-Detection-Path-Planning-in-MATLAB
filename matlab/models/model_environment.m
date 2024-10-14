@@ -1,8 +1,7 @@
 %% Function environmentModel.m
 % Description:  Fire state model for the disaster area. Based on article by
 % Ohgai, Gohnai, and Watanabe: "Cellular automata modeling of fire spread in
-% built-up areas—A tool to aid community-based
-% planning for disaster mitigation"
+% built-up areas—A tool to aid community-based planning for disaster mitigation"
 
 % Inputs:   environment_model.m_f - fire map - tracks states of fire in each cell. 
 %               cell states:
@@ -24,7 +23,7 @@
 %           b - Coefficient to tune range and direction of spread
 %           c_f - coarsen factor
 % Author:   Craig Maxwell
-% Date:     28/02/2020
+% Date:     11/09/2024
 
 %% Model notes
 % Fire in cell burns for fixed time t_burn
@@ -69,7 +68,7 @@ function [environment_model] = model_environment(environment_model, k_e, dt_e)
         environment_model.m_f = applyFireSpread(environment_model.m_f, F);
         
         % Calculate downwind map based on the new fire map
-        environment_model.m_dw_e = calculateDownwindMap(environment_model.m_f, environment_model.n_x_e, environment_model.n_y_e, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.ang_w, environment_model.v_w);
+        environment_model.m_dw_e = calc_downwindMap(environment_model.m_f, environment_model.n_x_e, environment_model.n_y_e, environment_model.c_wm_1, environment_model.c_wm_2, environment_model.ang_w, environment_model.v_w);
 
         % Store the updated states in the series at the adjusted MATLAB index
         environment_model.m_f_series(:, :, i) = environment_model.m_f;
@@ -155,7 +154,7 @@ function m_f = applyFireSpread(m_f, F)
     end
 end
 
-function m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w, v_w)
+function m_dw_e = calc_downwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w, v_w)
 
     % Initialize m_dw_e with zeros
     m_dw_e = zeros(n_x_e, n_y_e);
@@ -163,8 +162,8 @@ function m_dw_e = calculateDownwindMap(m_f, n_x_e, n_y_e, c_wm_1, c_wm_2, ang_w,
     for i = 1:n_x_e
         for j = 1:n_y_e
             if m_f(i, j) == 2 || m_f(i, j) == 3  % Active or burning fire
-                [W_dir_ws, W_dis_ws] = calculateLocalWindMap(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2);
-                m_dw_e = max(m_dw_e, W_dir_ws .* W_dis_ws);
+                [W_dir_dw, W_dis_dw] = calc_downwindMap_single(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2);
+                m_dw_e = max(m_dw_e, W_dir_dw .* W_dis_dw);
             end
         end
     end
@@ -192,11 +191,12 @@ function W = calculateWindSpreadMatrix(r_w, c_wm_1, c_wm_2, c_wm_d, ang_w, v_w)
     W = w_dir .* w_dis;
 end
 
-function [W_dir_ws, W_dis_ws] = calculateLocalWindMap(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2)
+function [W_dir_dw, W_dis_dw] = calc_downwindMap_single(i, j, n_x_e, n_y_e, ang_w, v_w, c_wm_1, c_wm_2)
     [X, Y] = meshgrid(1:n_x_e, 1:n_y_e);
-    f_d = atan2(Y - i, X - j);
-    ang = ang_w - f_d;
-    W_dir_ws = exp(v_w * (c_wm_1 + c_wm_2 * (cos(ang) - 1)));
-    W_dis_ws = 1 - sqrt((X - i).^2 + (Y - j).^2) / sqrt(n_x_e^2 + n_y_e^2);
-    W_dir_ws = mat2gray(W_dir_ws);  % Normalize wind direction influence
+    F_d = atan2(Y - i, X - j);
+    ang_diff = ang_w - F_d;
+    W_dir_dw = exp(v_w * (c_wm_1 + c_wm_2 * (cos(ang_diff) - 1)));
+    W_dir_dw = mat2gray(W_dir_dw);  % Normalize wind direction influence
+
+    W_dis_dw = 1 - sqrt((X - i).^2 + (Y - j).^2) / sqrt(n_x_e^2 + n_y_e^2);
 end

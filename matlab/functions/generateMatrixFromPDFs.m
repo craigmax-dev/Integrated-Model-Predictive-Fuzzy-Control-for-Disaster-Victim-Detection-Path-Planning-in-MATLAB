@@ -1,6 +1,3 @@
-% NOTE: Test function for building population grid
-% TODO: remove plotting function
-
 % EXAMPLE USAGE
 % % Define dimensions
 % dims = [100, 100]; % 100x100 grid
@@ -13,17 +10,15 @@
 % pdfs = {wideGaussian, narrowGaussian};
 % weights = [0.5, 0.5]; % Equal weighting for simplicity
 % 
-% % Seed for repeatability
-% seed = 42;
-% 
 % % Generate the matrix
 % matrix = generateMatrixFromPDFs(dims, pdfs, weights, seed);
 
-function matrix = generateMatrixFromPDFs(dims, pdfs, weights, seed)
+function matrix = generateMatrixFromPDFs(dims, pdfs, weights)
     % Generates a 2D matrix based on a combination of specified 2D probability distribution functions
-
-    % Set the seed for repeatability
-    rng(seed);
+    % 
+    % dims: number of rows and columns in the matrix
+    % pdfs: set of pdfs to use in the matrix
+    % weights: weighting of each pdf
 
     % Initialize the matrix
     matrix = zeros(dims(1), dims(2));

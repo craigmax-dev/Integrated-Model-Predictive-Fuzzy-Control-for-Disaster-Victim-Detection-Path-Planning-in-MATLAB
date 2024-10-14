@@ -1,16 +1,9 @@
-% NOTE: Test function for building population grid
-% TODO: remove plotting function
-
-function brownNoiseMatrix = generateBrownNoiseMatrix(rows, cols, fluctuation, seed)
+function brownNoiseMatrix = generateBrownNoiseMatrix(rows, cols, fluctuation)
     % Generates a 2D matrix of brown noise
     % 
     % rows: number of rows in the matrix
     % cols: number of columns in the matrix
     % fluctuation: maximum change between adjacent elements
-    % seed: seed for the random number generator to ensure repeatability
-
-    % Set the seed for repeatability
-    rng(seed);
 
     % Initialize the matrix with random values
     brownNoiseMatrix = rand(rows, cols);

@@ -22,7 +22,7 @@ function animateGeographical(agent_models, environment_model, agent_parameter_li
         
         % Call the plotting function for the current timestep
         % Note: You might need to adjust this function call according to your specific implementation
-        plotParametersWithItems(agent_model, environment_model, agent_parameter_list, search_parameter_list, items, item_locations, markerSizes);
+        plotGeographical(agent_model, environment_model, agent_parameter_list, search_parameter_list, items, item_locations, markerSizes);
         
         % Capture the current figure/frame
         frame = getframe(fig);

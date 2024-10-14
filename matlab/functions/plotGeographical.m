@@ -86,17 +86,6 @@ function plotGeographical(agent_model, environment_model, agent_parameter_list, 
         imagesc(environment_model.m_f_series(:,:,m_f_series_indexes(idx))); % Plot fire map at each index
         hold on;
 
-        % % Plot items on environment map with translated coordinates
-        % for itemIdx = 1:length(items)
-        %     locations = item_locations{itemIdx};
-        %     translatedLocations = [locations(:,1) * scaleX, locations(:,2) * scaleY];
-        %     for locIdx = 1:size(translatedLocations, 1)
-        %         plot(translatedLocations(locIdx, 1), translatedLocations(locIdx, 2), itemSymbols{mod(itemIdx-1, length(itemSymbols))+1}, ...
-        %             'MarkerEdgeColor', 'k', 'MarkerFaceColor', itemColors{mod(itemIdx-1, length(itemColors))+1}, ...
-        %             'MarkerSize', markerSizes(itemIdx));
-        %     end
-        % end
-
         hold off;
         axis equal tight;
         set(gca, 'YDir', 'normal'); % Reverse the y-axis

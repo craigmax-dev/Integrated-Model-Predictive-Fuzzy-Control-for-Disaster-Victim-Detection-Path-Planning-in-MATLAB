@@ -2,7 +2,7 @@
 % Date:     01/12/2023
 % Author:   Craig Maxwell
 
-function agent_model = model_fis_global(agent_model, ang_w, v_w, config, fisArray)
+function agent_model = model_fis_global(agent_model, ang_w, v_w, config, fisArray, m_f)
     % MODEL_FIS_GLOBAL Simulates the agent model using global maps for predictions.
     %
     % This function calculates the normalized response time for all agents,
@@ -52,12 +52,6 @@ function agent_model = model_fis_global(agent_model, ang_w, v_w, config, fisArra
                 switch inputName
                     case 't_response'
                         fisInputs.t_response = m_t_response(:,:,a);
-                    % case 'priority_combined'
-                    %     agent_model.m_prior = calc_prior_combined(agent_model.m_bo_s, agent_model.m_dw_s, agent_model.m_scan, config.t, agent_model.m_victim_s, config.flag_victim_model);
-                    %     fisInputs.priority = agent_model.m_prior;
-                    % case 'priority_first_scan'
-                    %     % NOTE: Not updated for local prediction
-                    %     fisInputs.priority_first_scan = calc_prior_first_scan(agent_model.m_bo_s, agent_model.m_scan);
                     case 'priority_dw'
                         fisInputs.priority_dw = agent_model.m_dw_s;
                     % case 'r_nextagent'
@@ -67,7 +61,10 @@ function agent_model = model_fis_global(agent_model, ang_w, v_w, config, fisArra
                     case 'cell_scan_certainty'
                         fisInputs.cell_scan_certainty = agent_model.m_scan;
                     case 'cell_fire_time_risk'
-                        fisInputs.cell_fire_time_risk = calc_fire_time_risk(agent_model.m_f_s, v_w);
+                        % fisInputs.cell_fire_time_risk = calc_fire_time_risk(agent_model.m_f_s, v_w);
+                        m_fire_time_risk_env = calc_fire_time_risk(m_f, v_w);
+                        m_fire_time_risk_c = func_coarsen(m_fire_time_risk_env, config.c_f_s);
+                        fisInputs.cell_fire_time_risk = m_fire_time_risk_c;
                 end
             end
 

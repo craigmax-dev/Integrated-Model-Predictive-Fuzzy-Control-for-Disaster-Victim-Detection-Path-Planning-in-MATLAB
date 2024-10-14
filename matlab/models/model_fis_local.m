@@ -1,4 +1,4 @@
-function agent_model = model_fis_local(agent_model, ang_w, v_w, config, fisArray)
+function agent_model = model_fis_local(agent_model, ang_w, v_w, config, fisArray, m_f)
     % MODEL_FIS_LOCAL Simulates the agent model using local maps for predictions.
     %
     % This function calculates the normalized response time for all agents,
@@ -71,7 +71,10 @@ function agent_model = model_fis_local(agent_model, ang_w, v_w, config, fisArray
                     case 'cell_scan_certainty'
                         fisInputs.cell_scan_certainty = local_m_scan;
                     case 'cell_fire_time_risk'
-                        fisInputs.cell_fire_time_risk = calc_fire_time_risk(local_m_f_s, v_w);
+                        % fisInputs.cell_fire_time_risk = calc_fire_time_risk(local_m_f_s, v_w);
+                        m_fire_time_risk_env = calc_fire_time_risk(m_f, v_w);
+                        m_fire_time_risk_c = func_coarsen(m_fire_time_risk_env, config.c_f_s);
+                        fisInputs.cell_fire_time_risk = m_fire_time_risk_c;
                 end
             end
 

@@ -1,7 +1,4 @@
 % V2
-% NOTE: Test function for building population grid
-% TODO: update input description with correct variable names
-
 function victimsMap = generateVictimsMap(probMatrix, n_max)
     % Generate a map of victims based on the probability matrix
     % probMatrix: Matrix of probabilities (0 to 1)
