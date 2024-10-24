@@ -3,11 +3,6 @@
 % component, optional victim map
 % Bugfix: fixed treatment of victim map
 
-% TODO
-% Define Method to balance re-scan part: easy to outweigh first scan component
-% Possible improvement: refactor rescan component to include rescan priority using known
-% victim location and m_bo where victim locations not known
-
 % V2.2 - added victim model flag
 function m_prior = calc_prior(m_bo, m_dw, m_scan, t, weight, m_victim, flag_victim_model)
   

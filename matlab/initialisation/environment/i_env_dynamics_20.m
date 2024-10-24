@@ -8,20 +8,31 @@ function environment_model = i_env_dynamics_20(config)
   n_x_e       = 20;
   n_y_e       = 20;
 
+  % Define PDF
+  pdf1 = @(x, y) reshape(mvnpdf([x(:) y(:)], [0.3, 0.3], [0.05, 0.02]), size(x));
+  pdf2 = @(x, y) reshape(mvnpdf([x(:) y(:)], [0.7, 0.7], [0.05, 0.02]), size(x));
+
+  % Define the list of PDFs
+  pdfs = {pdf1, pdf2};
+
+  % Define the weights for each PDF
+  weights = [0.5, 0.5];
+
+  % Generate the matrix from PDFs
+  pdf_matrix = generateMatrixFromPDFs([n_x_e, n_y_e], pdfs, weights);
+
+  % Generate the Brown noise matrix
+  fluctuation = 0.0001; % Define the fluctuation level for Brown noise
+  brown_noise_matrix = generateBrownNoiseMatrix(n_x_e, n_y_e, fluctuation);
+
+  % Combine the PDF matrix and Brown noise matrix
+  m_bo = pdf_matrix + brown_noise_matrix;
+
+  % Normalize the resulting matrix to have values between 0 and 1
+  m_bo = (m_bo - min(m_bo(:))) / (max(m_bo(:)) - min(m_bo(:)));
+
   % Create a matrix of ones to represent an even distribution of buildings
-  m_bo  = generateBrownNoiseMatrix(n_x_e, n_y_e, 1, 42);
-  m_s  = generateBrownNoiseMatrix(n_x_e, n_y_e, 1, 100);
-
-  % % Define the Gaussian PDFs
-  % dims = [n_x_e, n_y_e];
-  % wideGaussian = @(x, y) exp(-((x-0.5).^2 + (y-0.25).^2) / (2 * 0.1^2));
-  % 
-  % % Define PDFs and their weights
-  % pdfs = {wideGaussian};
-  % weights = [0.5, 0.5]; % Equal weighting for simplicity
-  % 
-  % m_s = generateMatrixFromPDFs(dims, pdfs, weights, 42);
-
+  m_s = ones(n_x_e, n_y_e);
   m_p_ref = ones(n_x_e, n_y_e);
 
   % V2 define cell sizes

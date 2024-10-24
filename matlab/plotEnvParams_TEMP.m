@@ -1,3 +1,135 @@
+function runEnvironmentSimulation()
+    close all;
+    clear all;
+    
+    % Setup constants and parameters
+    n_x_e = 9; n_y_e = 9;
+    wind_speeds = [0, 1, 3];
+    setupEnvironmentFigures(length(wind_speeds));
+    
+    % Loop through each wind speed
+    for idx = 1:length(wind_speeds)
+        v_w = wind_speeds(idx);
+        
+        [F, W, m_dw_e, m_f] = simulateFireSpread(n_x_e, n_y_e, v_w);
+        
+        plotFireSpread(F, idx, v_w);
+        plotWindSpread(W, idx, v_w);
+        plotDownwindMap(m_dw_e, idx, v_w);
+        plotFireMap(m_f, idx, v_w);
+    end
+end
+
+function setupEnvironmentFigures(numWindSpeeds)
+    global figure_F figure_W figure_dw_e figure_m_f;
+    figure_F = figure('Name', 'Fire Spread', 'Position', [0, 100, numWindSpeeds*300, 300]);
+    figure_W = figure('Name', 'Wind Spread', 'Position', [0, 600, numWindSpeeds*300, 300]);
+    figure_dw_e = figure('Name', 'Downwind Map', 'Position', [numWindSpeeds*300+100, 100, numWindSpeeds*300, 300]);
+    figure_m_f = figure('Name', 'Fire Map', 'Position', [numWindSpeeds*300+100, 600, numWindSpeeds*300, 300]);
+end
+
+function [F, W, m_dw_e, m_f] = simulateFireSpread(n_x_e, n_y_e, v_w)
+    % Initialize matrices and parameters
+    m_bt = 200 .* ones(n_x_e, n_y_e);
+    m_f = ones(n_x_e, n_y_e);
+    m_f(5, 5) = 3;
+    r_w = 3; c_wm_1 = 0.2; c_wm_2 = 0.3; c_wm_d = 0.9;
+    ang_w = pi / 4; t_i = 120; t_b = 600; dt_e = 15;
+    
+    % Initialize wind and fire matrices
+    W = zeros(n_x_e, n_y_e);
+    F = zeros(n_x_e, n_y_e);
+    m_dw_e = zeros(n_x_e, n_y_e);
+    
+    % Perform calculations
+    [X, Y] = meshgrid(-r_w:r_w, -r_w:r_w);
+    F_d = atan2(Y, X);
+    ang_diff = ang_w - F_d;
+    w_dir = exp(v_w * (c_wm_1 + c_wm_2 * (cos(ang_diff) - 1)));
+    distances = sqrt(X.^2 + Y.^2);
+    w_dis = c_wm_d .^ distances;
+    W = w_dir .* w_dis;
+
+    % Simulate fire spread
+    % Placeholder for the full implementation
+    % Calculate fire spread probability, update F, m_dw_e, m_f based on your model dynamics
+
+    return
+end
+
+function plotFireSpread(F, idx, v_w)
+    global figure_F;
+    figure(figure_F);
+    subplot(1, 3, idx);
+    imagesc(F);
+    colorbar;
+    colormap(fireColorMap()); % Custom colormap for fire spread
+    caxis([0 1.5]); % Adjust as per the simulation values
+    axis equal tight;
+    set(gca, 'YDir', 'normal');
+    title(sprintf('Fire Spread at $v_w = %d$ m/s', v_w), 'Interpreter', 'latex');
+end
+
+function plotWindSpread(W, idx, v_w)
+    global figure_W;
+    figure(figure_W);
+    subplot(1, 3, idx);
+    imagesc(W);
+    colorbar;
+    colormap(windColorMap()); % Custom colormap for wind spread
+    caxis([0 1.5]);
+    axis equal tight;
+    set(gca, 'YDir', 'normal');
+    title(sprintf('Wind Spread at $v_w = %d$ m/s', v_w), 'Interpreter', 'latex');
+end
+
+function plotDownwindMap(m_dw_e, idx, v_w)
+    global figure_dw_e;
+    figure(figure_dw_e);
+    subplot(1, 3, idx);
+    imagesc(m_dw_e);
+    colorbar;
+    colormap(downwindColorMap()); % Custom colormap for downwind map
+    caxis([0 1]);
+    axis equal tight;
+    set(gca, 'YDir', 'normal');
+    title(sprintf('Downwind Map at $v_w = %d$ m/s', v_w), 'Interpreter', 'latex');
+end
+
+function plotFireMap(m_f, idx, v_w)
+    global figure_m_f;
+    figure(figure_m_f);
+    subplot(1, 3, idx);
+    imagesc(m_f);
+    colorbar;
+    colormap(fireMapColorMap()); % Custom colormap for fire map
+    caxis([0 4]); % Fire states from 0 to 4
+    axis equal tight;
+    set(gca, 'YDir', 'normal');
+    title(sprintf('Fire Map at $v_w = %d$ m/s', v_w), 'Interpreter', 'latex');
+end
+
+function map = fireColorMap()
+    % Define custom colormap for fire spread visualization
+    map = [1 1 1; 1 0.5 0; 1 0 0; 0.5 0 0];
+end
+
+function map = windColorMap()
+    % Define custom colormap for wind spread visualization
+    map = [1 1 1; 0 0 1; 0 0.5 1];
+end
+
+function map = downwindColorMap()
+    % Define custom colormap for downwind effect visualization
+    map = [1 1 1; 0 1 0; 0 0.5 0];
+end
+
+function map = fireMapColorMap()
+    % Define custom colormap for fire map visualization
+    map = [0.6 0.6 0.6; 1 1 0; 1 0.5 0; 1 0 0; 0.5 0 0];
+end
+
+
 % close all
 % clear all
 % 
@@ -212,11 +344,11 @@
 %     caxis([0 3]);  % Set common color scale for F
 % end
 % 
-% Set the overall figure titles
+% % Set the overall figure titles
 % sgtitle(figure_F, 'Fire Spread for Different Wind Speeds');
 % sgtitle(figure_W, 'Wind Spread for Different Wind Speeds');
 % sgtitle(figure_dw_e, 'Downwind Map for Different Wind Speeds');
-% 
+
 % %% Plot p with bt
 % 
 % % % Define parameters

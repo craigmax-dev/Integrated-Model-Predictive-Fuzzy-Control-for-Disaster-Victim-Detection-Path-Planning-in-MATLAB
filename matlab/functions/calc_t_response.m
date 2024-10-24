@@ -2,10 +2,6 @@
 % CHANGELOG
 % Normalization using maxTravelTime instead of normalization at each
 % time step
-% Bugfix: Returns NAN when agent task list depleted.
-
-% TODO
-% Refactor: move agent iteration outside function
 
 % V2.1 
 % V2 refactor: performance improvements and handling depleted task list

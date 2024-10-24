@@ -43,13 +43,7 @@ function agent_model = i_a_repeat_3(environment_model, config)
   m_recharge = zeros(n_x_s, n_y_s); % Recharge stations
   a_battery_level_i = 4e4.*ones(n_a, 1); % Fully charged battery level (s)
   a_battery_level = a_battery_level_i; % Current battery level (s)
-
-
-  % a_loc_hist    = [];
-  % for a = 1:n_a
-  %   % Note: format is x-axis, y-axis, agent number, timestep number
-  %   a_loc_hist(a,:) = [a_loc(a, 1), a_loc(a, 2), a, 0]; 
-  % end  
+  t_recharge = 100; % Time to recharge agent: NOTE - recharge stations not implemented 
 
   % Agent targets
   n_q             = 2;
@@ -69,6 +63,6 @@ function agent_model = i_a_repeat_3(environment_model, config)
                        'n_a', n_a, 'n_q', n_q, 'v_as', v_as, 'a_t_trav', a_t_trav, ...
                        't_scan_m', t_scan_m, 't_scan_c', t_scan_c, 'a_battery_level_i', a_battery_level_i, 'a_battery_level', a_battery_level, 'a_task', a_task, ... 
                        'a_loc', a_loc, 'a_target', a_target, 'a_t_scan', a_t_scan, ...
-                       'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, ...
+                       'm_prior', m_prior, 'm_recharge', m_recharge, 'm_scan', m_scan, 'm_scan_hist', m_scan_hist, 'm_t_scan', m_t_scan, 't_recharge', t_recharge, ...
                        'm_bo_s', m_bo_s, 'm_dw_s', m_dw_s, 'm_f_s', m_f_s, 'm_victim_s', m_victim_s, 'maxResponseTime', maxResponseTime, 'sensor_accuracy', sensor_accuracy);
 end

@@ -18,15 +18,12 @@ function environment_model = i_env_dynamics_200_dualCentre(config)
   % Define the weights for each PDF
   weights = [0.5, 0.5];
 
-  % Define a random seed for reproducibility
-  seed = 123;
-
   % Generate the matrix from PDFs
-  pdf_matrix = generateMatrixFromPDFs([n_x_e, n_y_e], pdfs, weights, seed);
+  pdf_matrix = generateMatrixFromPDFs([n_x_e, n_y_e], pdfs, weights);
 
   % Generate the Brown noise matrix
   fluctuation = 0.0001; % Define the fluctuation level for Brown noise
-  brown_noise_matrix = generateBrownNoiseMatrix(n_x_e, n_y_e, fluctuation, seed);
+  brown_noise_matrix = generateBrownNoiseMatrix(n_x_e, n_y_e, fluctuation);
 
   % Combine the PDF matrix and Brown noise matrix
   m_bo = pdf_matrix + brown_noise_matrix;

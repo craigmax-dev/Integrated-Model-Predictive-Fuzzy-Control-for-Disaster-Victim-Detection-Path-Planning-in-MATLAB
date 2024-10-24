@@ -24,22 +24,3 @@ function plotFisMembershipFunctions(fis, inputNamesLatex)
         ylabel('Membership', 'Interpreter', 'latex');  % Ensure ylabel uses LaTeX interpreter
     end
 end
-
-
-% function plotFisMembershipFunctions(fis)
-% 
-%   % Number of input variables
-%   numInputs = length(fis.Inputs);
-% 
-%   % Create a figure for each agent
-%   figure;
-%   sgtitle(['FIS Input Membership Functions']);
-% 
-%   % Plot each input's membership functions
-%   for i = 1:numInputs
-%       subplot(numInputs, 1, i);
-%       plotmf(fis, 'input', i);
-%       title([fis.Inputs(i).Name]);
-%   end
-% 
-% end
