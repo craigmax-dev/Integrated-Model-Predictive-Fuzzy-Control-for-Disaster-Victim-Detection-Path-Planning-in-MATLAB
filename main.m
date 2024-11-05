@@ -1,24 +1,62 @@
- %% Main simulation script
-% Author: Craig Maxwell
-% Faculty: Control and Simulation, Aerospace Enigneering, Delft University of
-% Technology 
+% ========================================================================
+% Main Script for Simulation of UAV-based Search and Rescue Operations
+% ========================================================================
+% This script simulates various configurations of UAVs in search and rescue 
+% (SAR) operations using different control architectures, environment 
+% models, and agent behaviors. The aim is to evaluate their performance 
+% across a range of scenarios by analyzing the objective function, 
+% optimization times, and other metrics. This guide explains each section 
+% of the script and how to customize it for specific simulation setups.
 
-% FEATURE BACKLOG
+% =========================================================================
+% USER GUIDE
+% =========================================================================
+% 1. Select a Scenario: Uncomment the relevant `simulationSetup` and 
+%    `lineStyles` blocks that match the scenario you want to run, or define 
+%     a new one. Update `seeds` to control random variability.
+%
+% 2. Set the Number of Iterations: Modify `numIterations` to specify 
+%    how many times each scenario should be repeated. Increasing the number 
+%    of iterations increases the statistical certainty of controller 
+%    performance.
+%
+% 3. Run the Simulation: Run the script after making your selections.
+%
+% 4. Check the Results: View the output plots and animations to evaluate 
+%    the performance of each scenario.
+%
+% 5. Save Data and Plots: Ensure `config.flag_save` is `true` to save 
+%    results.
+
+% ========================================================================
+% BACKLOG
+% ========================================================================
 % - Feature: Complete VALIDATION CASE
 % - Feature: Add battery recharge model to FIS
 % - Feature: MPFC/MPC prediction with clustering
 % - Feature: Implement slow dynamic environment variable
 % - Feature: Deterministic threshold prediction mode
-% - Feature: Scheduled cells methodology can be removed with new FIS inputs formulation
+% - Feature: Scheduled cells methodology can be removed with new FIS inputs
+% formulation
 % - Feature: Remove downwind map - defunct if not used as a FIS input
-% - Feature: Remove options_firstEval - just use same options for all MPC evals
+% - Feature: Remove options_firstEval - just use same options for all MPC 
+% evals
 % - Feature: Random initialisation of fire locations
 % - Bugfix: set m_f = ones instead of m_s in initialisation files
 % - Feature: Setup fire model constants for realistic simulation
 
-% Main script user guide
-% 1. In section 1, handles to the initialisation functions are defined
-% 2. 
+% =========================================================================
+% AUTHOR AND CONTACT INFORMATION
+% =========================================================================
+% This script was developed as part of a thesis research project on the use 
+% of UAVs for search and rescue operations in disaster environments.
+% 
+% Faculty: Control and Simulation, Aerospace Enigneering, Delft University 
+% of Technology 
+% 
+% For any questions or collaboration inquiries, please contact:
+% Craig Maxwell - C.M.Maxwell@student.tudelft.nl / cmax.inbox@gmail.com
+% =========================================================================
 
 % Clear workspace 
 clear all  
@@ -36,6 +74,22 @@ addpath('data', ...
   'matlab/initialisation/agent');
   
 %% 1. Define function handles 
+%    ------------------------
+%    This section defines function handles that specify the simulation 
+%    variables, environment conditions, agent behavior, FIS parameters, and 
+%    control architectures.
+%    
+%    - Simulation: Different victim models, communication settings, and 
+%      MPC parameters are available.
+%    - Environment: Static and dynamic environment configurations are 
+%      provided.
+%    - Agents: Defines the different agent behaviors, such as the number 
+%      of agents and repeated missions.
+%    - FIS: Initial fuzzy inference system setups used for UAV path 
+%      planning.
+%    - Controller Architectures: Includes different supervisory control 
+%      strategies like FLC (Fuzzy Logic Control), MPFC (Model Predictive 
+%      Fuzzy Control), and MPC (Model Predictive Control).
 
 % Simulation variables
 h_s_no_victim_model = @()i_sim_comms_disabled();
@@ -59,6 +113,7 @@ h_s_victim_model_mpc_60_pred_75= @()i_sim_comms_disabled_victim_model_mpc_60_pre
 % Environment
 h_env_static_40 = @(dt_e)i_env_static_40(dt_e);
 h_env_dynamics_20 = @(dt_e)i_env_dynamics_20(dt_e);
+h_env_dynamics_30 = @(dt_e)i_env_dynamics_30(dt_e);
 h_env_dynamics_40 = @(dt_e)i_env_dynamics_40(dt_e);
 h_env_dynamics_60 = @(dt_e)i_env_dynamics_60(dt_e);
 h_env_dynamics_200_dualCentre = @(dt_e)i_env_dynamics_200_dualCentre(dt_e);
@@ -91,7 +146,7 @@ h_arch_mpc_prediction = @(fisArray, agent_model)i_arch_mpc_prediction(fisArray, 
 h_arch_mpc_prediction_decentralised = @(fisArray, agent_model)i_arch_mpc_prediction_decentralised(fisArray, agent_model);
 
 %% 2. Define the number of iterations for each simulation setup
-numIterations = 1;   
+numIterations = 5;   
 
 % Generate and store seeds for all iterations
 seeds = randi(10000, numIterations, 1);
@@ -100,31 +155,39 @@ seeds = randi(10000, numIterations, 1);
 data = struct();
 
 %% 3. Simulation setup 
-% The simulations run for my thesis are listed in the comments below.
-% To run a previous simulation, uncomment the simulationSetup parameter and 
-% copy the simulationSeeds parameter into the section 3 of the code.
+%    ----------------
+%    This section specifies the different scenarios (or setups) to simulate.
+%    To run a simulation from the thesis, uncomment the block of code 
+%     corresponding to the desired simulation and run the script.
+%    - `simulationSetup`: List of setups to simulate, each setup defined by 
+%      the combination of victim model, environment, agent, FIS, and 
+%      control architecture.
+%    - `lineStyles`: Specifies line styles for plotting the results of each 
+%      controller type. Solid or dashed lines indicate centralized or 
+%      decentralized strategies, respectively.
+%    - `simIndex`: Defines which lines to plot in optimisation time plots.
 
 % Define line colors for each controller type
-flc_color = "blue"; % Blue for FLC # #1b9e77
-mpfc_color = "red"; % Red for MPFC # #d95f02
-mpc_color = "green"; % Green for MPC # #7570b3
+flc_color = '#1b9e77'; % Blue for FLC
+mpfc_color = '#d95f02'; % Orange for MPFC
+mpc_color = '#7570b3'; % Yellow for MPC
 
 % Define line styles
 solid = '-';
 dash = '--';
 
 % % VALIDATION CASE
-simulationSetup = { 
-  "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-};
-lineStyles = {
-    {solid, 'Color', flc_color}, ... 
-    {solid, 'Color', mpfc_color}, ... 
-};
-seeds = [1, 2, 3, 4, 5];
-simIndex = [2, 3];
-% 
+% simulationSetup = { 
+%   "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+% };
+% lineStyles = {
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+% };
+% seeds = [1, 2, 3, 4, 5];
+% simIndex = [2];
+
 % % 4.2.1 - Two-Agent System in Small Static Disaster Environment
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
@@ -132,9 +195,9 @@ simIndex = [2, 3];
 %   "mpc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {solid, mpc_color}  ... 
 % };
 % seeds = [6586, 9364, 1009, 3473, 9463];
 % simIndex = [2, 3];
@@ -146,9 +209,9 @@ simIndex = [2, 3];
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {solid, mpc_color}  ... 
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % simIndex = [2, 3];
@@ -160,9 +223,9 @@ simIndex = [2, 3];
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {solid, mpc_color}  ... 
 % };
 % seeds = [1755, 8611, 6476, 3092, 5726];
 % simIndex = [2, 3];
@@ -174,9 +237,9 @@ simIndex = [2, 3];
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {dash, 'Color', mpfc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {dash, mpfc_color}  ... 
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % simIndex = [2, 3];
@@ -188,9 +251,9 @@ simIndex = [2, 3];
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {dash, 'Color', mpfc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {dash, mpfc_color}  ... 
 % };
 % seeds = [1755, 8611, 6476, 3092, 5726];
 % simIndex = [2, 3];
@@ -202,20 +265,20 @@ simIndex = [2, 3];
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color}  ... 
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {solid, mpc_color}  ... 
 % };
 % seeds = [803, 6063, 5333, 9967, 9982];
 % simIndex = [2, 3];
 % 
 % % 4.3.1 - Sensitivity Analysis: Number of Agents
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {dash, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color},  ... 
-%     {dash, 'Color', mpc_color}
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {dash, mpfc_color}, ... 
+%     {solid, mpc_color},  ... 
+%     {dash, mpc_color}
 % };
 
 % simulationSetup = { 
@@ -250,9 +313,9 @@ simIndex = [2, 3];
 % 
 % % 4.3.2 - Sensitivity Analysis: Disaster Environment Size
 % lineStyles = {
-%     {solid, 'Color', flc_color}, ... 
-%     {solid, 'Color', mpfc_color}, ... 
-%     {solid, 'Color', mpc_color}
+%     {solid, flc_color}, ... 
+%     {solid, mpfc_color}, ... 
+%     {solid, mpc_color}
 % };
 
 % simulationSetup = { 
@@ -281,25 +344,25 @@ simIndex = [2, 3];
 % 
 % % 4.3.3 - Sensitivity Analysis: MPC Step Size
 % simulationSetup = { 
-%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 2";
-%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 5";
-%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 30";
-%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 45";
-%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 60";
-%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 75";
+%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 2";
+%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 5";
+%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 30";
+%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 45";
+%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 60";
+%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 75";
 % };
 % seeds = [9933, 4258, 9696, 6016, 7584];
 % simIndex = [1, 2, 3, 4, 5, 6];
 % 
 % % 4.3.4 - Sensitivity Analysis: Prediction Step Size
-% simulationSetup = { 
-%   "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 17";
-%   "mpfc_centralised_pred_30", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 30";
-%   "mpfc_centralised_pred_45", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 45";
-%   "mpfc_centralised_pred_60", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 60";
-%   "mpfc_centralised_pred_75", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 75";
-% };
-% seeds = [2239, 7961, 6896, 8912, 833];
+simulationSetup = { 
+%   "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 17";
+%   "mpfc_centralised_pred_30", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 30";
+  "mpfc_centralised_pred_45", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 45";
+%   "mpfc_centralised_pred_60", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 60";
+%   "mpfc_centralised_pred_75", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 75";
+};
+seeds = [2239, 7961, 6896, 8912, 833];
 % simIndex = [1, 2, 3, 4, 5];
 % 
 % % 4.4.1 - Design Exploration: Prediction Modes
@@ -308,8 +371,8 @@ simIndex = [2, 3];
 %   "mpfc_centralised_prediction", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Prediction";
 % };
 % lineStyles = {
-%     {solid, 'Color', mpfc_color}, ... 
-%     {dot, 'Color', mpfc_color}
+%     {solid, mpfc_color}, ... 
+%     {dot, mpfc_color}
 % };
 % seeds = [8904, 6149, 5712, 3194, 6791];
 % simIndex = [1, 2];
@@ -320,8 +383,8 @@ simIndex = [2, 3];
 %   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
 % };
 % lineStyles = {
-%     {solid, 'Color', mpfc_color}, ... 
-%     {dot, 'Color', mpfc_color}
+%     {solid, mpfc_color}, ... 
+%     {dot, mpfc_color}
 % };
 % seeds = [9359, 4746, 839, 2634, 8288];
 % simIndex = [1, 2];
@@ -349,6 +412,13 @@ simIndex = [2, 3];
 % simIndex = [2, 3, 4, 5];
  
 %% 4. Iterate over each simulation setup
+%    ----------------
+%    Iterates over each setup defined in `simulationSetup` and runs the 
+%    simulation for the given number of iterations.
+%    Each iteration is run sequentially updating model parameters at each
+%    timestup until the termination condition (finish time).
+%    Calculates mean performance before continuing to the next setup.
+
 for simSetup = 1:size(simulationSetup, 1)
     
   simulationName = simulationSetup{simSetup, 1};
@@ -368,7 +438,7 @@ for simSetup = 1:size(simulationSetup, 1)
 
       fprintf("Iteration: %i \n", iteration)
     
-      %% Initialise models, plotting data, and timestep for saving variables
+      %% Initialise models, plotting data, timestep for saving variables
  
       % % Generate and record a unique seed for each iteration
       rng(seeds(iteration))
@@ -389,7 +459,7 @@ for simSetup = 1:size(simulationSetup, 1)
       mpc_model = f_init_mpc(fisArray, agent_model);
 
       %% Initialise parameters for animation (if necessary)
-      config.trackParams = true; % Uncomment to plot animations of simulation parameters
+      config.trackParams = true;
       
       % Calculate the length for initialization
       num_timesteps = floor(config.t_f / (config.dt_s * config.dk_mpc));
@@ -405,10 +475,10 @@ for simSetup = 1:size(simulationSetup, 1)
       % case where the MPC prediction horizon extends beyond the simulation
       % time. 
 
-      % Set the seed for RNG once, unless reseeding is explicitly required for each iteration
+      % Set seed for iteration
       rng(seeds(iteration));  
       
-      % Calculate the total number of steps needed for the pre-computation phase
+      % Calculate total number of steps needed for the pre-computation phase
       prediction_duration = mpc_model.n_p * config.dk_pred * config.dt_s;
       total_time = config.t_f + prediction_duration;
       total_steps = ceil(total_time / config.dt_e) + 1;
@@ -538,14 +608,20 @@ alpha = 0.05;
 [means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(data, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
 
 %% 6. Plot Simulation Performance Parameters
+%    ---------------------------------------
+%    `plotStats()` produces plots of:
+%    - Mean objective values with confidence intervals.
+%    - Mean optimization times with confidence intervals.
 
 % Plot stats for obj_hist
-plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, 'Mean Objective Value', 'Objective Value', lineStyles);
+plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, "Objective Function, $\overline{J}$", lineStyles);
 
 % Plot stats for optimizationTimes
-plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simIndex), time_vector_t_opt(simIndex), simulationSetup(simIndex, :), 'Mean Optimisation Time', 'Optimisation Time', lineStyles);
+plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simIndex), time_vector_t_opt(simIndex), simulationSetup(simIndex, :), "Optimisation Time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
 
 %% 7. Plot Geographical Parameters
+%    -----------------------------
+%    Plot environment and agent states:
 
 % Parameters List
 env_parameter_list = {'m_s', 'm_bo'};
@@ -563,11 +639,183 @@ m_f_series_indexes = [1, 21, 41, 61, 81];
 plotGeographical(agent_model, environment_model, env_parameter_list, env_labels, search_parameter_list, search_labels, items, item_locations, markerSizes, m_f_series_indexes)
 
 %% 8. Plot animations
+%    ----------------
+%    Plots and saves in MP4 format animations of:
+
+% evolution of the FLC parameters for each agent
 animateFLCParams(flc_params_hist, fisArray, "animation_mpfc_flc_params_hist")
+
+% Agent actions and the progression of environment states
 animateAgentFireEnvironment(agent_model, environment_model, config, "animation_agent_actions")
 
 %% 9. Save and export simulation results
+%    -----------------------------------
+%    `saveSimulationResults()` - saves workspace parameters and figures in 
+%     a new folder
 
 % Call the function to save results and figures
 saveSimulationResults(config.flag_save, config);
+
+%% 10. Sensitivity Analysis Plots
+%     ---------------------------
+%     Sensitivity analysis plots can be generated here using the data from 
+%     the simulations run during this study
+
+%% structures - sensitivity analysis for the results using structures (note no dynamics)
+
+% probThresh_MeanObj = 1.0e+03*[2.1525, 2.2396];
+% probThresh_MeanObj_confLower = 1.0e+03 *[1.9411, 1.9858];
+% probThresh_MeanObj_confUpper = 1.0e+03 *[2.3640, 2.4935];
+% probThresh_MeanTime = [38.9131, 105.2248];
+% probThresh_MeanTime_confLower = [31.1143, 86.2618];
+% probThresh_MeanTime_confUpper = [46.7118, 124.1878];
+% 
+% exact_MeanObj = 1.0e+03*[2.0296, 2.0608];
+% exact_MeanObj_confLower = 1.0e+03 *[1.8295, 1.9253];
+% exact_MeanObj_confUpper = 1.0e+03 *[2.2296, 2.1963];
+% exact_MeanTime = [42.8821, 100.1935];
+% exact_MeanTime_confLower = [29.2213, 83.0120];
+% exact_MeanTime_confUpper = [56.5428, 117.3750];
+% 
+% predMode_MeanObj            = [probThresh_MeanObj           ; exact_MeanObj           ];
+% predMode_MeanObj_confLower  = [probThresh_MeanObj_confLower ; exact_MeanObj_confLower ];
+% predMode_MeanObj_confUpper  = [probThresh_MeanObj_confUpper ; exact_MeanObj_confUpper ];
+% predMode_MeanTime           = [probThresh_MeanTime          ; exact_MeanTime          ];
+% predMode_MeanTime_confLower = [probThresh_MeanTime_confLower; exact_MeanTime_confLower];
+% predMode_MeanTime_confUpper = [probThresh_MeanTime_confUpper; exact_MeanTime_confUpper];
+% 
+% simNames = {'Probability Threshold', 'Exact'};
+% t_mpc = 15*[30, 60];
+% lineStyles = {
+%     {solid, mpfc_color}, ...         % Centralised MPFC
+%     {":", mpfc_color}, ...          % Decentralised MPFC
+% };
+% 
+% % Call the functions
+% plotScatterTrends(predMode_MeanObj, simNames, t_mpc, 1, predMode_MeanObj_confLower, predMode_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(predMode_MeanTime, simNames, t_mpc, 1, predMode_MeanTime_confLower, predMode_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Optimisation Time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+% 
+% 
+% % simNames = {'Probability Threshold'};
+% plotScatterTrendsNormalised(probThresh_MeanObj, exact_MeanObj, simNames, t_mpc, 1, probThresh_MeanObj_confLower, probThresh_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Normalised Objective Function, $\overline{J}$", lineStyles);
+
+%% n_a %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% % Data
+% fisMeanObj = 1.0e+03 *[2.5506, 2.2616, 2.1763];
+% 
+% mpfcCentralisedMeanTime = [48.2061, 70.7112, 96.8939];
+% mpfcCentralisedMeanTime_confLower = [47.4827, 68.4695, 94.7810];
+% mpfcCentralisedMeanTime_confUpper = [48.9295, 72.9529, 99.0068];
+% mpfcCentralisedMeanObj = 1.0e+03 *[2.3214, 2.0171, 1.8487];
+% mpfcCentralisedMeanObj_confLower = 1.0e+03 *[2.0998, 1.7781, 1.5523];
+% mpfcCentralisedMeanObj_confUpper = 1.0e+03 *[2.5430, 2.2561, 2.1451];
+% 
+% mpfcDecentralisedMeanTime = [23.5540, 23.7515, 23.3633];
+% mpfcDecentralisedMeanTime_confLower = [23.3618, 20.6987, 23.1581];
+% mpfcDecentralisedMeanTime_confUpper = [23.7462, 26.8044, 23.5684];
+% mpfcDecentralisedMeanObj = 1.0e+03 *[2.2642, 2.0330, 1.8070];
+% mpfcDecentralisedMeanObj_confLower = 1.0e+03 *[1.9367, 1.8009, 1.5147];
+% mpfcDecentralisedMeanObj_confUpper = 1.0e+03 *[2.5918, 2.2651, 2.0993];
+% 
+% mpcCentralisedMeanTime = [125.4170, 125.6490,  147.7781];
+% mpcCentralisedMeanTime_confLower = [94.6109, 96.1807, 106.4945];
+% mpcCentralisedMeanTime_confUpper = [156.2232, 155.1172, 189.0617];
+% mpcCentralisedMeanObj = 1.0e+03 *[2.6187, 2.3124, 2.0442];
+% mpcCentralisedMeanObj_confLower = 1.0e+03 *[2.3745, 2.1004, 1.8818];
+% mpcCentralisedMeanObj_confUpper = 1.0e+03 *[2.8629, 2.5244, 2.2067];
+% 
+% mpcDecentralisedMeanTime = [124.2137, 122.6140, 129.4289];
+% mpcDecentralisedMeanTime_confLower = [91.9590, 90.1793, 90.4822];
+% mpcDecentralisedMeanTime_confUpper = [156.4684, 155.0486, 168.3756];
+% mpcDecentralisedMeanObj = 1.0e+03 *[2.3870, 2.1690, 1.9107];
+% mpcDecentralisedMeanObj_confLower = 1.0e+03 *[2.1491, 2.0529, 1.6598];
+% mpcDecentralisedMeanObj_confUpper = 1.0e+03 *[2.6250, 2.2850, 2.1617];
+% 
+% simNames = {'Centralised MPC', 'Decentralised MPC', 'Centralised MPFC', 'Decentralised MPFC'};
+% agentCounts = [2, 3, 4];
+% lineStyles = {
+%     {solid, mpc_color}, ...         % Centralised MPC
+%     {dash, mpc_color}, ...          % Decentralised MPC
+%     {solid, mpfc_color}, ...        % Centralised MPFC
+%     {dash, mpfc_color}              % Decentralised MPFC
+% };
+
+% % Call the functions
+% plotScatterTrends([mpcCentralisedMeanTime; mpcDecentralisedMeanTime; mpfcCentralisedMeanTime; mpfcDecentralisedMeanTime], simNames, agentCounts, 1, [mpcCentralisedMeanTime_confLower; mpcDecentralisedMeanTime_confLower; mpfcCentralisedMeanTime_confLower; mpfcDecentralisedMeanTime_confLower], [mpcCentralisedMeanTime_confUpper; mpcDecentralisedMeanTime_confUpper; mpfcCentralisedMeanTime_confUpper; mpfcDecentralisedMeanTime_confUpper], "Number of Agents, $n^{a}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+% plotScatterTrendsNormalised([mpcCentralisedMeanObj; mpcDecentralisedMeanObj; mpfcCentralisedMeanObj; mpfcDecentralisedMeanObj], fisMeanObj, simNames, agentCounts, 1, [mpcCentralisedMeanObj_confLower; mpcDecentralisedMeanObj_confLower; mpfcCentralisedMeanObj_confLower; mpfcDecentralisedMeanObj_confLower], [mpcCentralisedMeanObj_confUpper; mpcDecentralisedMeanObj_confUpper; mpfcCentralisedMeanObj_confUpper; mpfcDecentralisedMeanObj_confUpper], "Number of Agents, $n^{a}$", "Normalised Objective Function, $\overline{J}$", lineStyles);
+
+%% t_MPC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% t_MPC_MeanObj = 1.0e+03*[7.1370, 7.0530, 7.2312, 7.0589, 7.7787, 8.0764];
+% t_MPC_MeanObj_confLower = 1.0e+03 *[6.6995, 6.6821, 6.7562, 6.5413, 7.2780, 7.3175];
+% t_MPC_MeanObj_confUpper = 1.0e+03 *[7.5746, 7.4238, 7.7063, 7.5765, 8.2794, 8.8353];
+% t_MPC_MeanTime = [46.0835, 54.1516, 74.7733, 121.3524, 161.9631, 202.1015];
+% t_MPC_MeanTime_confLower = [44.6674, 52.4588, 69.8264, 114.3734, 160.5813, 200.6613];
+% t_MPC_MeanTime_confUpper = [47.4997, 55.8444, 79.7201, 128.3313, 163.3449, 203.5417];
+% 
+% simNames = {'Centralised MPFC'};
+% t_mpc = 15*[2, 5, 15, 30, 45, 60];
+% lineStyles = {
+%     {solid, mpfc_color}, ...        % Centralised MPFC
+% };
+% 
+% % Call the functions
+% plotScatterTrends(t_MPC_MeanObj, simNames, t_mpc, 2, t_MPC_MeanObj_confLower, t_MPC_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(t_MPC_MeanTime, simNames, t_mpc, 1, t_MPC_MeanTime_confLower, t_MPC_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+
+%% t_pred
+% t_pred_MeanObj = 1.0e+03*[7.77, 7.7787, 7.805, 7.684];
+% t_pred_MeanObj_confLower = 1.0e+03 *[7.3310, 7.2780, 7.3690, 7.3288];
+% t_pred_MeanObj_confUpper = 1.0e+03 *[8.2091, 8.2794, 8.2409, 8.0391];
+% t_pred_MeanTime = [78.2812, 161.9631, 159.9497, 202.9531];
+% t_pred_MeanTime_confLower = [68.6694, 160.5813, 133.5439, 172.0526];
+% t_pred_MeanTime_confUpper = [87.8929, 163.3449, 186.3556, 233.8537];
+% 
+% simNames = {'Centralised MPFC'};
+% t_pred = 15*[30, 45, 60, 75];
+% lineStyles = {
+%     {solid, mpfc_color}, ...        % Centralised MPFC
+% };
+% 
+% % Call the functions
+% plotScatterTrends(t_pred_MeanObj, simNames, t_pred, 1, t_pred_MeanObj_confLower, t_pred_MeanObj_confUpper, "Prediction Timestep, $\Delta t^{\mathrm{pred}}$", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(t_pred_MeanTime, simNames, t_pred, 1, t_pred_MeanTime_confLower, t_pred_MeanTime_confUpper, "Prediction Timestep, $\Delta t^{\mathrm{pred}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+
+%% Disaster environment size %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% % Data
+% fisMeanObj = 1.0e+03*[0.207, 2.1763, 7.6638];
+% 
+% mpfcCentralisedMeanTime = [21.5653, 96.8939, 168.0375];
+% mpfcCentralisedMeanTime_confLower = [20.8904, 94.7810, 165.8786];
+% mpfcCentralisedMeanTime_confUpper = [22.2401, 99.0068, 170.1964];
+% mpfcCentralisedMeanObj = 1.0e+03 *[0.1908, 1.8487, 6.9163];
+% mpfcCentralisedMeanObj_confLower = 1.0e+03 *[0.156, 1.5523, 6.4595];
+% mpfcCentralisedMeanObj_confUpper = 1.0e+03 *[0.225, 2.1451, 7.3732];
+% 
+% % mpfcDecentralisedMeanTime = [23.3633];
+% % mpfcDecentralisedMeanTime_confLower = [23.1581];
+% % mpfcDecentralisedMeanTime_confUpper = [23.5684];
+% % mpfcDecentralisedMeanObj = 1.0e+03 *[1.8070];
+% % mpfcDecentralisedMeanObj_confLower = 1.0e+03 *[1.5147];
+% % mpfcDecentralisedMeanObj_confUpper = 1.0e+03 *[2.0993];
+% 
+% mpcMeanTime = [42.9858, 147.7781, 246.8798];
+% mpcMeanTime_confLower = [31.6914, 106.4945, 189.8676];
+% mpcMeanTime_confUpper = [54.2802, 189.0617, 303.8921];
+% mpcMeanObj = 1.0e+03 *[0.2697, 2.0442, 7.7265];
+% mpcMeanObj_confLower = 1.0e+03 *[0.218, 1.8818, 7.4081];
+% mpcMeanObj_confUpper = 1.0e+03 *[0.320, 2.2067, 8.0449];
+% 
+% simNames = {'Centralised MPC', 'Centralised MPFC'};
+% envSize = [400, 1600, 3600];
+% lineStyles = {
+%     {solid, mpc_color}, ...        % Centralised MPC
+%     {solid, mpfc_color}, ...        % Centralised MPFC
+% };
+% 
+% % Call the functions
+% plotScatterTrends([mpcMeanTime; mpfcCentralisedMeanTime], simNames, envSize, 1, [mpcMeanTime_confLower; mpfcCentralisedMeanTime_confLower], [mpcMeanTime_confUpper; mpfcCentralisedMeanTime_confUpper], "Number of Environment Cells, $n^{env^{x}} \cdot n^{env^{y}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+% plotScatterTrendsNormalised([mpcMeanObj; mpfcCentralisedMeanObj], fisMeanObj, simNames, envSize, 1, [mpcMeanObj_confLower; mpfcCentralisedMeanObj_confLower], [mpcMeanObj_confUpper; mpfcCentralisedMeanObj_confUpper], "Number of Environment Cells, $n^{env^{x}} \cdot n^{env^{y}}$", "Normalised Objective Function, $\overline{J} (\%)$", lineStyles);
+
 
