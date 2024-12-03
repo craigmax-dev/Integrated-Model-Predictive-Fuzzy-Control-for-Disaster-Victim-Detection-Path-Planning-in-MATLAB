@@ -18,7 +18,7 @@
 % 2. Set the Number of Iterations: Modify `numIterations` to specify 
 %    how many times each scenario should be repeated. Increasing the number 
 %    of iterations increases the statistical certainty of controller 
-%    performance.
+%    performance. 
 %
 % 3. Run the Simulation: Run the script after making your selections.
 %
@@ -27,6 +27,13 @@
 %
 % 5. Save Data and Plots: Ensure `config.flag_save` is `true` to save 
 %    results.
+
+% =========================================================================
+% USER GUIDE
+% =========================================================================
+% Note that a full change log is available in the Git repository.
+% Some slight changes to the MPC algorithm have been made, meaning that
+% simulation results will not exactly match 
 
 % ========================================================================
 % BACKLOG
@@ -192,12 +199,12 @@ dash = '--';
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
 %     {solid, flc_color}, ... 
 %     {solid, mpfc_color}, ... 
-%     {solid, mpc_color}  ... 
+%     {solid, mpc_color},  ... 
 % };
 % seeds = [6586, 9364, 1009, 3473, 9463];
 % simIndex = [2, 3];
@@ -206,12 +213,12 @@ dash = '--';
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
 %     {solid, flc_color}, ... 
 %     {solid, mpfc_color}, ... 
-%     {solid, mpc_color}  ... 
+%     {solid, mpc_color},  ... 
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % simIndex = [2, 3];
@@ -220,7 +227,7 @@ dash = '--';
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
 %     {solid, flc_color}, ... 
@@ -230,7 +237,7 @@ dash = '--';
 % seeds = [1755, 8611, 6476, 3092, 5726];
 % simIndex = [2, 3];
 % 
-% % 4.2.4 - Decentralised vs Centralised MPFC Controller Architectures: Two-agent system
+% 4.2.4 - Decentralised vs Centralised MPFC Controller Architectures: Two-agent system
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
@@ -262,7 +269,7 @@ dash = '--';
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
 %     {solid, flc_color}, ... 
@@ -285,8 +292,8 @@ dash = '--';
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
-%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % simIndex = [2, 3, 4, 5];
@@ -295,8 +302,8 @@ dash = '--';
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
-%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
 % };
 % seeds = [3866, 348, 8024, 8344, 1252];
 % simIndex = [2, 3, 4, 5];
@@ -305,64 +312,76 @@ dash = '--';
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
-%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
 % };
 % seeds = [1755, 8611, 6476, 3092, 5726];
 % simIndex = [2, 3, 4, 5];
 % 
 % % 4.3.2 - Sensitivity Analysis: Disaster Environment Size
-% lineStyles = {
-%     {solid, flc_color}, ... 
-%     {solid, mpfc_color}, ... 
-%     {solid, mpc_color}
-% };
+lineStyles = {
+    {solid, flc_color}, ... 
+    {solid, mpfc_color}, ... 
+    {solid, mpc_color}
+};
+simIndex = [2, 3];
 
+simulationSetup = { 
+  "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+  "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+};
+seeds = [8721, 7857, 1151, 9093, 6561];
+% 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [4767, 2357, 6936, 3167, 6246];
-% simIndex = [2, 3];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
-% simIndex = [2, 3];
+% 
+% simulationSetup = { 
+%   "flc", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+% };
+% seeds = [8721, 7857, 1151, 9093, 6561];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [8721, 7857, 1151, 9093, 6561];
-% simIndex = [2, 3];
 % 
 % % 4.3.3 - Sensitivity Analysis: MPC Step Size
 % simulationSetup = { 
-%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 2";
-%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 5";
-%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 30";
-%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 45";
-%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 60";
-%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 75";
+%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 2";
+%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 5";
+%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 30";
+%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 45";
+%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 60";
+%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 75";
 % };
 % seeds = [9933, 4258, 9696, 6016, 7584];
 % simIndex = [1, 2, 3, 4, 5, 6];
 % 
 % % 4.3.4 - Sensitivity Analysis: Prediction Step Size
-simulationSetup = { 
-%   "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 17";
-%   "mpfc_centralised_pred_30", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 30";
-  "mpfc_centralised_pred_45", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 45";
-%   "mpfc_centralised_pred_60", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 60";
-%   "mpfc_centralised_pred_75", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 75";
-};
-seeds = [2239, 7961, 6896, 8912, 833];
+% simulationSetup = { 
+  % "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 17";
+  % "mpfc_centralised_pred_20", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 30";
+  % "mpfc_centralised_pred_30", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 45";
+  % "mpfc_centralised_pred_45", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 60";
+  % "mpfc_centralised_pred_60", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 75";
+% };
+% seeds = [2239, 7961, 6896, 8912, 833];
 % simIndex = [1, 2, 3, 4, 5];
 % 
 % % 4.4.1 - Design Exploration: Prediction Modes
@@ -605,7 +624,7 @@ alpha = 0.05;
 [means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj] = calculateStats(data, simulationSetup, 'obj_hist', config.dt_s, alpha);
 
 % Calculate stats for optimizationTimes
-[means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(data, simulationSetup, 'optimizationTimes', config.dt_s, alpha);
+[means_t_opt, ci_lower_t_opt, ci_upper_t_opt, time_vector_t_opt] = calculateStats(data, simulationSetup, 'optimizationTimes', config.dt_mpc, alpha);
 
 %% 6. Plot Simulation Performance Parameters
 %    ---------------------------------------
@@ -613,11 +632,36 @@ alpha = 0.05;
 %    - Mean objective values with confidence intervals.
 %    - Mean optimization times with confidence intervals.
 
+% % Define the threshold
+% threshold = 0.2e4;
+% 
+% % Loop through each selected simulation index
+% for idx = 1:length(simIndex)
+%     i = simIndex(idx);
+% 
+%     % Get the data for means, ci_lower, and ci_upper
+%     means = means_t_opt{i};
+%     ci_lower = ci_lower_t_opt{i};
+%     ci_upper = ci_upper_t_opt{i};
+%     time_vector = time_vector_t_opt{i};
+% 
+%     % Find the indices of values below the threshold
+%     validIndices = means <= threshold;
+% 
+%     % Filter the data based on the valid indices
+%     means_t_opt{i} = means(validIndices);
+%     ci_lower_t_opt{i} = ci_lower(validIndices);
+%     ci_upper_t_opt{i} = ci_upper(validIndices);
+%     time_vector_t_opt{i} = time_vector(validIndices);
+% end
+
 % Plot stats for obj_hist
-plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, "Objective Function, $\overline{J}$", lineStyles);
+simIndex = [1, 2, 3];
+plotStats(means_obj(simIndex), ci_lower_obj(simIndex), ci_upper_obj(simIndex), time_vector_obj(simIndex), simulationSetup(simIndex, :), "Objective Function, $\overline{J}$", lineStyles(simIndex));
 
 % Plot stats for optimizationTimes
-plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simIndex), time_vector_t_opt(simIndex), simulationSetup(simIndex, :), "Optimisation Time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
+simIndex = [2, 3];
+plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simIndex), time_vector_t_opt(simIndex), simulationSetup(simIndex, :), "Optimisation Time, $\overline{t}^{\mathrm{opt}}$", lineStyles(simIndex));
 
 %% 7. Plot Geographical Parameters
 %    -----------------------------
@@ -650,11 +694,12 @@ animateAgentFireEnvironment(agent_model, environment_model, config, "animation_a
 
 %% 9. Save and export simulation results
 %    -----------------------------------
-%    `saveSimulationResults()` - saves workspace parameters and figures in 
+%    `saveSimulationResults()` - saves 2workspace parameters and figures in 
 %     a new folder
 
 % Call the function to save results and figures
 saveSimulationResults(config.flag_save, config);
+close all
 
 %% 10. Sensitivity Analysis Plots
 %     ---------------------------
@@ -763,7 +808,7 @@ saveSimulationResults(config.flag_save, config);
 % plotScatterTrends(t_MPC_MeanObj, simNames, t_mpc, 2, t_MPC_MeanObj_confLower, t_MPC_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Objective Function, $\overline{J}$", lineStyles);
 % plotScatterTrends(t_MPC_MeanTime, simNames, t_mpc, 1, t_MPC_MeanTime_confLower, t_MPC_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$", lineStyles);
 
-%% t_pred
+%% t_pred %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % t_pred_MeanObj = 1.0e+03*[7.77, 7.7787, 7.805, 7.684];
 % t_pred_MeanObj_confLower = 1.0e+03 *[7.3310, 7.2780, 7.3690, 7.3288];
 % t_pred_MeanObj_confUpper = 1.0e+03 *[8.2091, 8.2794, 8.2409, 8.0391];
@@ -784,6 +829,26 @@ saveSimulationResults(config.flag_save, config);
 %% Disaster environment size %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % % Data
+% V2
+% fisMeanObj = 1.0e+03*[0.207, 2.5986, 7.6638];
+% 
+% mpfcCentralisedMeanTime = [21.5653, 96.8939, 168.0375];
+% mpfcCentralisedMeanTime_confLower = [20.8904, 94.7810, 165.8786];
+% mpfcCentralisedMeanTime_confUpper = [22.2401, 99.0068, 170.1964];
+% mpfcCentralisedMeanObj = 1.0e+03 *[0.1908, 2.2754, 6.9163];
+% mpfcCentralisedMeanObj_confLower = 1.0e+03 *[0.156, 2.0890, 6.4595];
+% mpfcCentralisedMeanObj_confUpper = 1.0e+03 *[0.225, 2.4618, 7.3732];
+% 
+% 
+% mpcMeanTime = [42.9858, 129.7036, 246.8798];
+% mpcMeanTime_confLower = [31.6914, 100.7676, 189.8676];
+% mpcMeanTime_confUpper = [54.2802, 158.6395, 303.8921];
+% mpcMeanObj = 1.0e+03 *[0.2697, 2.5545, 7.7265];
+% mpcMeanObj_confLower = 1.0e+03 *[0.218, 2.3512, 7.4081];
+% mpcMeanObj_confUpper = 1.0e+03 *[0.320, 2.7578, 8.0449];
+
+
+% V1
 % fisMeanObj = 1.0e+03*[0.207, 2.1763, 7.6638];
 % 
 % mpfcCentralisedMeanTime = [21.5653, 96.8939, 168.0375];
@@ -793,12 +858,6 @@ saveSimulationResults(config.flag_save, config);
 % mpfcCentralisedMeanObj_confLower = 1.0e+03 *[0.156, 1.5523, 6.4595];
 % mpfcCentralisedMeanObj_confUpper = 1.0e+03 *[0.225, 2.1451, 7.3732];
 % 
-% % mpfcDecentralisedMeanTime = [23.3633];
-% % mpfcDecentralisedMeanTime_confLower = [23.1581];
-% % mpfcDecentralisedMeanTime_confUpper = [23.5684];
-% % mpfcDecentralisedMeanObj = 1.0e+03 *[1.8070];
-% % mpfcDecentralisedMeanObj_confLower = 1.0e+03 *[1.5147];
-% % mpfcDecentralisedMeanObj_confUpper = 1.0e+03 *[2.0993];
 % 
 % mpcMeanTime = [42.9858, 147.7781, 246.8798];
 % mpcMeanTime_confLower = [31.6914, 106.4945, 189.8676];

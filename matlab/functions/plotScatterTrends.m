@@ -84,9 +84,27 @@ end
 % 
 % disp('Confidence Interval Upper Bounds for Optimization Times:');
 % disp(m_ci_upper_t_opt);
-% 
+
+%% FILTER OUTLIERS
 % % Define the threshold
-% threshold = 1e3;
+% threshold = 0.2e4;
 % 
-% % Function to filter out values above the threshold
-% filter_function = @(x) x(abs(x) <= threshold);
+% % Loop through each selected simulation index
+% for idx = 1:length(simIndex)
+%     i = simIndex(idx);
+% 
+%     % Get the data for means, ci_lower, and ci_upper
+%     means = means_t_opt{i};
+%     ci_lower = ci_lower_t_opt{i};
+%     ci_upper = ci_upper_t_opt{i};
+%     time_vector = time_vector_t_opt{i};
+% 
+%     % Find the indices of values below the threshold
+%     validIndices = means <= threshold;
+% 
+%     % Filter the data based on the valid indices
+%     means_t_opt{i} = means(validIndices);
+%     ci_lower_t_opt{i} = ci_lower(validIndices);
+%     ci_upper_t_opt{i} = ci_upper(validIndices);
+%     time_vector_t_opt{i} = time_vector(validIndices);
+% end
