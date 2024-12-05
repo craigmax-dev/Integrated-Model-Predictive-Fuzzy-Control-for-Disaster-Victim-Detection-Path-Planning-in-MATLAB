@@ -9,22 +9,34 @@ function plotScatterTrendsNormalised(simResults, baselineResults, simNames, xPar
     confLower = 100 * (confLower - baselineResults) ./ baselineResults;
     confUpper = 100 * (confUpper - baselineResults) ./ baselineResults;
 
-    % Prepare the plot
-    figure;
+    % Prepare the plot with specified size
+    figHandle = figure;
+    set(figHandle, 'Units', 'centimeters', 'Position', [1, 1, 25, 20]);
     hold on;
     grid on;
-
-    % Helper function to convert hexadecimal to RGB
-    hex2rgb = @(hex) sscanf(char(hex(2:end)), '%2x%2x%2x', [1 3]) / 255;
 
     % Plot each simulation result
     for i = 1:length(simNames)
         % Get the line style for the current simulation
         lineSpec = lineStyles{i};
+        lineStyle = lineSpec{1};
+        colorHex = lineSpec{2};
+        color = hex2rgb(colorHex);
 
-        % Plot mean points with error bars
+        % Define marker and error bar styles based on line style
+        switch lineStyle
+            case '-'
+                marker = 'o';
+                capSize = 12;
+            case '--'
+                marker = 's';
+                capSize = 6;
+        end
+
+        % Plot mean points with error bars using custom line styles
         errorbar(xParameter, relDiffs(i, :), relDiffs(i, :) - confLower(i, :), confUpper(i, :) - relDiffs(i, :), ...
-            'o', 'MarkerEdgeColor', lineSpec{2}, 'MarkerFaceColor', lineSpec{2}, 'LineWidth', 1, 'Color', lineSpec{2}, 'HandleVisibility', 'off');
+            'LineStyle', 'none', 'Marker', marker, 'MarkerEdgeColor', color, 'MarkerFaceColor', color, ...
+            'Color', color, 'LineWidth', 1, 'CapSize', capSize, 'DisplayName', simNames{i});
 
         % Fit a polynomial to the relative difference results
         coeffs = polyfit(xParameter, relDiffs(i, :), polyOrder);
@@ -33,18 +45,34 @@ function plotScatterTrendsNormalised(simResults, baselineResults, simNames, xPar
         fineX = linspace(min(xParameter), max(xParameter), 100); % 100 points for smooth curve
         fittedY = polyval(coeffs, fineX);
 
-        % Plot the smooth polynomial curve
-        plot(fineX, fittedY, 'LineStyle', lineSpec{1}, 'Color', lineSpec{2}, 'LineWidth', 2, 'DisplayName', simNames{i});
+        % Plot the smooth polynomial curve without adding it to the legend
+        plot(fineX, fittedY, 'LineStyle', lineStyle, 'Color', color, 'LineWidth', 2, 'HandleVisibility', 'off');
     end
-    
+
     % Customize plot
     legend('show', 'Location', 'best');
-    xlabel(xLabel, 'Interpreter', 'latex');
-    ylabel(yLabel, 'Interpreter', 'latex');
+    xlabel(xLabel, 'Interpreter', 'latex', 'FontSize', 14);
+    ylabel(yLabel, 'Interpreter', 'latex', 'FontSize', 14);
+    set(gca, 'FontSize', 12);
 
     % Automatically set x-axis limits with slight margins
     xMargin = 0.1 * (max(xParameter) - min(xParameter)); % Define margin as 10% of the range
     xlim([min(xParameter) - xMargin, max(xParameter) + xMargin]);
 
     hold off;
+end
+
+% Helper function to convert hex color codes to RGB
+function rgb = hex2rgb(hex)
+    hex = char(hex);
+    if hex(1) == '#'
+        hex(1) = [];
+    end
+    if numel(hex) ~= 6
+        error('hex color code must be 6 characters');
+    end
+    r = double(hex2dec(hex(1:2))) / 255;
+    g = double(hex2dec(hex(3:4))) / 255;
+    b = double(hex2dec(hex(5:6))) / 255;
+    rgb = [r, g, b];
 end
