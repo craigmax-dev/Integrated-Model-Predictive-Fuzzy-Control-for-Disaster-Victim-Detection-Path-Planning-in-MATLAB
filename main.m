@@ -373,21 +373,30 @@ dash = '--';
 % };
 % seeds = [2239, 7961, 6896, 8912, 833];
 % 
-% % 4.4.1 - Design Exploration: Prediction Modes
+% 4.4.1 - Design Exploration: Prediction Modes
+% % dk_30
 % simulationSetup = { 
+%   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+%   "mpfc_centralised_prediction", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
 %   "mpfc_centralised_exact", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
-%   "mpfc_centralised_prediction", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Prediction";
 % };
-% lineStyles = {
-%     {solid, mpfc_colour}, ... 
-%     {dot, mpfc_colour}
-% };
-% seeds = [8904, 6149, 5712, 3194, 6791];
+% dk_60
+simulationSetup = { 
+  "flc", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+  "mpfc_centralised_prediction", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
+  "mpfc_centralised_exact", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
+};
+lineStyles = {
+    {solid, flc_colour}, ... 
+    {solid, mpfc_colour}, ... 
+    {dash, mpfc_colour}
+};
+seeds = [8904, 6149, 5712, 3194, 6791];
 % 
-% % 4.4.2 - Design Exploration: Type-1 vs Type-2 FLC
+% 4.4.2 - Design Exploration: Type-1 vs Type-2 FLC
 % simulationSetup = { 
-%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC, Type 1 FLC";
 %   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_fis, "Pre-tuned FLC, Type 2 FLC";
+%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC, Type 1 FLC";
 % };
 % lineStyles = {
 %     {solid, mpfc_colour}, ... 
@@ -395,7 +404,7 @@ dash = '--';
 % };
 % seeds = [9359, 4746, 839, 2634, 8288];
 
-% % 4.4.2 - Design Exploration: Type-1 vs Type-2 MPFC
+% 4.4.2 - Design Exploration: Type-1 vs Type-2 MPFC
 % simulationSetup = { 
 %   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
 %   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
@@ -422,23 +431,23 @@ dash = '--';
 % seeds = [3717, 2940, 4349];
 % numIterations = 3;   
 % 
-% % 4.4.3 - Design Exploration: Local Prediction Maps - Large Dynamic Disaster Environment
-% simulationSetup = { 
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 7";
-%   "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
-%   "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 3";
-%   "flc", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-% };
-% lineStyles = {
-%     {solid, '#e66101'}, ... 
-%     {solid, '#fdb863'}, ... 
-%     {solid, '#b2abd2'}, ... 
-%     {solid, '#5e3c99'}, ... 
-%     {solid, flc_colour}, ... 
-% };
-% seeds = [8675, 2155, 278];
-% numIterations = 3;   
+% 4.4.3 - Design Exploration: Local Prediction Maps - Large Dynamic Disaster Environment
+simulationSetup = { 
+  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+  "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 7";
+  "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
+  "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 3";
+  "flc", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+};
+lineStyles = {
+    {solid, '#e66101'}, ... 
+    {solid, '#fdb863'}, ... 
+    {solid, '#b2abd2'}, ... 
+    {solid, '#5e3c99'}, ... 
+    {solid, flc_colour}, ... 
+};
+seeds = [8675, 2155, 278];
+numIterations = 3;   
 
 %% 4. Iterate over each simulation setup
 %    ----------------
@@ -666,7 +675,7 @@ alpha = 0.05;
 % end
 
 % Select which simulations to plot
-simIndex = [1, 2, 3, 4, 5];
+simIndex = [1, 2];
 
 % Plot stats for obj_hist
 % plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, "Objective Function, $\overline{J}$", lineStyles);
@@ -691,19 +700,19 @@ items = {'UAV'};
 item_locations = {agent_model.a_loc};
 markerSizes = [10]; % List of marker sizes for items
 
-m_f_series_indexes = [1, 21, 41, 61, 81];
+m_f_series_indexes = [1, 21, 41];
 
 plotGeographical(agent_model, environment_model, env_parameter_list, env_labels, search_parameter_list, search_labels, items, item_locations, markerSizes, m_f_series_indexes)
 
-%% 8. Plot animations
-%    ----------------
-%    Plots and saves in MP4 format animations of:
-
-% evolution of the FLC parameters for each agent
-animateFLCParams(flc_params_hist, fisArray, "animation_mpfc_flc_params_hist")
-
-% Agent actions and the progression of environment states
-animateAgentFireEnvironment(agent_model, environment_model, config, "animation_agent_actions")
+% %% 8. Plot animations
+% %    ----------------
+% %    Plots and saves in MP4 format animations of:
+% 
+% % evolution of the FLC parameters for each agent
+% animateFLCParams(flc_params_hist, fisArray, "animation_mpfc_flc_params_hist")
+% 
+% % Agent actions and the progression of environment states
+% animateAgentFireEnvironment(agent_model, environment_model, config, "animation_agent_actions")
 
 %% 9. Save and export simulation results
 %    -----------------------------------
@@ -719,8 +728,23 @@ close all
 %     Sensitivity analysis plots can be generated here using the data from 
 %     the simulations run during this study
 
-%% structures - sensitivity analysis for the results using structures (note no dynamics)
+%% Prediction Mode
+% % V2
+% probThresh_MeanObj = 1.0e+03*[2.1918];
+% probThresh_MeanObj_confLower = 1.0e+03 *[1.9576];
+% probThresh_MeanObj_confUpper = 1.0e+03 *[2.4259];
+% probThresh_MeanTime = [44.7809];
+% probThresh_MeanTime_confLower = [42.7516];
+% probThresh_MeanTime_confUpper = [46.8101];
 % 
+% exact_MeanObj = 1.0e+03*[2.2119];
+% exact_MeanObj_confLower = 1.0e+03 *[2.0454];
+% exact_MeanObj_confUpper = 1.0e+03 *[2.3784];
+% exact_MeanTime = [44.1336];
+% exact_MeanTime_confLower = [42.5252];
+% exact_MeanTime_confUpper = [45.7420];
+
+% % V1
 % probThresh_MeanObj = 1.0e+03*[2.1525, 2.2396];
 % probThresh_MeanObj_confLower = 1.0e+03 *[1.9411, 1.9858];
 % probThresh_MeanObj_confUpper = 1.0e+03 *[2.3640, 2.4935];
@@ -746,7 +770,7 @@ close all
 % t_mpc = 15*[30, 60];
 % lineStyles = {
 %     {solid, mpfc_colour}, ...         % Centralised MPFC
-%     {"--", mpfc_colour}, ...          % Decentralised MPFC
+%     {dash, mpfc_colour}, ...          % Decentralised MPFC
 % };
 % 
 % % Call the functions
