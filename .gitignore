@@ -1,57 +1,6 @@
-# Simulation files
-*.fig
-*.jpg
-*.png
-*.mat
-
-# # Ignore everything in the initialisation file paths
-# */matlab/initialisation/simulation/*
-# */matlab/initialisation/plotting/*
-# */matlab/initialisation/pathPlanning/*
-# */matlab/initialisation/mpc/*
-# */matlab/initialisation/environment/*
-# */matlab/initialisation/agent/*
-
-# # Except for template.m files
-# */!matlab/initialisation/simulation/template.m
-# */!matlab/initialisation/plotting/template.m
-# */!matlab/initialisation/pathPlanning/template.m
-# */!matlab/initialisation/mpc/template.m
-# */!matlab/initialisation/environment/template.m
-# */!matlab/initialisation/agent/template.m
-
-# LaTeX generated files
-*.aux
-*.log
-*.synctex.gz
-*.out
-*.fls
-*.fdb_latexmk
-*.toc
-*.lof
-*.lot
-*.bbl
-*.blg
-*.idx
-*.ind
-*.ilg
-*.maf
-*.mtc
-*.mtc0
-*.nav
-*.snm
-*.vrb
-*.acn
-*.acr
-*.alg
-*.glg
-*.glo
-*.gls
-*.ist
-*.flg
-*.dvi
-*.thm
+# Folders to ignore
+simulations/0_ARCHIVE/*
+animations/*
 
 # Other files
-*.pdf
 *.asv
