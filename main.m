@@ -381,17 +381,17 @@ dash = '--';
 %   "mpfc_centralised_exact", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
 % };
 % dk_60
-simulationSetup = { 
-  "flc", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-  "mpfc_centralised_prediction", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
-  "mpfc_centralised_exact", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
-};
-lineStyles = {
-    {solid, flc_colour}, ... 
-    {solid, mpfc_colour}, ... 
-    {dash, mpfc_colour}
-};
-seeds = [8904, 6149, 5712, 3194, 6791];
+% simulationSetup = { 
+%   "flc", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+%   "mpfc_centralised_prediction", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
+%   "mpfc_centralised_exact", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
+% };
+% lineStyles = {
+%     {solid, flc_colour}, ... 
+%     {solid, mpfc_colour}, ... 
+%     {dash, mpfc_colour}
+% };
+% seeds = [8904, 6149, 5712, 3194, 6791];
 % 
 % 4.4.2 - Design Exploration: Type-1 vs Type-2 FLC
 % simulationSetup = { 
@@ -405,15 +405,15 @@ seeds = [8904, 6149, 5712, 3194, 6791];
 % seeds = [9359, 4746, 839, 2634, 8288];
 
 % 4.4.2 - Design Exploration: Type-1 vs Type-2 MPFC
-% simulationSetup = { 
-%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
-%   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
-% };
-% lineStyles = {
-%     {solid, mpfc_colour}, ... 
-%     {dash, mpfc_colour}
-% };
-% seeds = [9359, 4746, 839, 2634, 8288];
+simulationSetup = { 
+  "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
+  "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
+};
+lineStyles = {
+    {solid, mpfc_colour}, ... 
+    {dash, mpfc_colour}
+};
+seeds = [9359, 4746, 839, 2634, 8288];
 % 
 % % 4.4.3 - Design Exploration: Local Prediction Maps - Small Static Disaster Environment
 % simulationSetup = { 
@@ -432,22 +432,22 @@ seeds = [8904, 6149, 5712, 3194, 6791];
 % numIterations = 3;   
 % 
 % 4.4.3 - Design Exploration: Local Prediction Maps - Large Dynamic Disaster Environment
-simulationSetup = { 
-  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-  "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 7";
-  "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
-  "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 3";
-  "flc", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-};
-lineStyles = {
-    {solid, '#e66101'}, ... 
-    {solid, '#fdb863'}, ... 
-    {solid, '#b2abd2'}, ... 
-    {solid, '#5e3c99'}, ... 
-    {solid, flc_colour}, ... 
-};
-seeds = [8675, 2155, 278];
-numIterations = 3;   
+% simulationSetup = { 
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 7";
+%   "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
+%   "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 3";
+%   "flc", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+% };
+% lineStyles = {
+%     {solid, '#e66101'}, ... 
+%     {solid, '#fdb863'}, ... 
+%     {solid, '#b2abd2'}, ... 
+%     {solid, '#5e3c99'}, ... 
+%     {solid, flc_colour}, ... 
+% };
+% seeds = [8675, 2155, 278];
+% numIterations = 3;   
 
 %% 4. Iterate over each simulation setup
 %    ----------------
@@ -730,34 +730,21 @@ close all
 
 %% Prediction Mode
 % % V2
-% probThresh_MeanObj = 1.0e+03*[2.1918];
-% probThresh_MeanObj_confLower = 1.0e+03 *[1.9576];
-% probThresh_MeanObj_confUpper = 1.0e+03 *[2.4259];
-% probThresh_MeanTime = [44.7809];
-% probThresh_MeanTime_confLower = [42.7516];
-% probThresh_MeanTime_confUpper = [46.8101];
-% 
-% exact_MeanObj = 1.0e+03*[2.2119];
-% exact_MeanObj_confLower = 1.0e+03 *[2.0454];
-% exact_MeanObj_confUpper = 1.0e+03 *[2.3784];
-% exact_MeanTime = [44.1336];
-% exact_MeanTime_confLower = [42.5252];
-% exact_MeanTime_confUpper = [45.7420];
+% fisMeanObj = 1.0e+03*[?, 2.4509];
 
-% % V1
-% probThresh_MeanObj = 1.0e+03*[2.1525, 2.2396];
-% probThresh_MeanObj_confLower = 1.0e+03 *[1.9411, 1.9858];
-% probThresh_MeanObj_confUpper = 1.0e+03 *[2.3640, 2.4935];
-% probThresh_MeanTime = [38.9131, 105.2248];
-% probThresh_MeanTime_confLower = [31.1143, 86.2618];
-% probThresh_MeanTime_confUpper = [46.7118, 124.1878];
+% probThresh_MeanObj = 1.0e+03*[2.1918, 2.1121];
+% probThresh_MeanObj_confLower = 1.0e+03 *[1.9576, 1.9219];
+% probThresh_MeanObj_confUpper = 1.0e+03 *[2.4259, 2.3023];
+% probThresh_MeanTime = [44.7809, 108];
+% probThresh_MeanTime_confLower = [42.7516, 105];
+% probThresh_MeanTime_confUpper = [46.8101, 110];
 % 
-% exact_MeanObj = 1.0e+03*[2.0296, 2.0608];
-% exact_MeanObj_confLower = 1.0e+03 *[1.8295, 1.9253];
-% exact_MeanObj_confUpper = 1.0e+03 *[2.2296, 2.1963];
-% exact_MeanTime = [42.8821, 100.1935];
-% exact_MeanTime_confLower = [29.2213, 83.0120];
-% exact_MeanTime_confUpper = [56.5428, 117.3750];
+% exact_MeanObj = 1.0e+03*[2.2119, 2.1055];
+% exact_MeanObj_confLower = 1.0e+03 *[2.0454, 1.9160];
+% exact_MeanObj_confUpper = 1.0e+03 *[2.3784, 2.2950];
+% exact_MeanTime = [44.1336, 119];
+% exact_MeanTime_confLower = [42.5252, 107];
+% exact_MeanTime_confUpper = [45.7420, 132];
 % 
 % predMode_MeanObj            = [probThresh_MeanObj           ; exact_MeanObj           ];
 % predMode_MeanObj_confLower  = [probThresh_MeanObj_confLower ; exact_MeanObj_confLower ];
@@ -774,12 +761,12 @@ close all
 % };
 % 
 % % Call the functions
-% plotScatterTrends(predMode_MeanObj, simNames, t_mpc, 1, predMode_MeanObj_confLower, predMode_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Objective Function, $\overline{J}$", lineStyles);
-% plotScatterTrends(predMode_MeanTime, simNames, t_mpc, 1, predMode_MeanTime_confLower, predMode_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
-% 
+% plotScatterTrends(predMode_MeanObj, simNames, t_mpc, 1, predMode_MeanObj_confLower, predMode_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(predMode_MeanTime, simNames, t_mpc, 1, predMode_MeanTime_confLower, predMode_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
+
 % 
 % % simNames = {'Probability Threshold'};
-% plotScatterTrendsNormalised(probThresh_MeanObj, exact_MeanObj, simNames, t_mpc, 1, probThresh_MeanObj_confLower, probThresh_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
+% plotScatterTrendsNormalised([probThresh_MeanObj, exact_MeanObj], fisMeanObj, simNames, t_mpc, 1, probThresh_MeanObj_confLower, probThresh_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
 
 %% n_a %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -842,8 +829,8 @@ close all
 % };
 % 
 % % Call the functions
-% plotScatterTrends(t_MPC_MeanObj, simNames, t_mpc, 2, t_MPC_MeanObj_confLower, t_MPC_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Objective Function, $\overline{J}$", lineStyles);
-% plotScatterTrends(t_MPC_MeanTime, simNames, t_mpc, 1, t_MPC_MeanTime_confLower, t_MPC_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
+% plotScatterTrends(t_MPC_MeanObj, simNames, t_mpc, 2, t_MPC_MeanObj_confLower, t_MPC_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(t_MPC_MeanTime, simNames, t_mpc, 1, t_MPC_MeanTime_confLower, t_MPC_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
 
 % % t_pred %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % t_pred_MeanObj = 1.0e+03*[7.77, 7.7787, 7.805, 7.684];
