@@ -2,17 +2,17 @@
 
 **Please note currently the README file is out of date**
 
-This is the code for my in-progress thesis project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology.
+This project is produced for the department of Control and Simulation, Aerospace Engineering at the Delft University of Technology.
 
-<!-- :exclamation: This is a work in progress! :exclamation:
-Please note that the code here is not complete. There currently may be various bugs and improvements that need to be made to the simulation. When the version of the code to be used in my thesis is complete, I will release it as a version in this repo.
- -->
- 
-This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters. 
-The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents). 
-The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation. 
-The output of the FIS is attraction which is used by the path-planner to decide on waypoint locations for the UAVs. 
-The MPC uses an objective function which is a combination of the accumulative priority of unscanned cells and an additional priority due to cells which are on fire. 
+Version 1.1 of this code base is used in my master thesis: [Model-Predictive Fuzzy Control for Search-and-Rescue Path-Planning of Multi-Agent Systems](https://repository.tudelft.nl/record/uuid:c2e3766a-d228-4ce3-8755-88c1f097fbf5)
+
+<!-- :exclamation: Current version: V1.1 -->
+
+This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters.
+The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents).
+The inputs used for the FIS are distance, priority, and downwind time; each of which are modelled in the simulation.
+The output of the FIS is attraction which is used by the path-planner to decide on waypoint locations for the UAVs.
+The MPC uses an objective function which is a combination of the accumulative priority of unscanned cells and an additional priority due to cells which are on fire.
 The MPC uses the patternsearch solver for the nonlinear time-limited optimisation of the FIS parameters.
 
 ## Getting Started
@@ -21,19 +21,19 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-* [MATLAB](https://www.mathworks.com/products/matlab.html) - Version: '9.8'
-* [Mapping Toolbox]() - Version: '4.10'
-* [Image Processing Toolbox]() - Version: '11.1'
-* [Fuzzy Logic Toolbox](https://www.mathworks.com/products/fuzzy-logic.html) - Version: '2.7'
-* [Global Optimization Toolbox]() - Version: '4.3'
-* [Antenna Toolbox]() - Version: '4.2'
-* [Curve Fitting Toolbox]() - Version: '3.5.11'
-* [Fixed-Point Designer]() - Version: '7.0'
-* [System Identification Toolbox]() - Version: '9.12'
-* [MATLAB Coder]() - Version: '5.0'
-* [Optimization Toolbox](https://www.mathworks.com/products/optimization.html) - Version: '8.5'
-* [Simulink]() - Version: '10.1'
-* [Statistics and Machine Learning Toolbox]() - Version: '11.7'
+- [MATLAB](https://www.mathworks.com/products/matlab.html) - Version: '9.8'
+  <!-- * [Mapping Toolbox]() - Version: '4.10' -->
+  <!-- * [Image Processing Toolbox]() - Version: '11.1' -->
+- [Fuzzy Logic Toolbox](https://www.mathworks.com/products/fuzzy-logic.html) - Version: '2.7'
+  <!-- * [Global Optimization Toolbox]() - Version: '4.3' -->
+  <!-- * [Antenna Toolbox]() - Version: '4.2' -->
+  <!-- * [Curve Fitting Toolbox]() - Version: '3.5.11' -->
+  <!-- * [Fixed-Point Designer]() - Version: '7.0' -->
+  <!-- * [System Identification Toolbox]() - Version: '9.12' -->
+  <!-- * [MATLAB Coder]() - Version: '5.0' -->
+- [Optimization Toolbox](https://www.mathworks.com/products/optimization.html) - Version: '8.5'
+<!-- * [Simulink]() - Version: '10.1' -->
+- [Statistics and Machine Learning Toolbox]() - Version: '11.7'
 
 ### Installing
 
@@ -51,19 +51,19 @@ Default tests will be included in the full release of the project code.
 
 ## Contributing
 
-This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology. 
-Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code. 
-Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us. 
+This is a thesis project as part of my final project for my MSc in Control and Simulation, Aerospace Engineering at the Delft University of Technology.
+Contributions will be welcome after the final version of the code for the thesis is produced. There are many options to continue building on and improving the code.
+Please read [CONTRIBUTING.md](https://gist.github.com/craigmax-dev/contributing) for details on our code of conduct, and the process for submitting pull requests to us.
 For inspiration or ideas of how to contribute to the project, please read [RECOMMENDATIONS.md](RECOMMENDATIONS.md).
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/craigmax-dev/Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/craigmax-dev/Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB/tags).
 
 ## Authors
 
-* **Craig Maxwell** - *Initial work* - [craigmax-dev](https://github.com/craigmax-dev)
-* **Mirko Baglioni** - Several adaptations are made from the PhD project of Mirko.
+- **Craig Maxwell** - _Initial work_ - [craigmax-dev](https://github.com/craigmax-dev)
+- **Mirko Baglioni** - Several adaptations are made from the PhD project of Mirko.
 
 ## License
 
@@ -83,6 +83,7 @@ The `calculateAgentDistances` function computes the minimum Euclidean distance f
 #### Process
 
 1. **Initialization:**
+
    - Extract the number of rows (`numRows`) and columns (`numCols`) from `gridSize`.
    - Determine the number of agents (`numAgents`) from the dimensions of `agentPositions`.
    - Initialize `distanceMatrix`, a cell array where each cell will contain a matrix representing the minimum distances from all points in the grid to a particular agent.
@@ -112,15 +113,19 @@ The `calculateFireSpreadLikelihood` function computes a map of the likelihood of
 #### Process
 
 1. **Initialization:**
+
    - Initialize `F_likelihood`, a matrix with dimensions corresponding to the environment (`n_x_e` by `n_y_e`), to zeros. This matrix will store the likelihood of fire spread to each cell.
 
 2. **Wind Influence Matrix Calculation:**
+
    - Calculate `W`, the wind influence matrix, using `calculateWindSpreadMatrix` function with parameters from `environment_model`. `W` incorporates the effects of wind direction and speed on fire spread.
 
 3. **Burn Time Window Assumption:**
+
    - For each time step `t` within the given `time_period`, iterate over all cells in the environment to calculate the fire spread likelihood.
 
 4. **Fire Spread Likelihood Calculation:**
+
    - Skip cells that are already burnt or burning (`m_f(i, j) == 3` or `m_f(i, j) == 4`).
    - Calculate the spread probability `p` for the current time `t` using `calculateSpreadProbability`, which considers the ignition time (`t_i`) and burn time (`t_b`) for the environment.
    - Update the fire spread likelihood for the current cell using `updateFireSpreadProbability`, which takes into account the calculated probability `p`, wind influence `W`, and other environmental factors such as slope (`m_s`) and building occupancy (`m_bo`).
@@ -147,17 +152,21 @@ The `calc_att` function calculates the attraction level for each cell in an envi
 #### Process
 
 1. **Initialization:**
+
    - Initialize `m_att` with `NaN` values, having the same dimensions as `m_t_response`.
 
 2. **Scheduled Cells Identification:**
+
    - Create a logical matrix `scheduled_cells` indicating which cells are already scheduled by agents. The process differs based on the `communication_enabled` flag:
      - **With Communication:** Consider cells scheduled by all agents.
      - **Without Communication:** Consider only cells scheduled by the agent in question.
 
 3. **Valid Cells Determination:**
+
    - Identify valid cells for attraction calculation as those not scheduled (`~scheduled_cells`) and not containing `NaN` in `m_t_response` or `m_prior`.
 
 4. **FIS Input Preparation:**
+
    - Extract `m_t_response` and `m_prior` for valid cells and combine them into a matrix `fisInputs`.
 
 5. **Attraction Calculation:**
@@ -182,11 +191,13 @@ The `calc_maxResponseTime` function computes the maximum response time for an ag
 #### Calculations
 
 1. **Total Length and Width of the Search Area:**
+
    - The total length and width of the search area are calculated based on the environment dimensions and scaling factors:
      - `totalLength = (n_x_s - 1) * l_x_s`
      - `totalWidth = (n_y_s - 1) * l_y_s`
 
 2. **Diagonal Distance of the Search Area:**
+
    - The diagonal distance, representing the longest straight-line distance across the search area, is computed as:
      - `diagonalDistance = sqrt(totalLength^2 + totalWidth^2)`
 
@@ -218,27 +229,34 @@ The `calc_obj` function calculates an objective value based on various factors i
 #### Process
 
 1. **Active Fires Map (`m_fo`):**
+
    - Identify cells with active fires: `m_fo = (m_f == 3)`.
 
 2. **Victim Parameter:**
+
    - Use `m_victim_s` to represent victim likelihood. If `m_victim_s` is empty, use `m_bo_s` as a proxy.
 
 3. **Coarsen Environment Maps:**
+
    - Apply `func_coarsen` to `m_fo` using `c_f_s` to adjust the resolution to match agent resolution, resulting in `m_fo_s`.
 
 4. **Active Fire Weight (`m_P_fire_weight`):**
+
    - Calculate the weight applied to cells with active fires: `m_P_fire_weight = m_fo_s * weight.fire`.
 
 5. **First-time Scan Priority Component (`m_P_first_scan`):**
+
    - For cells not yet scanned (`m_scan == 0`), calculate the priority based on victim likelihood and fire presence:
      `m_P_first_scan = double(m_scan == 0) .* m_victim_s .* (1 + m_P_fire_weight) * weight.first_scan`.
 
 6. **Repeat Scan Priority Component (`m_P_repeat_scan`):**
+
    - Calculate the priority for repeat scans based on time since last scan, victim likelihood, and fire presence:
      `m_P_repeat_scan = time_since_last_scan .* m_victim_s .* (1 + m_P_fire_weight) * weight.repeat_scan`,
-   where `time_since_last_scan = max(t - m_scan, 0)`.
+     where `time_since_last_scan = max(t - m_scan, 0)`.
 
 7. **Total Priority Map (`m_P`):**
+
    - Sum the first-time and repeat scan priorities to obtain the total priority map: `m_P = m_P_first_scan + m_P_repeat_scan`.
 
 8. **Objective Function Calculation:**
@@ -272,24 +290,24 @@ The `calc_prior` function computes the scanning priority for areas within a grid
 
 1. **Normalize Victim Information (Optional):**
    If `flag_victim_model` is true, normalize $m_{victim}$ to the range [0, 1]:
-   $$ m_{\text{victim}} = \frac{m_{\text{victim}}}{\max(m_{\text{victim}})} $$
+   $$ m*{\text{victim}} = \frac{m*{\text{victim}}}{\max(m\_{\text{victim}})} $$
 
 2. **First-time Scan Priority ($m_{P_{\text{first\_scan}}}$):**
    Priority for cells not yet scanned, based on building occupancy:
-   $$ m_{P_{\text{first\_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} = 0\}}) \cdot m_{bo} \cdot weight_{\text{first\_scan}} $$
+   $$ m*{P*{\text{first_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} = 0\}}) \cdot m*{bo} \cdot weight*{\text{first_scan}} $$
 
 3. **Re-scan Priority ($m_{P rescan}$):**
    Based on time since last scan and, optionally, on victim information or building occupancy:
-   $$ m_{P_{\text{re\_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} \neq 0\}}) \cdot (m_{\text{variable}} \cdot weight_{\text{repeat\_scan}} \cdot (\max(t - m_{\text{scan}}, 0)) + 1) $$
-   Where $m_{\text{variable}}$ is $m_{victim}$ if `flag_victim_model` is true, otherwise $m_{bo}$.
+   $$ m*{P*{\text{re_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} \neq 0\}}) \cdot (m*{\text{variable}} \cdot weight*{\text{repeat_scan}} \cdot (\max(t - m*{\text{scan}}, 0)) + 1) $$
+   Where $m*{\text{variable}}$ is $m_{victim}$ if `flag_victim_model` is true, otherwise $m_{bo}$.
 
 4. **Downwind Map Information ($m_{P_{\text{dw}}}$):**
    Priority based on hazard proximity, inversely related to downwind values:
-   $$ m_{P_{\text{dw}}} = (1 - m_{dw}) \cdot weight_{\text{dw}} $$
+   $$ m*{P*{\text{dw}}} = (1 - m*{dw}) \cdot weight*{\text{dw}} $$
 
 5. **Overall Priority ($m_{\text{prior}}$):**
    Summing the calculated priorities to obtain the overall priority matrix:
-   $$ m_{\text{prior}} = m_{P_{\text{first\_scan}}} + m_{P_{\text{re\_scan}}} + m_{P_{\text{dw}}} $$
+   $$ m*{\text{prior}} = m*{P*{\text{first_scan}}} + m*{P*{\text{re_scan}}} + m*{P\_{\text{dw}}} $$
 
 #### Output
 
@@ -301,28 +319,24 @@ The `calc_prior` function computes the scanning priority for areas within a grid
 
 #### Inputs
 
-*   mbom\_{bo}mbo​: Matrix representing building occupancy, with higher values indicating more occupancy.
-*   mdwm\_{dw}mdw​: Downwind map matrix, where values closer to 0 indicate proximity to hazards like fire.
-*   mscanm\_{scan}mscan​: Matrix indicating the last scan time for each cell, with 0 indicating that the cell has not been scanned.
-*   ttt: Current time.
-*   weightweightweight: Struct containing weights for different components of priority calculation:
-    *   weightfirst\_scanweight\_{first\\\_scan}weightfirst\_scan​: Weight for first-time scans.
-    *   weightrepeat\_scanweight\_{repeat\\\_scan}weightrepeat\_scan​: Weight for re-scans.
-    *   weightdwweight\_{dw}weightdw​: Weight for downwind information in priority calculation.
-*   mvictimm\_{victim}mvictim​: Matrix indicating the likelihood of finding victims in each cell, normalized to \[0, 1\] if `flag_victim_model` is true.
-*   flagvictim\_modelflag\_{victim\\\_model}flagvictim\_model​: Boolean indicating whether the victim model is used for re-scan priority.
+- mbom\_{bo}mbo​: Matrix representing building occupancy, with higher values indicating more occupancy.
+- mdwm\_{dw}mdw​: Downwind map matrix, where values closer to 0 indicate proximity to hazards like fire.
+- mscanm\_{scan}mscan​: Matrix indicating the last scan time for each cell, with 0 indicating that the cell has not been scanned.
+- ttt: Current time.
+- weightweightweight: Struct containing weights for different components of priority calculation:
+  - weightfirst_scanweight\_{first\\\_scan}weightfirst_scan​: Weight for first-time scans.
+  - weightrepeat_scanweight\_{repeat\\\_scan}weightrepeat_scan​: Weight for re-scans.
+  - weightdwweight\_{dw}weightdw​: Weight for downwind information in priority calculation.
+- mvictimm\_{victim}mvictim​: Matrix indicating the likelihood of finding victims in each cell, normalized to \[0, 1\] if `flag_victim_model` is true.
+- flagvictim_modelflag\_{victim\\\_model}flagvictim_model​: Boolean indicating whether the victim model is used for re-scan priority.
 
 #### Process
 
 1.  **Normalize Victim Information (Optional):** If `flag_victim_model` is true, normalize mvictimm\_{victim}mvictim​ to the range \[0, 1\]: mvictim\=mvictimmax⁡(mvictim)m\_{victim} = \\frac{m\_{victim}}{\\max(m\_{victim})}mvictim​\=max(mvictim​)mvictim​​
-    
-2.  **First-time Scan Priority (mPfirst\_scanm\_{P\_{first\\\_scan}}mPfirst\_scan​​):** Priority for cells not yet scanned, based on building occupancy: mPfirst\_scan\=(1{mscan\=0})⋅mbo⋅weightfirst\_scanm\_{P\_{first\\\_scan}} = (\\mathbf{1}\_{\\{m\_{scan} = 0\\}}) \\cdot m\_{bo} \\cdot weight\_{first\\\_scan}mPfirst\_scan​​\=(1{mscan​\=0}​)⋅mbo​⋅weightfirst\_scan​
-    
-3.  **Re-scan Priority (mPrescanm\_{P\_{rescan}}mPrescan​​):** Based on time since last scan and, optionally, on victim information or building occupancy: mPrescan\=(1{mscan≠0})⋅(mvariable⋅weightrepeat\_scan⋅(max⁡(t−mscan,0))+1)m\_{P\_{rescan}} = (\\mathbf{1}\_{\\{m\_{scan} \\neq 0\\}}) \\cdot (m\_{variable} \\cdot weight\_{repeat\\\_scan} \\cdot (\\max(t - m\_{scan}, 0)) + 1)mPrescan​​\=(1{mscan​\=0}​)⋅(mvariable​⋅weightrepeat\_scan​⋅(max(t−mscan​,0))+1) Where mvariablem\_{variable}mvariable​ is mvictimm\_{victim}mvictim​ if `flag_victim_model` is true, otherwise mbom\_{bo}mbo​.
-    
+2.  **First-time Scan Priority (mPfirst_scanm\_{P\_{first\\\_scan}}mPfirst_scan​​):** Priority for cells not yet scanned, based on building occupancy: mPfirst_scan\=(1{mscan\=0})⋅mbo⋅weightfirst_scanm\_{P\_{first\\\_scan}} = (\\mathbf{1}\_{\\{m\_{scan} = 0\\}}) \\cdot m\_{bo} \\cdot weight\_{first\\\_scan}mPfirst_scan​​\=(1{mscan​\=0}​)⋅mbo​⋅weightfirst_scan​
+3.  **Re-scan Priority (mPrescanm\_{P\_{rescan}}mPrescan​​):** Based on time since last scan and, optionally, on victim information or building occupancy: mPrescan\=(1{mscan≠0})⋅(mvariable⋅weightrepeat_scan⋅(max⁡(t−mscan,0))+1)m\_{P\_{rescan}} = (\\mathbf{1}\_{\\{m\_{scan} \\neq 0\\}}) \\cdot (m\_{variable} \\cdot weight\_{repeat\\\_scan} \\cdot (\\max(t - m\_{scan}, 0)) + 1)mPrescan​​\=(1{mscan​\=0}​)⋅(mvariable​⋅weightrepeat_scan​⋅(max(t−mscan​,0))+1) Where mvariablem\_{variable}mvariable​ is mvictimm\_{victim}mvictim​ if `flag_victim_model` is true, otherwise mbom\_{bo}mbo​.
 4.  **Downwind Map Information (mPdwm\_{P\_{dw}}mPdw​​):** Priority based on hazard proximity, inversely related to downwind values: mPdw\=(1−mdw)⋅weightdwm\_{P\_{dw}} = (1 - m\_{dw}) \\cdot weight\_{dw}mPdw​​\=(1−mdw​)⋅weightdw​
-    
-5.  **Overall Priority (mpriorm\_{prior}mprior​):** Summing the calculated priorities to obtain the overall priority matrix: mprior\=mPfirst\_scan+mPrescan+mPdwm\_{prior} = m\_{P\_{first\\\_scan}} + m\_{P\_{rescan}} + m\_{P\_{dw}}mprior​\=mPfirst\_scan​​+mPrescan​​+mPdw​​
+5.  **Overall Priority (mpriorm\_{prior}mprior​):** Summing the calculated priorities to obtain the overall priority matrix: mprior\=mPfirst_scan+mPrescan+mPdwm\_{prior} = m\_{P\_{first\\\_scan}} + m\_{P\_{rescan}} + m\_{P\_{dw}}mprior​\=mPfirst_scan​​+mPrescan​​+mPdw​​
 
 ### `calc_t_response` Function
 
@@ -344,12 +358,15 @@ The `calc_t_response` function calculates the response time matrix for agents to
 #### Process
 
 1. **Initialization:**
+
    - Initialize the response time matrix `m_t_response` with dimensions `(n_x_s, n_y_s, n_a)`, filled with `NaN` values to indicate uncalculated or infeasible travel times.
 
 2. **End Locations Grid:**
+
    - Generate a grid of all possible end locations `(i, j)` within the environment using `meshgrid`.
 
 3. **Response Time Calculation:**
+
    - For each agent `a` and each target location `loc_2`:
      - Initialize the base response time with the agent's current travel and scan times.
      - For each queue position up to `q-1`, calculate the travel time from the current target `loc_1` to the next target `loc_next` (or `loc_2` for the last queue position) using `calc_t_trav`.
@@ -357,7 +374,7 @@ The `calc_t_response` function calculates the response time matrix for agents to
      - If the target list is not depleted (i.e., does not contain `NaN`), assign the calculated response time to the corresponding cell in `m_t_response`.
 
 4. **Normalization:**
-   - Normalize the response times to a `[0, 1]` range using `maxTravelTime`. 
+   - Normalize the response times to a `[0, 1]` range using `maxTravelTime`.
    - Replace `NaN` values in `m_t_response` with `maxTravelTime` to handle cases with depleted task lists or infeasible travel times due to constraints like wind speed.
 
 #### Output
@@ -380,28 +397,28 @@ The `calc_t_trav` function computes the time required to travel between two poin
 
 1. **Distance Calculation (`d`):**
    The Euclidean distance between `loc_1` and `loc_2`, adjusted for scaling factors:
-   $$ d = \sqrt{(l_{x_s} \cdot (loc_{2_1} - loc_{1_1}))^2 + (l_{y_s} \cdot (loc_{2_2} - loc_{1_2}))^2} $$
+   $$ d = \sqrt{(l*{x_s} \cdot (loc*{2*1} - loc*{1*1}))^2 + (l*{y*s} \cdot (loc*{2*2} - loc*{1_2}))^2} $$
 
 2. **Ground Angle (`a_g`):**
    The angle of the path from `loc_1` to `loc_2` relative to the positive x-axis:
-   $$ a_g = \text{atan2}(loc_{2_2} - loc_{1_2}, loc_{2_1} - loc_{1_1}) $$
+   $$ a*g = \text{atan2}(loc*{2*2} - loc*{1*2}, loc*{2*1} - loc*{1_1}) $$
 
 3. **Wind to Track Angle (`a_wt`):**
    The angle between the wind direction and the ground track direction:
-   $$ a_{wt} = a_g - ang_w $$
+   $$ a\_{wt} = a_g - ang_w $$
 
 4. **Wind Correction Angle (`a_wca`):**
    The angle needed to correct for wind drift, calculated using the wind speed, wind to track angle, and airspeed:
-   $$ a_{wca} = \text{asin}\left(\frac{v_w \cdot \sin(a_{wt})}{v_{as}}\right) $$
+   $$ a*{wca} = \text{asin}\left(\frac{v_w \cdot \sin(a*{wt})}{v\_{as}}\right) $$
    If the absolute value of the wind ratio (`v_w*sin(a_wt)/v_as`) exceeds 1, travel is deemed impossible due to excessive wind, setting `t_travel` to `Inf`.
 
 5. **Ground Speed (`v_gs`):**
    The actual speed over ground, considering both the airspeed and the wind's effect:
-   $$ v_{gs} = v_{as} \cdot \cos(a_{wca}) + v_w \cdot \cos(a_{wt}) $$
+   $$ v*{gs} = v*{as} \cdot \cos(a*{wca}) + v_w \cdot \cos(a*{wt}) $$
 
 6. **Travel Time Calculation (`t_travel`):**
    The time to travel from `loc_1` to `loc_2`, given the ground speed:
-   $$ t_{travel} = \frac{d}{v_{gs}} $$
+   $$ t*{travel} = \frac{d}{v*{gs}} $$
    If `v_gs` is less than or equal to 0, indicating an impossible or undefined travel time due to adverse wind conditions, `t_travel` is set to `Inf`.
 
 #### Output
@@ -431,12 +448,15 @@ The `updateFireStatesAndProbabilities` function updates the fire states and prob
 #### Process
 
 1. **Update Burn Time:**
+
    - For cells in active (`m_f == 2`) or burning (`m_f == 3`) states, increment the burn time (`m_bt`) by `dt_e`.
 
 2. **Transition Active to Burning:**
+
    - Cells transition from active to burning state (`m_f` from 2 to 3) if their burn time (`m_bt`) exceeds or equals the ignition time threshold (`t_i`).
 
 3. **Update Fire Spread Probability for Burning Cells:**
+
    - For each cell in the burning state (`m_f == 3`), calculate the spread probability `p` using `calculateSpreadProbability` based on its burn time (`m_bt`), the ignition time threshold (`t_i`), and the burnout time threshold (`t_b`).
    - Update the fire spread probability matrix `F` for each burning cell using `updateFireSpreadProbability`, considering the calculated probability `p`, wind influence `W`, and other environmental factors.
 
@@ -450,5 +470,5 @@ The `updateFireStatesAndProbabilities` function updates the fire states and prob
 
 ## Acknowledgments
 
-* Dr Anahita Jamshidnejad, my supervisor.
-* Mirko Baglioni, my PhD supervisor.
+- Dr Anahita Jamshidnejad, my supervisor.
+- Mirko Baglioni, my PhD supervisor.

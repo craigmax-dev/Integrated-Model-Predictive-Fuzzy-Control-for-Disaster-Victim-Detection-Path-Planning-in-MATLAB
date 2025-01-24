@@ -184,15 +184,15 @@ solid = '-';
 dash = '--';
 
 % % VALIDATION CASE
-% simulationSetup = { 
-%   "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-% };
-% lineStyles = {
-%     {solid, flc_colour}, ... 
-%     {solid, mpfc_colour}, ... 
-% };
-% seeds = [1, 2, 3, 4, 5];
+simulationSetup = { 
+  "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+};
+lineStyles = {
+    {solid, flc_colour}, ... 
+    {solid, mpfc_colour}, ... 
+};
+seeds = [1, 2, 3, 4, 5];
 
 % % 4.2.1 - Two-Agent System in Small Static Disaster Environment
 % simulationSetup = { 
@@ -405,15 +405,15 @@ dash = '--';
 % seeds = [9359, 4746, 839, 2634, 8288];
 
 % 4.4.2 - Design Exploration: Type-1 vs Type-2 MPFC
-simulationSetup = { 
-  "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
-  "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
-};
-lineStyles = {
-    {solid, mpfc_colour}, ... 
-    {dash, mpfc_colour}
-};
-seeds = [9359, 4746, 839, 2634, 8288];
+% simulationSetup = { 
+%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
+%   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
+% };
+% lineStyles = {
+%     {solid, mpfc_colour}, ... 
+%     {dash, mpfc_colour}
+% };
+% seeds = [9359, 4746, 839, 2634, 8288];
 % 
 % % 4.4.3 - Design Exploration: Local Prediction Maps - Small Static Disaster Environment
 % simulationSetup = { 
@@ -700,19 +700,18 @@ items = {'UAV'};
 item_locations = {agent_model.a_loc};
 markerSizes = [10]; % List of marker sizes for items
 
-m_f_series_indexes = [1, 21, 41];
+m_f_series_indexes = [1, 21, 41, 61, 81];
 
 plotGeographical(agent_model, environment_model, env_parameter_list, env_labels, search_parameter_list, search_labels, items, item_locations, markerSizes, m_f_series_indexes)
 
-% %% 8. Plot animations
-% %    ----------------
-% %    Plots and saves in MP4 format animations of:
-% 
-% % evolution of the FLC parameters for each agent
-% animateFLCParams(flc_params_hist, fisArray, "animation_mpfc_flc_params_hist")
-% 
-% % Agent actions and the progression of environment states
-% animateAgentFireEnvironment(agent_model, environment_model, config, "animation_agent_actions")
+%% 8. Plot animations
+%    ----------------
+%    Plots and saves in .gif format animations of:
+animateMPFCSimulation(agent_model, environment_model, config, flc_params_hist, results, "animation_agent_actions.gif")
+
+
+% Fire spread animation
+animateFireHistory(environment_model.m_f_series, config, "animation_fire_map", "animation_fire_map.gif")
 
 %% 9. Save and export simulation results
 %    -----------------------------------
@@ -726,12 +725,13 @@ close all
 %% 10. Sensitivity Analysis Plots
 %     ---------------------------
 %     Sensitivity analysis plots can be generated here using the data from 
-%     the simulations run during this study
+%     the simulations run during this study. Note that the pre-filled data is
+%     from simulations used in the thesis.
 
 %% Prediction Mode
 % % V2
-% fisMeanObj = 1.0e+03*[?, 2.4509];
-
+% fisMeanObj = 1.0e+03*[2.6022, 2.4509];
+% 
 % probThresh_MeanObj = 1.0e+03*[2.1918, 2.1121];
 % probThresh_MeanObj_confLower = 1.0e+03 *[1.9576, 1.9219];
 % probThresh_MeanObj_confUpper = 1.0e+03 *[2.4259, 2.3023];
@@ -763,10 +763,15 @@ close all
 % % Call the functions
 % plotScatterTrends(predMode_MeanObj, simNames, t_mpc, 1, predMode_MeanObj_confLower, predMode_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Objective Function, $\overline{J}$", lineStyles);
 % plotScatterTrends(predMode_MeanTime, simNames, t_mpc, 1, predMode_MeanTime_confLower, predMode_MeanTime_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
-
+% 
 % 
 % % simNames = {'Probability Threshold'};
-% plotScatterTrendsNormalised([probThresh_MeanObj, exact_MeanObj], fisMeanObj, simNames, t_mpc, 1, probThresh_MeanObj_confLower, probThresh_MeanObj_confUpper, "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
+% plotScatterTrendsNormalised([probThresh_MeanObj; exact_MeanObj], ...
+%     fisMeanObj, simNames, t_mpc, 1, ...
+%     [probThresh_MeanObj_confLower; exact_MeanObj_confLower], ...
+%     [probThresh_MeanObj_confUpper; exact_MeanObj_confUpper], ...
+%     "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", ...
+%     "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
 
 %% n_a %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -847,8 +852,8 @@ close all
 % };
 % 
 % % Call the functions
-% plotScatterTrends(t_pred_MeanObj, simNames, t_pred, 1, t_pred_MeanObj_confLower, t_pred_MeanObj_confUpper, "Prediction Timestep, $\Delta t^{\mathrm{pred}}$", "Objective Function, $\overline{J}$", lineStyles);
-% plotScatterTrends(t_pred_MeanTime, simNames, t_pred, 1, t_pred_MeanTime_confLower, t_pred_MeanTime_confUpper, "Prediction Timestep, $\Delta t^{\mathrm{pred}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
+% plotScatterTrends(t_pred_MeanObj, simNames, t_pred, 1, t_pred_MeanObj_confLower, t_pred_MeanObj_confUpper, "Prediction Horizon, $\Delta t^{\mathrm{pred}}$", "Objective Function, $\overline{J}$", lineStyles);
+% plotScatterTrends(t_pred_MeanTime, simNames, t_pred, 1, t_pred_MeanTime_confLower, t_pred_MeanTime_confUpper, "Prediction Horizon, $\Delta t^{\mathrm{pred}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
 
 %% Disaster environment size %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

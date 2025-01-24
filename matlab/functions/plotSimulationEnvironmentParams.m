@@ -377,3 +377,8 @@ function plotSimulationEnvironmentParams()
     end
 
 end
+
+% title(subplot(2,2,1), '$\mathbf{M}^{\mathrm{structure}}$', 'Interpreter', 'latex')
+% title(subplot(2,2,2), '$\mathbf{M}^{\mathrm{building}}$', 'Interpreter', 'latex')
+% title(subplot(2,2,3), '$\mathbf{M}^{\mathrm{c,building}}$', 'Interpreter', 'latex')
+% title(subplot(2,2,4), '$\mathbf{M}^{\mathrm{victim}}$', 'Interpreter', 'latex')

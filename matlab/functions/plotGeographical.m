@@ -100,7 +100,7 @@ function plotGeographical(agent_model, environment_model, agent_parameter_list, 
         hold off;
         axis equal tight;
         set(gca, 'YDir', 'normal'); % Reverse the y-axis
-        title(['$k = ', num2str(m_f_series_indexes(idx)), '$'], 'Interpreter', 'latex');
+        title(['$t = ', num2str(60*m_f_series_indexes(idx)), 's$'], 'Interpreter', 'latex');
         xlabel('$x$ cell index', 'Interpreter', 'latex');
         ylabel('$y$ cell index', 'Interpreter', 'latex');
     end
