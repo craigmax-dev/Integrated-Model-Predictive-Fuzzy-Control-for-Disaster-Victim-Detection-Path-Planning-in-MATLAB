@@ -691,9 +691,9 @@ plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simInd
 
 % Parameters List
 env_parameter_list = {'m_s', 'm_bo'};
-env_labels = {'M^{\mathrm{structure}}', 'M^{\mathrm{building}}'};
+env_labels = {'\mathbf{M}^{\mathrm{structure}}', '\mathbf{M}^{\mathrm{building}}'};
 search_parameter_list = {'m_bo_s', 'm_victim_s'};
-search_labels = {'M^{\mathrm{search}_{\mathrm{building}}}', 'M^{\mathrm{search}_{\mathrm{victim}}}'};
+search_labels = {'\mathbf{M}^{\mathrm{c,building}}', '\mathbf{M}^{\mathrm{victim}}'};
 
 % Items and their locations
 items = {'UAV'}; 

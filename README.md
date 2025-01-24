@@ -6,7 +6,7 @@ This project is produced for the department of Control and Simulation, Aerospace
 
 Version 1.1 of this code base is used in my master thesis: [Model-Predictive Fuzzy Control for Search-and-Rescue Path-Planning of Multi-Agent Systems](https://repository.tudelft.nl/record/uuid:c2e3766a-d228-4ce3-8755-88c1f097fbf5)
 
-<!-- :exclamation: Current version: V1.1 -->
+:exclamation: Current version: V1.1
 
 This project consists of a simulation of a search-and-rescue environment for discrete path-planning of agents using a Fuzzy Inference System (FIS)-based controller and a Model Predictive Control (MPC)-based controller to optimise FIS parameters.
 The environment model consists of static states (building coverage and wind) and dynamic states (fire and agents).
@@ -22,9 +22,11 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 - [MATLAB](https://www.mathworks.com/products/matlab.html) - Version: '9.8'
-  <!-- * [Mapping Toolbox]() - Version: '4.10' -->
-  <!-- * [Image Processing Toolbox]() - Version: '11.1' -->
+    <!-- * [Mapping Toolbox]() - Version: '4.10' -->
+    <!-- * [Image Processing Toolbox]() - Version: '11.1' -->
+  <!-- - [AUTOSAR Blockset](https://www.mathworks.com/products/autosar.html) -->
 - [Fuzzy Logic Toolbox](https://www.mathworks.com/products/fuzzy-logic.html) - Version: '2.7'
+- [Global Optimization Toolbox](https://www.mathworks.com/products/global-optimization.html)
   <!-- * [Global Optimization Toolbox]() - Version: '4.3' -->
   <!-- * [Antenna Toolbox]() - Version: '4.2' -->
   <!-- * [Curve Fitting Toolbox]() - Version: '3.5.11' -->
@@ -34,6 +36,10 @@ These instructions will get you a copy of the project up and running on your loc
 - [Optimization Toolbox](https://www.mathworks.com/products/optimization.html) - Version: '8.5'
 <!-- * [Simulink]() - Version: '10.1' -->
 - [Statistics and Machine Learning Toolbox]() - Version: '11.7'
+
+<!-- AUTOSAR Blockset (Missing)
+Fuzzy Logic Toolbox
+Image Processing Toolbox -->
 
 ### Installing
 
@@ -294,12 +300,12 @@ The `calc_prior` function computes the scanning priority for areas within a grid
 
 2. **First-time Scan Priority ($m_{P_{\text{first\_scan}}}$):**
    Priority for cells not yet scanned, based on building occupancy:
-   $$ m*{P*{\text{first_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} = 0\}}) \cdot m*{bo} \cdot weight*{\text{first_scan}} $$
+   $$ m*{P*{\text{first*scan}}} = (\mathbf{1}*{\{m\_{\text{scan}} = 0\}}) \cdot m*{bo} \cdot weight*{\text{first_scan}} $$
 
 3. **Re-scan Priority ($m_{P rescan}$):**
    Based on time since last scan and, optionally, on victim information or building occupancy:
-   $$ m*{P*{\text{re_scan}}} = (\mathbf{1}_{\{m_{\text{scan}} \neq 0\}}) \cdot (m*{\text{variable}} \cdot weight*{\text{repeat_scan}} \cdot (\max(t - m*{\text{scan}}, 0)) + 1) $$
-   Where $m*{\text{variable}}$ is $m_{victim}$ if `flag_victim_model` is true, otherwise $m_{bo}$.
+   $$ m*{P*{\text{re*scan}}} = (\mathbf{1}*{\{m*{\text{scan}} \neq 0\}}) \cdot (m*{\text{variable}} \cdot weight*{\text{repeat_scan}} \cdot (\max(t - m*{\text{scan}}, 0)) + 1) $$
+   Where $m*{\text{variable}}$ is $m*{victim}$ if `flag_victim_model` is true, otherwise $m_{bo}$.
 
 4. **Downwind Map Information ($m_{P_{\text{dw}}}$):**
    Priority based on hazard proximity, inversely related to downwind values:
