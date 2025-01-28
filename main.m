@@ -70,8 +70,7 @@ clear all
 close all
  
 %% Set up folder paths
-addpath('data', ...
-  'matlab', ...
+addpath('matlab', ...
   'matlab/functions', ...
   'matlab/models', ...
   'matlab/initialisation/simulation', ...
@@ -675,7 +674,7 @@ alpha = 0.05;
 % end
 
 % Select which simulations to plot
-simIndex = [1, 2];
+simIndex = [1, 2, 3];
 
 % Plot stats for obj_hist
 % plotStats(means_obj, ci_lower_obj, ci_upper_obj, time_vector_obj, simulationSetup, "Objective Function, $\overline{J}$", lineStyles);
@@ -690,10 +689,14 @@ plotStats(means_t_opt(simIndex), ci_lower_t_opt(simIndex), ci_upper_t_opt(simInd
 %    Plot environment and agent states:
 
 % Parameters List
-env_parameter_list = {'m_s', 'm_bo'};
-env_labels = {'\mathbf{M}^{\mathrm{structure}}', '\mathbf{M}^{\mathrm{building}}'};
-search_parameter_list = {'m_bo_s', 'm_victim_s'};
-search_labels = {'\mathbf{M}^{\mathrm{c,building}}', '\mathbf{M}^{\mathrm{victim}}'};
+% env_parameter_list = {'m_s', 'm_bo'};
+% env_labels = {'\mathbf{M}^{\mathrm{structure}}', '\mathbf{M}^{\mathrm{building}}'};
+% search_parameter_list = {'m_bo_s', 'm_victim_s'};
+% search_labels = {'\mathbf{M}^{\mathrm{c,building}}', '\mathbf{M}^{\mathrm{victim}}'};
+env_parameter_list = {'m_s'};
+env_labels = {'\mathbf{M}^{\mathrm{structure}}'};
+search_parameter_list = {'m_victim_s'};
+search_labels = {'\mathbf{M}^{\mathrm{victim}}'};
 
 % Items and their locations
 items = {'UAV'}; 
@@ -708,7 +711,6 @@ plotGeographical(agent_model, environment_model, env_parameter_list, env_labels,
 %    ----------------
 %    Plots and saves in .gif format animations of:
 animateMPFCSimulation(agent_model, environment_model, config, flc_params_hist, results, "animation_agent_actions.gif")
-
 
 % Fire spread animation
 animateFireHistory(environment_model.m_f_series, config, "animation_fire_map", "animation_fire_map.gif")
