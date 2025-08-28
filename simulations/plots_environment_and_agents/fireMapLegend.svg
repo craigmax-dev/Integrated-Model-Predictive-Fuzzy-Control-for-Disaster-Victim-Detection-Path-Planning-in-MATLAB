@@ -15,7 +15,7 @@
       ><path d="M0 202 L42 202 L42 0 L0 0 Z"
       /></clipPath
       ><font horiz-adv-x="75.0" id="font1"
-      ><font-face ascent="100.53711" descent="21.972656" units-per-em="100" style="font-style:normal; font-family:Dialog; font-weight:normal;"
+      ><font-face ascent="100.53711" descent="21.972656" units-per-em="100" style="font-style:normal; font-family:SansSerif; font-weight:normal;"
         /><missing-glyph horiz-adv-x="75.0" d="M12.5 0 L12.5 62.5 L62.5 62.5 L62.5 0 L12.5 0 ZM14.0625 1.5625 L60.9375 1.5625 L60.9375 60.9375 L14.0625 60.9375 L14.0625 1.5625 Z"
         /><glyph unicode="e" horiz-adv-x="55.615234" d="M42.0938 16.7031 L51.1719 15.5781 Q49.0312 7.625 43.2188 3.2266 Q37.4062 -1.1719 28.375 -1.1719 Q17 -1.1719 10.3281 5.8359 Q3.6562 12.8438 3.6562 25.4844 Q3.6562 38.5781 10.3984 45.8047 Q17.1406 53.0312 27.875 53.0312 Q38.2812 53.0312 44.875 45.9531 Q51.4688 38.875 51.4688 26.0312 Q51.4688 25.25 51.4219 23.6875 L12.75 23.6875 Q13.2344 15.1406 17.5781 10.6016 Q21.9219 6.0625 28.4219 6.0625 Q33.25 6.0625 36.6719 8.6016 Q40.0938 11.1406 42.0938 16.7031 ZM13.2344 30.9062 L42.1875 30.9062 Q41.6094 37.4531 38.875 40.7188 Q34.6719 45.7969 27.9844 45.7969 Q21.9219 45.7969 17.7969 41.75 Q13.6719 37.7031 13.2344 30.9062 Z"
         /><glyph unicode="b" horiz-adv-x="55.615234" d="M14.7031 0 L6.5469 0 L6.5469 71.5781 L15.3281 71.5781 L15.3281 46.0469 Q20.9062 53.0312 29.5469 53.0312 Q34.3281 53.0312 38.6016 51.1016 Q42.875 49.1719 45.6328 45.6797 Q48.3906 42.1875 49.9531 37.2578 Q51.5156 32.3281 51.5156 26.7031 Q51.5156 13.375 44.9219 6.1016 Q38.3281 -1.1719 29.1094 -1.1719 Q19.9219 -1.1719 14.7031 6.5 L14.7031 0 ZM14.5938 26.3125 Q14.5938 17 17.1406 12.8438 Q21.2969 6.0625 28.375 6.0625 Q34.125 6.0625 38.3281 11.0625 Q42.5312 16.0625 42.5312 25.9844 Q42.5312 36.1406 38.5 40.9688 Q34.4688 45.7969 28.7656 45.7969 Q23 45.7969 18.7969 40.7969 Q14.5938 35.7969 14.5938 26.3125 Z"
@@ -103,10 +103,10 @@ fQn3jfvGfRv3hfsS7hv3jfs27gv3hfs27hv3bRYV7gv3bdw37hv3JdwX7hv3bdw3
       /><line y2="151.6" style="fill:none;" x1="85" x2="594" y1="151.6"
       /><line y2="151.6" style="fill:none;" x1="85" x2="85" y1="253.4"
       /><line y2="151.6" style="fill:none;" x1="594" x2="594" y1="253.4"
-      /><line y2="253" style="fill:none;" x1="605" x2="626" y1="253"
-      /><line y2="152" style="fill:none;" x1="605" x2="626" y1="152"
-      /><line y2="152" style="fill:none;" x1="605" x2="605" y1="253"
-      /><line y2="152" style="fill:none;" x1="626" x2="626" y1="253"
+      /><line x1="605" x2="626" y1="253" style="fill:none; stroke:black;" y2="253"
+      /><line x1="605" x2="626" y1="152" style="fill:none; stroke:black;" y2="152"
+      /><line x1="605" x2="605" y1="253" style="fill:none; stroke:black;" y2="152"
+      /><line x1="626" x2="626" y1="253" style="fill:none; stroke:black;" y2="152"
     /></g
     ><g transform="matrix(0.5,0,0,0.5,605,152)" style="fill-opacity:0; fill:rgb(0,0,0); text-rendering:optimizeSpeed; image-rendering:optimizeSpeed; color-rendering:optimizeSpeed; shape-rendering:crispEdges; stroke:rgb(0,0,0); color-interpolation:sRGB; stroke-opacity:0;"
     ><image x="0" y="0" width="42" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAADKCAIAAABc5UWOAAAAf0lEQVR42u3NQQkA
@@ -114,7 +114,7 @@ IBAAQXOIXS1oDDGABTSD9zmEWfY/pUiSJEmSJEnSW7O2xPF4PB6Px+PxeDwej8fj
 8Xh8hD89czwej8fj8Xg8Ho/H4/F4PB7/Ib/2SRyPx+PxeDwej8fj8Xg8Ho/HR/iR
 Gh6Px+PxeDwej8fj8Xg8Ho8PdAGZ25paw0iHzQAAAABJRU5ErkJggg==" style="clip-path:url(#clipPath3);" height="202" preserveAspectRatio="none"
     /></g
-    ><g style="fill:rgb(38,38,38); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:rgb(38,38,38); color-interpolation:linearRGB; stroke-width:0.6667;"
+    ><g style="text-rendering:geometricPrecision; stroke-width:0.6667; color-interpolation:linearRGB; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke-linejoin:round;"
     ><line y2="152" style="fill:none;" x1="626" x2="626" y1="253"
       /><line y2="253" style="fill:none;" x1="626" x2="624.99" y1="253"
       /><line y2="227.75" style="fill:none;" x1="626" x2="624.99" y1="227.75"
@@ -122,27 +122,27 @@ Gh6Px+PxeDwej8fj8Xg8Ho8PdAGZ25paw0iHzQAAAABJRU5ErkJggg==" style="clip-path:url(#
       /><line y2="177.25" style="fill:none;" x1="626" x2="624.99" y1="177.25"
       /><line y2="152" style="fill:none;" x1="626" x2="624.99" y1="152"
     /></g
-    ><g transform="translate(630.5867,253)" style="font-size:9.6px; fill:rgb(38,38,38); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:rgb(38,38,38); color-interpolation:linearRGB;"
-    ><text x="0" xml:space="preserve" y="3.5" style="stroke:none;"
+    ><g transform="translate(632.0267,253)" style="font-size:16.8px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family:'SansSerif'; color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="6.5" style="stroke:none;"
       >Non-flammable</text
     ></g
-    ><g transform="translate(630.5867,227.75)" style="font-size:9.6px; fill:rgb(38,38,38); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:rgb(38,38,38); color-interpolation:linearRGB;"
-    ><text x="0" xml:space="preserve" y="3.5" style="stroke:none;"
+    ><g transform="translate(632.0267,227.75)" style="font-size:16.8px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family:'SansSerif'; color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="6.5" style="stroke:none;"
       >Flammable</text
     ></g
-    ><g transform="translate(630.5867,202.5)" style="font-size:9.6px; fill:rgb(38,38,38); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:rgb(38,38,38); color-interpolation:linearRGB;"
-    ><text x="0" xml:space="preserve" y="3.5" style="stroke:none;"
+    ><g transform="translate(632.0267,202.5)" style="font-size:16.8px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family:'SansSerif'; color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="6.5" style="stroke:none;"
       >Catching Fire</text
     ></g
-    ><g transform="translate(630.5867,177.25)" style="font-size:9.6px; fill:rgb(38,38,38); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:rgb(38,38,38); color-interpolation:linearRGB;"
-    ><text x="0" xml:space="preserve" y="3.5" style="stroke:none;"
+    ><g transform="translate(632.0267,177.25)" style="font-size:16.8px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family:'SansSerif'; color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="6.5" style="stroke:none;"
       >Burning</text
     ></g
-    ><g transform="translate(630.5867,152)" style="font-size:9.6px; fill:rgb(38,38,38); text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke:rgb(38,38,38); color-interpolation:linearRGB;"
-    ><text x="0" xml:space="preserve" y="3.5" style="stroke:none;"
+    ><g transform="translate(632.0267,152)" style="font-size:16.8px; text-rendering:geometricPrecision; color-rendering:optimizeQuality; image-rendering:optimizeQuality; font-family:'SansSerif'; color-interpolation:linearRGB;"
+    ><text x="0" xml:space="preserve" y="6.5" style="stroke:none;"
       >Extinguished</text
     ></g
-    ><g style="fill:rgb(38,38,38); text-rendering:geometricPrecision; image-rendering:optimizeQuality; color-rendering:optimizeQuality; stroke-linejoin:round; stroke:rgb(38,38,38); color-interpolation:linearRGB; stroke-width:0.6667;"
+    ><g style="text-rendering:geometricPrecision; stroke-width:0.6667; color-interpolation:linearRGB; color-rendering:optimizeQuality; image-rendering:optimizeQuality; stroke-linejoin:round;"
     ><line y2="152" style="fill:none;" x1="605" x2="626" y1="152"
       /><line y2="253" style="fill:none;" x1="605" x2="626" y1="253"
       /><line y2="152" style="fill:none;" x1="605" x2="605" y1="253"
