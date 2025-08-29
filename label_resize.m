@@ -8,7 +8,7 @@
 % ----- USER INPUTS -----
 % Specify the folder containing the images.
 % Use a full path, e.g., 'C:\Users\YourName\Documents\MyImages'
-folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_3_2_sensitivity_n_env_20';
+folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_2_4_centralised_vs_decentralised\2a';
 
 % Define the font sizes for different text elements.
 fontSize.axisLabels = 20;
