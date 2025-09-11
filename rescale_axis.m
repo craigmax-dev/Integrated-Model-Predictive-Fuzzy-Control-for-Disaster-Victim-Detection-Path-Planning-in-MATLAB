@@ -1,21 +1,21 @@
 % SCRIPT to rescale X-axis data of the currently active plot.
-
-ax = gca; 
-set(ax.XLabel, 'String', 'Simulation timestep, $k$', 'Interpreter', 'latex');
-set(ax.YLabel, 'String', 'Optimisation time, $\overline{t}^{\mathrm{opt}}\mathrm{(s)}$', 'Interpreter', 'latex');
-
-ax = gca; 
-set(ax.XLabel, 'String', 'Simulation timestep, $k$', 'Interpreter', 'latex');
-set(ax.YLabel, 'String', 'Objective function, $\overline{J}$', 'Interpreter', 'latex');
-
-ax = gca; 
-set(ax.XLabel, 'String', 'Number of environment cells, $n^{env^{x}} \cdot n^{env^{y}}$', 'Interpreter', 'latex');
-set(ax.YLabel, 'String', 'Normalised objective function, $\overline{J} (\Delta \%)$', 'Interpreter', 'latex');
+% 
+% ax = gca; 
+% set(ax.XLabel, 'String', 'Simulation timestep, $k$', 'Interpreter', 'latex');
+% set(ax.YLabel, 'String', 'Optimisation time, $\overline{t}^{\mathrm{opt}}\mathrm{(s)}$', 'Interpreter', 'latex');
+% 
+% ax = gca; 
+% set(ax.XLabel, 'String', 'Simulation timestep, $k$', 'Interpreter', 'latex');
+% set(ax.YLabel, 'String', 'Objective function, $\overline{J}$', 'Interpreter', 'latex');
+% 
+% ax = gca; 
+% set(ax.XLabel, 'String', 'Number of environment cells, $n^{env^{x}} \cdot n^{env^{y}}$', 'Interpreter', 'latex');
+% set(ax.YLabel, 'String', 'Normalised objective function, $\overline{J} (\Delta \%)$', 'Interpreter', 'latex');
 
 % ----- USER INPUT -----
 % Define the value to divide the x-axis data by.
 % For example, to convert seconds to minutes, use 60.
-scalingFactor = 1/15;
+scalingFactor = 1;
 % ----------------------
 
 % Get the handle to the currently active axes
@@ -60,7 +60,7 @@ end
 if isfinite(minX) && isfinite(maxX)
     % Add a small padding to the limits for better visualization
     padding = (maxX - minX) * 0; % 5% padding
-    padding = (maxX - minX) * 0.02; % 5% padding    
+%     padding = (maxX - minX) * 0.02; % 5% padding    
     if padding == 0 % Handle case where minX equals maxX
         padding = 0; 
     end
