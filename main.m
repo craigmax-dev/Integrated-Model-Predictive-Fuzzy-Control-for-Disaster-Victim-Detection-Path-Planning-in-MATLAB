@@ -775,8 +775,8 @@ close all
 %     "MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)", ...
 %     "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
 
-%% n_a %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% %% n_a %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
 % % Data
 % fisMeanObj = 1.0e+03 *[2.5506, 2.2616, 2.1763];
 % 
@@ -808,7 +808,7 @@ close all
 % mpcDecentralisedMeanObj_confLower = 1.0e+03 *[2.1491, 2.0529, 1.6598];
 % mpcDecentralisedMeanObj_confUpper = 1.0e+03 *[2.6250, 2.2850, 2.1617];
 % 
-% simNames = {'Centralised MPC', 'Decentralised MPC', 'Centralised MPFC', 'Decentralised MPFC'};
+% simNames = {'Centralised MPC', 'Decentralised MPC', 'Centralised M2PFC', 'Decentralised M2PFC'};
 % agentCounts = [2, 3, 4];
 % lineStyles = {
 %     {solid, mpc_colour}, ...         % Centralised MPC
@@ -818,8 +818,8 @@ close all
 % };
 % 
 % % Call the functions
-% plotScatterTrends([mpcCentralisedMeanTime; mpcDecentralisedMeanTime; mpfcCentralisedMeanTime; mpfcDecentralisedMeanTime], simNames, agentCounts, 1, [mpcCentralisedMeanTime_confLower; mpcDecentralisedMeanTime_confLower; mpfcCentralisedMeanTime_confLower; mpfcDecentralisedMeanTime_confLower], [mpcCentralisedMeanTime_confUpper; mpcDecentralisedMeanTime_confUpper; mpfcCentralisedMeanTime_confUpper; mpfcDecentralisedMeanTime_confUpper], "Number of Agents, $n^{a}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
-% plotScatterTrendsNormalised([mpcCentralisedMeanObj; mpcDecentralisedMeanObj; mpfcCentralisedMeanObj; mpfcDecentralisedMeanObj], fisMeanObj, simNames, agentCounts, 1, [mpcCentralisedMeanObj_confLower; mpcDecentralisedMeanObj_confLower; mpfcCentralisedMeanObj_confLower; mpfcDecentralisedMeanObj_confLower], [mpcCentralisedMeanObj_confUpper; mpcDecentralisedMeanObj_confUpper; mpfcCentralisedMeanObj_confUpper; mpfcDecentralisedMeanObj_confUpper], "Number of Agents, $n^{a}$", "Normalised Objective Function, $\overline{J} (\Delta \%)$", lineStyles);
+% plotScatterTrends([mpcCentralisedMeanTime; mpcDecentralisedMeanTime; mpfcCentralisedMeanTime; mpfcDecentralisedMeanTime], simNames, agentCounts, 1, [mpcCentralisedMeanTime_confLower; mpcDecentralisedMeanTime_confLower; mpfcCentralisedMeanTime_confLower; mpfcDecentralisedMeanTime_confLower], [mpcCentralisedMeanTime_confUpper; mpcDecentralisedMeanTime_confUpper; mpfcCentralisedMeanTime_confUpper; mpfcDecentralisedMeanTime_confUpper], "Number of robots, $n^{\mathrm{rob}}$", "Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)", lineStyles);
+% plotScatterTrendsNormalised([mpcCentralisedMeanObj; mpcDecentralisedMeanObj; mpfcCentralisedMeanObj; mpfcDecentralisedMeanObj], fisMeanObj, simNames, agentCounts, 1, [mpcCentralisedMeanObj_confLower; mpcDecentralisedMeanObj_confLower; mpfcCentralisedMeanObj_confLower; mpfcDecentralisedMeanObj_confLower], [mpcCentralisedMeanObj_confUpper; mpcDecentralisedMeanObj_confUpper; mpfcCentralisedMeanObj_confUpper; mpfcDecentralisedMeanObj_confUpper], "Number of robots, $n^{\mathrm{rob}}$", "Normalised objective function, $\overline{J} (\Delta \%)$", lineStyles);
 
 %% t_MPC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % t_MPC_MeanObj = 1.0e+03*[7.1370, 7.0530, 7.2312, 7.0589, 7.7787, 8.0764];

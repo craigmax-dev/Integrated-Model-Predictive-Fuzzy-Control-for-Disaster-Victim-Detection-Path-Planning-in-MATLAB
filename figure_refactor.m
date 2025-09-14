@@ -1,51 +1,51 @@
-% ax = gca; 
-% set(ax.XLabel, 'String', 'Simulation Timestep, $k$', 'Interpreter', 'latex');
-
 % This script opens every image file nested within a specified folder,
 % then iterates through each figure and its subplots to modify text
-% elements (titles, labels, legends, annotations) and apply specified 
-% font sizes.
-% MODIFIED: Figures will be left open for manual inspection and will not be
-% automatically saved.
-% MODIFIED: Legend modification now respects hidden entries and will not
-% make them visible again.
+% elements, font sizes, and other properties.
+%
+% MODIFIED: After processing all figures, it pauses and provides an
+% interactive prompt to save all open figures as both .fig and .svg.
 
 % ----- USER INPUTS -----
 % Specify the folder containing the images.
-% Use a full path, e.g., 'C:\Users\YourName\Documents\MyImages'
-folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_2_1_two_agent_small_static_v2';
+% folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\\4_4_3_local_prediction_maps_small_static_disaster_environment';
+% folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_3_sensitivity_analysis_plots';
+folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\plots_environment_and_agents';
 
 % Define the font sizes for different text elements.
-fontSize.axisLabels = 20;
+fontSize.axisLabels = 18;
 fontSize.tickLabels = 16;
-fontSize.title = 20;
-fontSize.legend = 20;
+fontSize.title = 18;
+fontSize.legend = 18;
 
 % Define the text replacement rules as an N-by-2 cell array.
-% The format is { 'old text 1', 'new text 1';
-%                'old text 2', 'new text 2'; ... }
-% The order is important for rules that might overlap.
-% replacementRules = {
+replacementRules = {
+    'Optimisation time, $\overline{t}^{\mathrm{opt}}\mathrm{(s)}$', 'Optimisation time, $\overline{t}^{\mathrm{opt}}$(k)[s]';
+    'Optimisation time, $\overline{t}^{\mathrm{opt}}$ (s)', 'Optimisation time, $\overline{t}^{\mathrm{opt}}$(k)[s]';
+    'Number of robots, $n^{r}$', 'Number of robots, $n^{\mathrm{rob}}$';
+    '\mathbf{M}', 'M';
+    'm/s', '\mathrm{m/s}';
+%     'Parameter Index', 'Parameter index';
+%     'Membership Function', 'Membership function';
+%     'FIS Output MF Parameters', '';
+%     '$T^{\mbox{risk}}$', '$M^{\mbox{risk}}$';
 %     'MPFC', 'M2PFC';
 %     'FIS', 'FLC';
 %     'MF', 'Membership Function';
 %     'T^{risk}', 'M^{risk}';
-% %     'MPC Timestep, $\Delta t^{\mathrm{MPC}}$', 'MPC Timestep, $\Delta t^{\mathrm{MPC}}\mathrm{(s)}$';
-% %     'Prediction Horizon, $\Delta t^{\mathrm{pred}}$', 'Prediction Horizon, $\Delta t^{\mathrm{pred}}\mathrm{(s)}$';
 %     'Optimisation time, $\overline{t}^{\mathrm{opt}}$', 'Optimisation time, $\overline{t}^{\mathrm{opt}}\mathrm{(s)}$';
-%     '$k = 41, \mathbf{M}^{\mathrm{structure}} = 1$', '$\mathbf{M}^{\mathrm{struct}}(41) = 1_{[20 \times 20]}$';
-%     '$k = 21, \mathbf{M}^{\mathrm{structure}} = 1$', '$\mathbf{M}^{\mathrm{struct}}(21) = 1_{[20 \times 20]}$';
-%     '$k = 1, \mathbf{M}^{\mathrm{structure}} = 1$', '$\mathbf{M}^{\mathrm{struct}} = 1_{[20 \times 20]}$';
-%     '$k = 41, \mathbf{M}^{\mathrm{structure}} = 0.5$', '$\mathbf{M}^{\mathrm{struct}}(41) = 0.5_{[20 \times 20]}$';
-%     '$k = 21, \mathbf{M}^{\mathrm{structure}} = 0.5$', '$\mathbf{M}^{\mathrm{struct}}(21) = 0.5_{[20 \times 20]}$';
-%     '$k = 1, \mathbf{M}^{\mathrm{structure}} = 0.5$', '$\mathbf{M}^{\mathrm{struct}}(1) = 0.5_{[20 \times 20]}$';
-%     '$k = 41, \mathbf{M}^{\mathrm{structure}} = 0.25$', '$\mathbf{M}^{\mathrm{struct}}(41) = 0.25_{[20 \times 20]}$';
-%     '$k = 21, \mathbf{M}^{\mathrm{structure}} = 0.25$', '$\mathbf{M}^{\mathrm{struct}}(21) = 0.25_{[20 \times 20]}$';
-%     '$k = 1, \mathbf{M}^{\mathrm{structure}} = 0.25$', '$\mathbf{M}^{\mathrm{struct}}(1) = 0.25_{[20 \times 20]}$';
-%     '$\mathbf{M}^{\mathrm{victim}}$', '$\mathbf{M}^{\mathrm{victim}}(1)$';
-%     '$\mathbf{M}^{\mathrm{structure}}$', '$\mathbf{M}^{\mathrm{struct}}$';
-%     '$\mathbf{M}^{\mathrm{building}}$', '$\mathbf{M}^{\mathrm{debris}}(1)$';
-%     '$\mathbf{M}^{\mathrm{c,building}}$', '$\mathbf{M}^{\mathrm{debris,coarsened}}(1)$';
+%     '$\mathbf{M}^{\mathrm{struct}}(41) = 1_{[20 \times 20]}$', '$M^{\mathrm{struct}}(41) = 1_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(21) = 1_{[20 \times 20]}$', '$M^{\mathrm{struct}}(21) = 1_{[20 \times 20]}$';
+    '$M^{\mathrm{struct}} = 1_{[20 \times 20]}$', '$M^{\mathrm{struct}}(1) = 1_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(41) = 0.5_{[20 \times 20]}$', '$M^{\mathrm{struct}}(41) = 0.5_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(21) = 0.5_{[20 \times 20]}$', '$M^{\mathrm{struct}}(21) = 0.5_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(1) = 0.5_{[20 \times 20]}$', '$M^{\mathrm{struct}}(1) = 0.5_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(41) = 0.25_{[20 \times 20]}$', '$M^{\mathrm{struct}}(41) = 0.25_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(21) = 0.25_{[20 \times 20]}$', '$M^{\mathrm{struct}}(21) = 0.25_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{struct}}(1) = 0.25_{[20 \times 20]}$', '$M^{\mathrm{struct}}(1) = 0.25_{[20 \times 20]}$';
+%     '$\mathbf{M}^{\mathrm{victim}}(1)$';
+%     '$\mathbf{M}^{\mathrm{struct}}$';
+%     '$\mathbf{M}^{\mathrm{debris}}(1)$';
+%     '$\mathbf{M}^{\mathrm{debris,coarsened}}(1)$';
 %     '$\mathbf{F}$, $v^{\mathrm{wind}} = 0$ m/s', '$\Pi$, $m^{\mathrm{velocity}} = 0$ m/s';
 %     '$\mathbf{F}$, $v^{\mathrm{wind}} = 1$ m/s', '$\Pi$, $m^{\mathrm{velocity}} = 1$ m/s';
 %     '$\mathbf{F}$, $v^{\mathrm{wind}} = 3$ m/s', '$\Pi$, $m^{\mathrm{velocity}} = 3$ m/s';
@@ -67,36 +67,28 @@ fontSize.legend = 20;
 %     'Simulation Time, $t$ (s)', 'Simulation Timestep, $k$';
 %     'MPC Timestep, $\Delta t^{\mathrm{MPC}}$(s)', '$T^{\mathrm{ctrl}}$';
 %     'Mean', 'mean';    
-% };
+};
 
-% $k = 41, \mathbf{M}^{\mathrm{structure}} = 1$
 
-% ----- SCRIPT LOGIC -----
+% ----- SCRIPT LOGIC (PART 1: MODIFY FIGURES) -----
 
-% Check if the folder exists.
 if ~isfolder(folderPath)
     error('Error: The specified folder "%s" does not exist.', folderPath);
 end
 
-% Get a list of all .fig files in the folder and its subfolders.
 imageFiles = dir(fullfile(folderPath, '**', '*.fig')); 
 
-% Check if any image files were found.
 if isempty(imageFiles)
     warning('No .fig files found in the specified folder "%s".', folderPath);
     return;
 end
 
-% Loop through each found image file.
 fprintf('Processing %d image files...\n', length(imageFiles));
 
 for i = 1:length(imageFiles)
-    fileName = imageFiles(i).name;
-    filePath = fullfile(imageFiles(i).folder, fileName);
-
+    filePath = fullfile(imageFiles(i).folder, imageFiles(i).name);
     fprintf('  -> Opening and modifying: %s\n', filePath);
 
-    % Suppress the harmless 'classNotFound' warning during loading.
     warnState = warning('off', 'MATLAB:load:classNotFound');
     try
         hFig = openfig(filePath, 'reuse');
@@ -106,7 +98,7 @@ for i = 1:length(imageFiles)
         hAxes = findall(hFig, 'type', 'axes');
 
         if isempty(hAxes)
-            fprintf('     -> No axes found in this figure. Skipping.\n');
+            fprintf('     -> No axes found. Skipping.\n');
             close(hFig);
             continue;
         end
@@ -114,99 +106,123 @@ for i = 1:length(imageFiles)
         for j = 1:length(hAxes)
             currentAxes = hAxes(j);
 
-            % ----- FONT SIZE MODIFICATION -----
+            % Font size modification
             set(currentAxes, 'FontSize', fontSize.tickLabels);
             set(currentAxes.XLabel, 'FontSize', fontSize.axisLabels);
             set(currentAxes.YLabel, 'FontSize', fontSize.axisLabels);
             set(currentAxes.ZLabel, 'FontSize', fontSize.axisLabels);
             set(currentAxes.Title, 'FontSize', fontSize.title);
-            
             hLegend = currentAxes.Legend;
             if ~isempty(hLegend) && isvalid(hLegend)
                 set(hLegend, 'FontSize', fontSize.legend);
             end
 
-            % ----- TEXT REPLACEMENT -----
-            textObjectsToModify = {
-                currentAxes.Title, ...
-                currentAxes.XLabel, ...
-                currentAxes.YLabel, ...
-                currentAxes.ZLabel
-            };
-            if ~isempty(hLegend) && isvalid(hLegend)
-                textObjectsToModify{end+1} = hLegend;
-            end
-            otherTextHandles = findall(currentAxes, 'Type', 'text', ...
-                '-not', {'Handle', currentAxes.Title}, ...
-                '-not', {'Handle', currentAxes.XLabel}, ...
-                '-not', {'Handle', currentAxes.YLabel}, ...
-                '-not', {'Handle', currentAxes.ZLabel});
-            if ~isempty(otherTextHandles)
-                textObjectsToModify = [textObjectsToModify, num2cell(otherTextHandles)'];
-            end
+            % Text replacement logic
+            textObjects = {currentAxes.Title, currentAxes.XLabel, currentAxes.YLabel, currentAxes.ZLabel};
+            if ~isempty(hLegend) && isvalid(hLegend), textObjects{end+1} = hLegend; end
+            otherText = findall(currentAxes, 'Type', 'text', '-not', {'Handle', [textObjects{:}]});
+            if ~isempty(otherText), textObjects = [textObjects, num2cell(otherText)']; end
 
-            % --- MODIFIED SECTION: Intelligent Text Replacement ---
-            for k = 1:length(textObjectsToModify)
-                obj = textObjectsToModify{k};
+            for k = 1:length(textObjects)
+                obj = textObjects{k};
+                if ~isvalid(obj) || isempty(obj.String), continue; end
                 
-                if ~isvalid(obj) || isempty(obj.String)
-                    continue; % Skip invalid or empty objects
-                end
-
-                % Check if the current object is a legend
-                isLegend = isa(obj, 'matlab.graphics.illustration.Legend');
-                
-                if isLegend
-                    % --- Special Handling for Legends ---
+                if isa(obj, 'matlab.graphics.illustration.Legend')
                     originalStrings = obj.String;
-                    newStrings = originalStrings; % Start with a copy
+                    newStrings = originalStrings;
                     plotChildren = obj.PlotChildren;
-                    
                     numEntries = min(length(originalStrings), length(plotChildren));
 
                     for entryIdx = 1:numEntries
-                        % Check if the corresponding plot item is intended to be visible
                         if strcmp(get(plotChildren(entryIdx), 'HandleVisibility'), 'on')
-                            
-                            % This entry is VISIBLE, so apply replacements to its string
                             stringToModify = newStrings{entryIdx};
                             for ruleIdx = 1:size(replacementRules, 1)
-                                oldText = replacementRules{ruleIdx, 1};
-                                newText = replacementRules{ruleIdx, 2};
-                                stringToModify = replace(stringToModify, oldText, newText);
+                                stringToModify = replace(stringToModify, replacementRules{ruleIdx, 1}, replacementRules{ruleIdx, 2});
                             end
                             newStrings{entryIdx} = stringToModify;
                         end
-                        % If HandleVisibility is 'off', we do nothing, preserving the original string.
                     end
                     obj.String = newStrings;
-
                 else
-                    % --- Standard Handling for other text objects (Title, Labels, etc.) ---
                     modifiedString = obj.String;
                     for ruleIdx = 1:size(replacementRules, 1)
-                        oldText = replacementRules{ruleIdx, 1};
-                        newText = replacementRules{ruleIdx, 2};
-                        modifiedString = replace(modifiedString, oldText, newText);
+                        modifiedString = replace(modifiedString, replacementRules{ruleIdx, 1}, replacementRules{ruleIdx, 2});
                     end
                     obj.String = modifiedString;
                 end
             end
-            % --- End of Modified Section ---
-
-        end % end of axes loop
+        end
         
         drawnow;
         fprintf('     -> Figure modified and left open for inspection.\n');
 
     catch ME
         warning(warnState); 
-        fprintf('     -> An error occurred while processing "%s":\n', filePath);
+        fprintf('     -> AN ERROR OCCURRED while processing "%s":\n', filePath);
         fprintf('        %s\n', ME.message);
         close all;
     end
 end
 
-fprintf('\nScript execution complete.\n');
-fprintf('Warning: All modified figures have been left open.\n');
-fprintf('Please review, save, and close them manually.\n');
+fprintf('\n--- All figures have been processed and are open for review. ---\n');
+
+
+% ----- SCRIPT LOGIC (PART 2: INTERACTIVE SAVE) -----
+
+% Ask the user if they want to save the figures.
+prompt = 'Do you want to save all modified figures? (y/n): ';
+userInput = input(prompt, 's');
+
+if strcmpi(userInput, 'y')
+    % Ask for a suffix.
+    suffixPrompt = 'Enter a filename suffix (e.g., _v2) or press Enter to overwrite: ';
+    fileSuffix = input(suffixPrompt, 's');
+    
+    % Get handles to all open figures.
+    allHandles = findall(0, 'Type', 'figure');
+    if isempty(allHandles)
+        disp('No open figures found to save.');
+        return;
+    end
+    
+    fprintf('\nStarting save process for %d figure(s)...\n', length(allHandles));
+    
+    for hFig = allHandles'
+        originalFilepath = get(hFig, 'FileName');
+        
+        if isempty(originalFilepath)
+            fprintf(' -> Skipping Figure %d (was not opened from a file).\n', hFig.Number);
+            continue;
+        end
+        
+        [folder, name, ~] = fileparts(originalFilepath);
+        
+        % Construct the new filenames with the suffix.
+        newBaseName = [name, fileSuffix];
+        newFigPath = fullfile(folder, [newBaseName, '.fig']);
+        newSvgPath = fullfile(folder, [newBaseName, '.svg']);
+        
+        fprintf(' -> Saving Figure %d ("%s")\n', hFig.Number, newBaseName);
+        
+        try
+            % Save as .fig
+            savefig(hFig, newFigPath);
+            fprintf('    ... saved as %s\n', [newBaseName, '.fig']);
+            
+            % Save as .svg using the compatible 'print' function
+            print(hFig, newSvgPath, '-dsvg');
+            fprintf('    ... saved as %s\n', [newBaseName, '.svg']);
+            
+            % Close the figure after saving.
+            close(hFig);
+            
+        catch ME_save
+            fprintf('    ... FAILED to save Figure %d: %s\n', hFig.Number, ME_save.message);
+        end
+    end
+    
+    fprintf('\nSave and close process complete.\n');
+    
+else
+    fprintf('\nSave operation cancelled. Figures remain open for manual review.\n');
+end

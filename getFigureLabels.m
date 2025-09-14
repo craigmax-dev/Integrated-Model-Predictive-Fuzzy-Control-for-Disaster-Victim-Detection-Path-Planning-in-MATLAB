@@ -53,3 +53,8 @@ else
     end
 end
 fprintf('\n--- Script finished. ---\n');
+
+%% Change label text
+% xlabel('Number of environment cells, $n^{\mathrm{h}} \cdot n^{\mathrm{v}}$', 'Interpreter', 'latex');
+% ylabel('Optimisation time, $\overline{t}^{\mathrm{opt}}$(k)[s]', 'Interpreter', 'latex');
+% title('Plot with Custom LaTeX X-axis Label');
