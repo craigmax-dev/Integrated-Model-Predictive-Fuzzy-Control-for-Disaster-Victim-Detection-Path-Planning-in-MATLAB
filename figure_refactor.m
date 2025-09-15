@@ -24,6 +24,7 @@ replacementRules = {
     'Number of robots, $n^{r}$', 'Number of robots, $n^{\mathrm{rob}}$';
     '\mathbf{M}', 'M';
     'm/s', '\mathrm{m/s}';
+    '$T^{\mbox{risk}}$', '$M^{\mbox{risk}}$';
 %     'Parameter Index', 'Parameter index';
 %     'Membership Function', 'Membership function';
 %     'FIS Output MF Parameters', '';

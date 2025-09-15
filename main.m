@@ -185,7 +185,7 @@ dash = '--';
 % % VALIDATION CASE
 simulationSetup = { 
   "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 };
 lineStyles = {
     {solid, flc_colour}, ... 
@@ -196,7 +196,7 @@ seeds = [1, 2, 3, 4, 5];
 % % 4.2.1 - Two-Agent System in Small Static Disaster Environment
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_static_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
@@ -206,23 +206,23 @@ seeds = [1, 2, 3, 4, 5];
 % };
 % seeds = [6586, 9364, 1009, 3473, 9463];
 % 
-% % 4.2.2 - Two-Agent System in Small Dynamic Disaster Environment
-% simulationSetup = { 
-%   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
-% };
-% lineStyles = {
-%     {solid, flc_colour}, ... 
-%     {solid, mpfc_colour}, ... 
-%     {solid, mpc_colour},  ... 
-% };
-% seeds = [265, 5052, 9173, 1171, 7530];
+% 4.2.2 - Two-Agent System in Small Dynamic Disaster Environment
+simulationSetup = { 
+  "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
+  "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
+  "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
+};
+lineStyles = {
+    {solid, flc_colour}, ... 
+    {solid, mpfc_colour}, ... 
+    {solid, mpc_colour},  ... 
+};
+seeds = [265, 5052, 9173, 1171, 7530];
 % 
 % % 4.2.3 - Four-Agent System in Small Dynamic Disaster Environment
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 % %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
@@ -234,10 +234,10 @@ seeds = [1, 2, 3, 4, 5];
 % };
 % seeds = [1755, 8611, 6476, 3092, 5726];
 % 
-% 4.2.4 - Decentralised vs Centralised MPFC Controller Architectures: Two-agent system
+% 4.2.4 - Decentralised vs Centralised M2PFC Controller Architectures: Two-agent system
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 % };
 % lineStyles = {
@@ -247,10 +247,10 @@ seeds = [1, 2, 3, 4, 5];
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % 
-% % 4.2.4 - Decentralised vs Centralised MPFC Controller Architectures: Four-agent system
+% % 4.2.4 - Decentralised vs Centralised M2PFC Controller Architectures: Four-agent system
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 % };
 % lineStyles = {
@@ -263,7 +263,7 @@ seeds = [1, 2, 3, 4, 5];
 % % 4.2.5 - Two-Agent System in Complex Dynamic Disaster Environment
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60_complex, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % lineStyles = {
@@ -284,7 +284,7 @@ seeds = [1, 2, 3, 4, 5];
 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 %   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
@@ -293,7 +293,7 @@ seeds = [1, 2, 3, 4, 5];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 %   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_3_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
@@ -302,7 +302,7 @@ seeds = [1, 2, 3, 4, 5];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpfc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4, h_init_fis_mirko_4, h_arch_mpfc_output_prediction_decentralised, "Decentralised MPFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 %   "mpc_decentralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_4_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction_decentralised, "Decentralised MPC";
@@ -318,57 +318,57 @@ seeds = [1, 2, 3, 4, 5];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_20, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [8721, 7857, 1151, 9093, 6561];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_30, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [4767, 2357, 6936, 3167, 6246];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [265, 5052, 9173, 1171, 7530];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_50, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [8721, 7857, 1151, 9093, 6561];
 % 
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
 %   "mpc_centralised", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2_mpc, h_init_fis_mirko_4, h_arch_mpc_prediction, "Centralised MPC";
 % };
 % seeds = [8721, 7857, 1151, 9093, 6561];
 % 
 % % 4.3.3 - Sensitivity Analysis: MPC Step Size
 % simulationSetup = { 
-%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 2";
-%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 5";
-%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 30";
-%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 45";
-%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 60";
-%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_MPC = 75";
+%   "mpfc_centralised_mpc_2", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 2";
+%   "mpfc_centralised_mpc_5", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 5";
+%   "mpfc_centralised_mpc_15", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 30";
+%   "mpfc_centralised_mpc_30", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 45";
+%   "mpfc_centralised_mpc_45", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 60";
+%   "mpfc_centralised_mpc_60", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_MPC = 75";
 % };
 % seeds = [9933, 4258, 9696, 6016, 7584];
 % 
 % % 4.3.4 - Sensitivity Analysis: Prediction Step Size
 % simulationSetup = { 
-  % "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 17";
-  % "mpfc_centralised_pred_20", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 30";
-  % "mpfc_centralised_pred_30", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 45";
-  % "mpfc_centralised_pred_45", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 60";
-  % "mpfc_centralised_pred_60", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, k_pred = 75";
+  % "mpfc_centralised_pred_17", h_s_victim_model_mpc_2_pred_17, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_pred = 17";
+  % "mpfc_centralised_pred_20", h_s_victim_model_mpc_5_pred_20, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_pred = 30";
+  % "mpfc_centralised_pred_30", h_s_victim_model_mpc_15_pred_30, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_pred = 45";
+  % "mpfc_centralised_pred_45", h_s_victim_model_5000, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_pred = 60";
+  % "mpfc_centralised_pred_60", h_s_victim_model_mpc_45_pred_60, h_env_dynamics_60, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, k_pred = 75";
 % };
 % seeds = [2239, 7961, 6896, 8912, 833];
 % 
@@ -376,14 +376,14 @@ seeds = [1, 2, 3, 4, 5];
 % % dk_30
 % simulationSetup = { 
 %   "flc", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised_prediction", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
-%   "mpfc_centralised_exact", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
+%   "mpfc_centralised_prediction", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, Probability Threshold";
+%   "mpfc_centralised_exact", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised M2PFC, Exact";
 % };
 % dk_60
 % simulationSetup = { 
 %   "flc", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
-%   "mpfc_centralised_prediction", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Probability Threshold";
-%   "mpfc_centralised_exact", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised MPFC, Exact";
+%   "mpfc_centralised_prediction", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, Probability Threshold";
+%   "mpfc_centralised_exact", h_s_victim_model_mpc_60_pred_75, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_exact, "Centralised M2PFC, Exact";
 % };
 % lineStyles = {
 %     {solid, flc_colour}, ... 
@@ -405,8 +405,8 @@ seeds = [1, 2, 3, 4, 5];
 
 % 4.4.2 - Design Exploration: Type-1 vs Type-2 MPFC
 % simulationSetup = { 
-%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 1 FLC";
-%   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised MPFC, Type 2 FLC";
+%   "mpfc_centralised_type1", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC, Type 1 FLC";
+%   "mpfc_centralised_type2", h_s_victim_model_5000, h_env_dynamics_40, h_a_repeat_2, h_init_fis_mirko_4_type2, h_arch_mpfc_output_prediction, "Centralised M2PFC, Type 2 FLC";
 % };
 % lineStyles = {
 %     {solid, mpfc_colour}, ... 
@@ -418,8 +418,8 @@ seeds = [1, 2, 3, 4, 5];
 % simulationSetup = { 
 %   "fis_global", h_s_victim_model_5000, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 %   "fis_local_r_5", h_s_victim_model_5000_local_map_r5, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Pre-tuned FLC Local Map R = 5";
-%   "mpfc_global", h_s_victim_model_5000, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpfc_local_r_5", h_s_victim_model_5000_local_map_r5, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
+%   "mpfc_global", h_s_victim_model_5000, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
+%   "mpfc_local_r_5", h_s_victim_model_5000_local_map_r5, h_env_static_20, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC Local Map R = 5";
 % };
 % lineStyles = {
 %     {solid, flc_colour}, ... 
@@ -432,10 +432,10 @@ seeds = [1, 2, 3, 4, 5];
 % 
 % 4.4.3 - Design Exploration: Local Prediction Maps - Large Dynamic Disaster Environment
 % simulationSetup = { 
-%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC";
-%   "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 7";
-%   "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 5";
-%   "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised MPFC Local Map R = 3";
+%   "mpfc_centralised", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC";
+%   "mpfc_centralised_local_r7", h_s_victim_model_5000_local_map_r7, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC Local Map R = 7";
+%   "mpfc_centralised_local_r5", h_s_victim_model_5000_local_map_r5, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC Local Map R = 5";
+%   "mpfc_centralised_local_r3", h_s_victim_model_5000_local_map_r3, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_mpfc_output_prediction, "Centralised M2PFC Local Map R = 3";
 %   "flc", h_s_victim_model_5000, h_env_dynamics_200_dualCentre, h_a_repeat_2, h_init_fis_mirko_4, h_arch_fis, "Pre-tuned FLC";
 % };
 % lineStyles = {
@@ -758,7 +758,7 @@ close all
 % simNames = {'Probability Threshold', 'Exact'};
 % t_mpc = 15*[30, 60];
 % lineStyles = {
-%     {solid, mpfc_colour}, ...         % Centralised MPFC
+%     {solid, mpfc_colour}, ...         % Centralised M2PFC
 %     {dash, mpfc_colour}, ...          % Decentralised MPFC
 % };
 % 
@@ -813,7 +813,7 @@ close all
 % lineStyles = {
 %     {solid, mpc_colour}, ...         % Centralised MPC
 %     {dash, mpc_colour}, ...          % Decentralised MPC
-%     {solid, mpfc_colour}, ...        % Centralised MPFC
+%     {solid, mpfc_colour}, ...        % Centralised M2PFC
 %     {dash, mpfc_colour}              % Decentralised MPFC
 % };
 % 
@@ -829,10 +829,10 @@ close all
 % t_MPC_MeanTime_confLower = [44.6674, 52.4588, 69.8264, 114.3734, 160.5813, 200.6613];
 % t_MPC_MeanTime_confUpper = [47.4997, 55.8444, 79.7201, 128.3313, 163.3449, 203.5417];
 % 
-% simNames = {'Centralised MPFC'};
+% simNames = {'Centralised M2PFC'};
 % t_mpc = 15*[2, 5, 15, 30, 45, 60];
 % lineStyles = {
-%     {solid, mpfc_colour}, ...        % Centralised MPFC
+%     {solid, mpfc_colour}, ...        % Centralised M2PFC
 % };
 % 
 % % Call the functions
@@ -847,10 +847,10 @@ close all
 % t_pred_MeanTime_confLower = [68.6694, 160.5813, 133.5439, 172.0526];
 % t_pred_MeanTime_confUpper = [87.8929, 163.3449, 186.3556, 233.8537];
 % 
-% simNames = {'Centralised MPFC'};
+% simNames = {'Centralised M2PFC'};
 % t_pred = 15*[30, 45, 60, 75];
 % lineStyles = {
-%     {solid, mpfc_colour}, ...        % Centralised MPFC
+%     {solid, mpfc_colour}, ...        % Centralised M2PFC
 % };
 % 
 % % Call the functions
@@ -878,11 +878,11 @@ close all
 % mpcMeanObj_confLower = 1.0e+03 *[0.218, 2.3512, 7.4081];
 % mpcMeanObj_confUpper = 1.0e+03 *[0.320, 2.7578, 8.0449];
 % 
-% simNames = {'Centralised MPC', 'Centralised MPFC'};
+% simNames = {'Centralised MPC', 'Centralised M2PFC'};
 % envSize = [400, 1600, 3600];
 % lineStyles = {
 %     {solid, mpc_colour}, ...        % Centralised MPC
-%     {solid, mpfc_colour}, ...        % Centralised MPFC
+%     {solid, mpfc_colour}, ...        % Centralised M2PFC
 % };
 % 
 % % Call the functions
