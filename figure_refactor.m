@@ -7,15 +7,21 @@
 
 % ----- USER INPUTS -----
 % Specify the folder containing the images.
-folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_2_5_two_agent_complex_dynamic_env_params_v2';
+folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_4_3_local_prediction_maps_large_dynamic_disaster_environment';
 % folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\4_3_sensitivity_analysis_plots';
 % folderPath = 'C:\Users\CMAX2647\Documents\GitHub\Integrated-Model-Predictive-Fuzzy-Control-for-Disaster-Victim-Detection-Path-Planning-in-MATLAB\simulations\plots_environment_and_agents';
 
+% % Define the font sizes for different text elements.
+% fontSize.axisLabels = 18;
+% fontSize.tickLabels = 16;
+% fontSize.title = 18;
+% fontSize.legend = 18;
+
 % Define the font sizes for different text elements.
-fontSize.axisLabels = 18;
-fontSize.tickLabels = 16;
-fontSize.title = 18;
-fontSize.legend = 18;
+fontSize.axisLabels = 22;
+fontSize.tickLabels = 20;
+fontSize.title = 20;
+fontSize.legend = 20;
 
 % Define the text replacement rules as an N-by-2 cell array.
 replacementRules = {
